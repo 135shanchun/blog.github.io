@@ -1,0 +1,684 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#17 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#17</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-15T10:48:39.000Z" id="date"> 2023-06-15</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-22T00:38:10.973Z" id="updated"> 2023-06-22</time></div></span></div></div><hr><div id="post-content"><p>这篇文章是一些函数、语句学习</p>
+<span id="more"></span>
+
+<h1 id="cast函数"><a href="#cast函数" class="headerlink" title="cast函数"></a>cast函数</h1><p><code>CAST()</code> 函数是 MySQL 中一种类型转换函数，用于将一个数据类型转换为另一个数据类型。该函数通常可以用于针对某些列或变量进行特定的计算或操作，需要将其转换成特定的数据类型才能完成。下面是 <code>CAST()</code> 函数的基本语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CAST(expression AS data_type)<br></code></pre></td></tr></table></figure>
+
+<p>其中 <code>expression</code> 表示待转换的表达式或值， <code>data_type</code> 表示要转换到的目标数据类型。</p>
+<p>以下是几个示例:</p>
+<p>将字符串转换为整数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CAST(&#x27;42&#x27; AS SIGNED);<br></code></pre></td></tr></table></figure>
+
+<p>将浮点数转换为整数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CAST(3.14159 AS UNSIGNED);<br></code></pre></td></tr></table></figure>
+
+<p>将日期字符串转换为日期类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CAST(&#x27;2022-12-31&#x27; AS DATE);<br></code></pre></td></tr></table></figure>
+
+<p>需要注意的是， <code>CAST()</code> 函数不会改变原始表达式或值本身的数据类型，而是返回一个转换后的值。如果要更改数据表中的列的数据类型，请使用 <code>ALTER TABLE</code> 语句。</p>
+<hr>
+<p>例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select cast(&#x27;123&#x27; as char);<br></code></pre></td></tr></table></figure>
+
+<p>然后这里我搜了一下有哪些数据类型：</p>
+<ol>
+<li>数值类型（Numeric Types）<ul>
+<li>TINYINT</li>
+<li>SMALLINT</li>
+<li>MEDIUMINT</li>
+<li>INT&#x2F;INTEGER</li>
+<li>BIGINT</li>
+<li>FLOAT</li>
+<li>DOUBLE</li>
+<li>DECIMAL</li>
+</ul>
+</li>
+<li>日期和时间类型(Date and Time Types)<ul>
+<li>DATE</li>
+<li>TIME</li>
+<li>DATETIME</li>
+<li>TIMESTAMP</li>
+<li>YEAR</li>
+</ul>
+</li>
+<li>字符串类型(String Types)<ul>
+<li>CHAR</li>
+<li>VARCHAR</li>
+<li>TINYTEXT</li>
+<li>TEXT</li>
+<li>MEDIUMTEXT</li>
+<li>LONGTEXT</li>
+<li>BINARY</li>
+<li>VARBINARY</li>
+<li>BLOB</li>
+<li>ENUM</li>
+<li>SET</li>
+</ul>
+</li>
+<li>布尔类型(Boolean Type)<ul>
+<li>BOOLEANBOOL</li>
+</ul>
+</li>
+<li>位数据类型（Bit-Value Types）<ul>
+<li>BIT</li>
+</ul>
+</li>
+<li>JSON数据类型(JSON Data Type)<ul>
+<li>JSON</li>
+</ul>
+</li>
+</ol>
+<h1 id="ifnull函数"><a href="#ifnull函数" class="headerlink" title="ifnull函数"></a>ifnull函数</h1><p>MySQL <code>IFNULL()</code> 函数用于替换表达式中的 NULL 值。如果表达式的值为 NULL，则返回替换后的值；否则返回原始值。</p>
+<p>语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">IFNULL(expr1, expr2)<br></code></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><code>expr1</code>：要检查是否为 NULL 的表达式。</li>
+<li><code>expr2</code>：如果 <code>expr1</code> 为 NULL，则返回 <code>expr2</code> 替代；否则返回 <code>expr1</code> 原始值。</li>
+</ul>
+<p>示例：</p>
+<p>假设我们有一个名为 <code>orders</code> 的表，其中包含以下数据：</p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>customer_name</th>
+<th>order_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>001</td>
+<td>Alice</td>
+<td>2021-01-01</td>
+</tr>
+<tr>
+<td>002</td>
+<td>Bob</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>003</td>
+<td>Cindy</td>
+<td>2021-01-03</td>
+</tr>
+<tr>
+<td>004</td>
+<td>NULL</td>
+<td>2021-01-04</td>
+</tr>
+</tbody></table>
+<p>现在，我们想要按照特定条件查询订单信息，如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <br>    order_id,<br>    IFNULL(customer_name, <span class="hljs-string">&#x27;N/A&#x27;</span>) <span class="hljs-keyword">as</span> customer_name,<br>    IFNULL(order_date, <span class="hljs-string">&#x27;N/A&#x27;</span>) <span class="hljs-keyword">as</span> order_date<br><span class="hljs-keyword">FROM</span> orders;<br></code></pre></td></tr></table></figure>
+
+<p>结果将会是：</p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>customer_name</th>
+<th>order_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>001</td>
+<td>Alice</td>
+<td>2021-01-01</td>
+</tr>
+<tr>
+<td>002</td>
+<td>Bob</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td>003</td>
+<td>Cindy</td>
+<td>2021-01-03</td>
+</tr>
+<tr>
+<td>004</td>
+<td>N&#x2F;A</td>
+<td>2021-01-04</td>
+</tr>
+</tbody></table>
+<p>如上所示，使用 <code>IFNULL()</code> 函数使得查询结果中不会出现 NULL 值，同时提供了一个合适的替代值。</p>
+<hr>
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select ifnull(null,&#x27;a&#x27;);<br>+------------------+<br>| ifnull(null,&#x27;a&#x27;) |<br>+------------------+<br>| a                |<br>+------------------+<br>1 row in set (0.00 sec)<br><br>mysql&gt; select ifnull(1,&#x27;a&#x27;);<br>+---------------+<br>| ifnull(1,&#x27;a&#x27;) |<br>+---------------+<br>| 1             |<br>+---------------+<br></code></pre></td></tr></table></figure>
+
+<p>意思就是如果第一个值为空则返回第二个值，否则返回第一个值</p>
+<p>这个在实战中可能可以达到出其不意的效果，</p>
+<p>因为这同样有回显</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,ifnull(cast(security.users.username as char),&#x27;no&#x27;) from users--+<br></code></pre></td></tr></table></figure>
+
+<p>但是可能有点慢，因为一次只能回显一行</p>
+<h1 id="union-all-select-语句"><a href="#union-all-select-语句" class="headerlink" title="union all select 语句"></a>union all select 语句</h1><p><code>UNION ALL SELECT</code>是MySQL中用于合并多个SELECT查询结果的语法。在使用该语法时，要求每个SELECT语句的列数和数据类型必须相同，否则会出现错误。</p>
+<p>语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT column_name(s) FROM table1<br>UNION ALL<br>SELECT column_name(s) FROM table2;<br></code></pre></td></tr></table></figure>
+
+<p>该语法会将<code>table1</code>和<code>table2</code>两个表中的记录合并起来，并返回一个包含所有匹配记录的结果集。UNION ALL操作可以重复输出包含重复值的行，因此如果需要去重，应该使用<code>UNION</code>语法。</p>
+<p>例子：</p>
+<p>假设有两个表格 <code>employees1</code> 和 <code>employees2</code>，都拥有列名为 <code>name</code> 和 <code>salary</code> 的列，现在我们想把这两个表中的对应行进行合并，可以使用如下 SQL 语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT name, salary FROM employees1<br>UNION ALL<br>SELECT name, salary FROM employees2;<br></code></pre></td></tr></table></figure>
+
+<p>这条 SQL 语句会返回一个结果集，其中包含了 <code>employees1</code> 和 <code>employees2</code> 表中的所有行。</p>
+<hr>
+<p>这里我不经想问：他和union select的区别是什么呢？</p>
+<hr>
+<p><code>UNION ALL SELECT</code>和<code>UNION SELECT</code>是SQL语句中用于合并两个或多个查询结果的关键字。</p>
+<p><code>UNION SELECT</code>可以简写为<code>UNION</code>，而区别在于加不加<code>ALL</code>，此外两者还有以下区别：</p>
+<ul>
+<li><code>UNION SELECT</code>会对查询结果进行去重操作，而<code>UNION ALL SELECT</code>不会。这意味着如果两个查询结果集中存在相同的行，则只会返回一次。</li>
+<li>去重操作并不是没有代价的，它可能会对查询性能产生负面影响。因此，如果你确定查询结果集中不会存在重复行，或者你需要保留所有的行，那么使用<code>UNION ALL SELECT</code>可以获得更好的性能。</li>
+</ul>
+<p>综上所述，如果需要对查询结果集进行去重操作，则使用<code>UNION SELECT</code>；否则使用<code>UNION ALL SELECT</code>可以获得更好的性能。</p>
+<hr>
+<p>虽然我不知道我知道这个有什么用处，</p>
+<p>但是可能在免杀中有出其不意的效果吧</p>
+<h1 id="strcmp函数"><a href="#strcmp函数" class="headerlink" title="strcmp函数"></a>strcmp函数</h1><p>MySQL 中的 strcmp 函数是用于比较两个字符串的函数。它接受两个参数作为输入，这些参数是要比较的两个字符串。该函数返回一个整数值，该值指示两个字符串之间的关系。</p>
+<p>下面是 MySQL strcmp 函数的语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">STRCMP(string1, string2)<br></code></pre></td></tr></table></figure>
+<p>其中，<code>string1</code> 和 <code>string2</code> 是要比较的两个字符串。</p>
+<p>该函数返回以下值之一：</p>
+<ul>
+<li>如果 <code>string1</code> 小于 <code>string2</code>，则返回值为负数。</li>
+<li>如果 <code>string1</code> 等于 <code>string2</code>，则返回 0。</li>
+<li>如果 <code>string1</code> 大于 <code>string2</code>，则返回值为正数。</li>
+</ul>
+<p>例如，如果我们想要按字典顺序对字符串进行排序，我们可以使用 strcmp 函数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> table_name <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> STRCMP(column1, column2);<br></code></pre></td></tr></table></figure>
+
+<p>此查询会按升序或降序（取决于返回值）排列由 column1 和 column2 形成的字符串对。</p>
+<hr>
+<p>实战中用于盲注</p>
+<h1 id="各种运算"><a href="#各种运算" class="headerlink" title="各种运算"></a>各种运算</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/mysql/mysql-operator.html">MySQL 运算符 | 菜鸟教程 (runoob.com)</a></p>
+</blockquote>
+<p>当然他介绍的还不是很全面，可以看一下chatgpt的回答：</p>
+<p>以下是MySQL中常用的运算符：</p>
+<ol>
+<li>算术运算符</li>
+</ol>
+<ul>
+<li><code>+</code>：加法</li>
+<li><code>-</code>：减法</li>
+<li><code>*</code>：乘法</li>
+<li><code>/</code>：除法 （注：这个似乎可以写成DIV）</li>
+<li><code>%</code>：取模（求余数）  （注：这个似乎可以写成MOD）</li>
+</ul>
+<ol>
+<li>比较运算符</li>
+</ol>
+<ul>
+<li><code>=</code>：等于</li>
+<li><code>&lt;&gt;</code> 或 <code>!=</code>：不等于</li>
+<li><code>&lt;</code>：小于</li>
+<li><code>&gt;</code>：大于</li>
+<li><code>&lt;=</code>：小于等于</li>
+<li><code>&gt;=</code>：大于等于</li>
+</ul>
+<ol>
+<li>逻辑运算符</li>
+</ol>
+<ul>
+<li><p><code>AND</code>：逻辑与 （符号&amp;&amp;）</p>
+</li>
+<li><p><code>OR</code>：逻辑或    （符号||）</p>
+</li>
+<li><p><code>NOT</code>：逻辑非  （符号!）</p>
+</li>
+</ul>
+<ol>
+<li>字符串运算符</li>
+</ol>
+<ul>
+<li><code>CONCAT</code>：字符串连接</li>
+<li><code>LIKE</code>：模糊匹配</li>
+<li><code>IN</code>：判断是否在一组值中</li>
+<li><code>BETWEEN</code>：判断是否在指定范围内</li>
+</ul>
+<ol>
+<li>空值判断运算符</li>
+</ol>
+<ul>
+<li><code>IS NULL</code>：判断是否为NULL</li>
+<li><code>IS NOT NULL</code>：判断是否不为NULL</li>
+</ul>
+<hr>
+<p>我记得还有一些运算符的。。。我补充一下</p>
+<h2 id="“-”-二进制下按位或"><a href="#“-”-二进制下按位或" class="headerlink" title="“|” 二进制下按位或"></a>“|” 二进制下按位或</h2><p>MySQL中的“|”符号是二进制按位OR操作符。在执行比较运算时，使用该操作符将两个二进制数的位进行比较，如果至少有一个位被设置为1，则结果也是1。可以在SELECT语句中使用它作为逻辑运算符来组合多个条件，也可以在UPDATE或INSERT语句中将其用于修改二进制数据类型的值。 </p>
+<p>下面是一个示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM table_name WHERE column_name = 1 | 2;<br></code></pre></td></tr></table></figure>
+
+<p>在上面的示例代码中，使用“|”操作符将值1和值2进行按位OR操作，然后将结果与列column_name中的值进行比较。如果该列中的值包含任何一个位等于1，那么该行将匹配该条件。</p>
+<p>请注意，如果你要在WHERE子句中进行按位操作，请确保使用括号正确分组，以防止意外的结果。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM table_name WHERE (column_name &amp; 8) &gt; 0 AND (column_name &amp; 16) = 0;<br></code></pre></td></tr></table></figure>
+
+<p>在上面的示例代码中，使用“&amp;”操作符将column_name的值与8和16进行按位AND操作。第一个条件检查8位是否设置(返回非零值)，第二个条件检查16位是否未设置(返回零值)。两个条件必须同时满足才能匹配该行记录。</p>
+<p>例如，1 | 2 的结果是3（二进制为0001|0010&#x3D;0011），其中第1位和第2位都被设置为1了，因此结果为3。</p>
+<p>同样的，1 | 1 的结果是1(二进制为0001|0001&#x3D;0001)，因为第1位是1了。</p>
+<hr>
+<p>这个似乎已经被安全狗杀死了，进入全国联保套餐了。。。</p>
+<h2 id="“-amp-”-二进制下按位或"><a href="#“-amp-”-二进制下按位或" class="headerlink" title="“&amp;” 二进制下按位或"></a>“&amp;” 二进制下按位或</h2><h2 id="“-”-异或"><a href="#“-”-异或" class="headerlink" title="“^” 异或"></a>“^” 异或</h2><p>在 MySQL 中，符号“^”表示按位异或运算符。按位异或操作会将两个二进制数中的每一个对应位进行异或操作，并输出结果。</p>
+<p>例如：假设我们有两个二进制数10和6，它们的二进制分别为1010和0110。那么当我们对它们进行按位异或运算时，得到的结果为1100（二进制），转换成十进制即为12。</p>
+<p>下面是按位异或运算符的一些示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 10 ^ 6;  -- 输出 12<br>SELECT 5 ^ 3;   -- 输出 6<br>SELECT 2 ^ 8;   -- 输出 10<br></code></pre></td></tr></table></figure>
+
+<p>请注意：在 MySQL 中，符号“^”还可以用作按位或和按位异或赋值运算符。这些是不同的运算符，将在其他问题中进行描述。</p>
+<hr>
+<p>与我们熟知的异或有一点不一样，</p>
+<p>我们的异或都是二进制下的异或，</p>
+<p>但是这里是先把十进制转换为二进制然后再异或的</p>
+<h2 id="“-gt-gt-”-和-“-lt-lt-”-位运算符"><a href="#“-gt-gt-”-和-“-lt-lt-”-位运算符" class="headerlink" title="“&gt;&gt;”   和   “&lt;&lt;” 位运算符"></a>“&gt;&gt;”   和   “&lt;&lt;” 位运算符</h2><p>MySQL提供了多种运算符，包括算术、比较、逻辑和位运算符等。其中，&lt;&lt;是一种位运算符。</p>
+<p>位运算符是对二进制数进行操作的运算符。&lt;&lt;表示左移位运算符，在二进制数中将所有位向左移动指定的次数，并在右侧添加零位。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 8 &lt;&lt; 2; -- 结果为32<br>-- 将8的二进制数1000左移两位，即变成100000，转换为10进制数即为32。<br></code></pre></td></tr></table></figure>
+
+<p>移动的位数是通过右侧的数字来指定的，这个数字必须是非负整数。左移过程中，超出数据类型长度的高位将被丢弃。如果移动的是负数位数，则会进行右移运算。</p>
+<p>&lt;&lt; 运算可以用于替代某些算术运算，如乘以2^n（2的n次方）。因此，在某些情况下，使用位运算符可能会比使用算术运算符更高效。</p>
+<hr>
+<p>剩下一个符号同理</p>
+<h2 id="LIKE-模糊匹配"><a href="#LIKE-模糊匹配" class="headerlink" title="LIKE 模糊匹配"></a>LIKE 模糊匹配</h2><p>在MySQL中，”LIKE” 运算符用于执行模糊匹配操作。它通常与通配符一起使用，以在字符串比较中进行模式匹配。</p>
+<p>“LIKE” 运算符基于模式匹配规则来比较字符串。以下是一些常用的通配符：</p>
+<ol>
+<li>百分号（%）：表示任意字符序列（包括空字符序列）。</li>
+<li>下划线（_）：表示任意单个字符。</li>
+</ol>
+<p>下面是一些使用 “LIKE” 运算符进行模糊匹配的示例：</p>
+<ol>
+<li>匹配以特定字符串开头的值：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT * FROM table_name WHERE column_name LIKE &#x27;prefix%&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p>这将返回以 “prefix” 开头的所有值。</p>
+<ol>
+<li>匹配以特定字符串结尾的值：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT * FROM table_name WHERE column_name LIKE &#x27;%suffix&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p>这将返回以 “suffix” 结尾的所有值。</p>
+<ol>
+<li>匹配包含特定字符串的值：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT * FROM table_name WHERE column_name LIKE &#x27;%keyword%&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p>这将返回包含 “keyword” 的任何位置的所有值。</p>
+<ol>
+<li>匹配符合指定模式的值：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT * FROM table_name WHERE column_name LIKE &#x27;pattern&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p>在模式中可以使用百分号和下划线通配符进行更复杂的模糊匹配。</p>
+<p>请注意，”LIKE” 运算符对大小写敏感。如果需要进行不区分大小写的模糊匹配，可以使用 “LIKE” 运算符的函数形式，如 “LIKE BINARY” 或 “LIKE COLLATE”，或者使用 “REGEXP” 运算符配合正则表达式进行匹配。</p>
+<hr>
+<p>这个没什么用处，知道即可</p>
+<h2 id="REGEXP-或-RLIKE-正则式匹配"><a href="#REGEXP-或-RLIKE-正则式匹配" class="headerlink" title="REGEXP 或 RLIKE 正则式匹配"></a>REGEXP 或 RLIKE 正则式匹配</h2><p>MySQL中的REGEXP和RLIKE都是用于正则表达式匹配的操作符。这两个关键字可以互换使用，因为它们的作用完全相同。</p>
+<p>语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">expr REGEXP pattern<br>或<br>expr RLIKE pattern<br></code></pre></td></tr></table></figure>
+
+<p>其中，<code>expr</code>是待匹配的字符串或列名称，<code>pattern</code>是正则表达式。</p>
+<p>下面介绍一些常用的正则表达式符号（请注意：不是所有的正则表达式符号在MySQL中都被支持）：</p>
+<ul>
+<li><code>^</code> 匹配行首。</li>
+<li><code>$</code> 匹配行尾。</li>
+<li><code>.</code> 匹配任意一个字符。</li>
+<li><code>*</code> 匹配前面的字符0次或多次。</li>
+<li><code>+</code> 匹配前面的字符1次或多次。</li>
+<li><code>?</code> 匹配前面的字符0次或1次。</li>
+<li><code>|</code> 或者符号，表示匹配多个模式之一。</li>
+<li><code>[abc]</code> 可以匹配a、b或c。</li>
+<li><code>[^abc]</code> 可以匹配除了a、b和c以外的任何字符。</li>
+<li><code>[a-z]</code> 可以匹配任何小写字母。</li>
+<li><code>[A-Z]</code> 可以匹配任何大写字母。</li>
+<li><code>[0-9]</code> 可以匹配任何数字。</li>
+</ul>
+<p>例如：</p>
+<p><code>SELECT * FROM mytable WHERE name REGEXP &#39;^J&#39;</code></p>
+<p>上述查询语句将返回表格mytable中名字以字母J开头的所有行。</p>
+<p><code>SELECT * FROM mytable WHERE name RLIKE &#39;a+$&#39;</code></p>
+<p>上述查询语句将返回表格mytable中名字以一个或多个字母a结尾的所有行。</p>
+<hr>
+<p>这个现在以我的水平暂时用不到，</p>
+<p>不过后面肯定会学习正则语法的</p>
+<h1 id="HAVING-关键字"><a href="#HAVING-关键字" class="headerlink" title="HAVING 关键字"></a>HAVING 关键字</h1><p><code>HAVING</code> 是 MySQL 中用于筛选聚合查询结果的关键字。通常在 GROUP BY 子句之后使用，作为对分组结果再次进行过滤的条件。</p>
+<p>例如，如果我们有一个名为 <code>orders</code> 的表包含订单信息，我们想知道每个客户的总订单数，但只想查找那些具有超过 10 笔订单的客户，可以这样写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT customer_id, COUNT(*) as order_count<br>FROM orders<br>GROUP BY customer_id<br>HAVING order_count &gt; 10;<br></code></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>HAVING</code> 子句允许我们根据聚合计算结果来过滤组数据，并返回仅符合条件的结果。</p>
+<hr>
+<p>这个可以用来bypass安全狗的检测：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Keyword filer: 		and, or, union, where, limit<br>	----------------------------------------------------------------------<br>	PHP filter code:	preg_match(&#x27;/(and|or|union|where|limit)/i&#x27;, $id)<br>	Filtered injection:	1 || (select user from users limit 1) = &#x27;admin&#x27;<br>	Bypassed injection:	1 || (select user from users group by user_id having user_id = 1) = &#x27;admin&#x27;<br>	----------------------------------------------------------------------<br></code></pre></td></tr></table></figure>
+
+<h1 id="conv函数"><a href="#conv函数" class="headerlink" title="conv函数"></a>conv函数</h1><p>MySQL的CONV函数用于将输入的表示为一个数字的字符串，转换成指定进制的值。</p>
+<p>该函数的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CONV(number,from_base,to_base)<br></code></pre></td></tr></table></figure>
+
+<p>其中，number表示一个被表示为数字字符串的数值；from_base和to_base分别表示原来字符串所使用的进制和要转换成的目标进制。这两个参数都是可选的，默认情况下它们都是10，即表示十进制。</p>
+<p>例如，要将二进制数11101转换成十进制数，可以使用以下语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CONV(&#x27;11101&#x27;, 2, 10);<br></code></pre></td></tr></table></figure>
+
+<p>其结果为29。</p>
+<h1 id="lpad函数"><a href="#lpad函数" class="headerlink" title="lpad函数"></a>lpad函数</h1><p><code>LPAD()</code>是MySQL函数库中的一个字符串函数，在MySQL版本4.0及以上可用。这个函数的主要作用是在字符串左侧填充指定字符，例如在数字前面添加”0”等。</p>
+<p>下面是<code>LPAD()</code>函数的语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">LPAD(str,length,padstr)<br></code></pre></td></tr></table></figure>
+
+<p>其中，<code>str</code>指原字符串的名称或常量值，<code>length</code>指新字符串的长度，<code>padstr</code>指填充的字符。如果原字符串的长度小于指定的长度，则新字符串从左侧开始填充指定字符，直到达到指定长度；如果原字符串的长度已经等于指定的长度，则返回原字符串。</p>
+<p>下面是一个使用<code>LPAD()</code>函数将数字格式化为指定长度的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT LPAD(&#x27;123&#x27;,5,&#x27;0&#x27;); <br></code></pre></td></tr></table></figure>
+
+<p>执行上述语句后，将返回结果为”00123”。</p>
+<h1 id="elt函数"><a href="#elt函数" class="headerlink" title="elt函数"></a>elt函数</h1><p>MySQL的ELT函数是一种用于返回给定数字列表中指定索引处元素值的函数。ELT函数使用以下语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ELT(index, str1, str2, ..., strN)<br></code></pre></td></tr></table></figure>
+
+<p>其中，<code>index</code>表示要返回的元素的位置。<code>str1</code>，<code>str2</code>，…，<code>strN</code>是待选字符串列表，它们的位置从1开始编号。</p>
+<p>例如，以下示例使用ELT函数检索员工部门的名称，根据其在表中的位置进行指定：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT ELT(dept_id, &#x27;Sales&#x27;, &#x27;Marketing&#x27;, &#x27;Engineering&#x27;, &#x27;Finance&#x27;) AS department<br>FROM employees;<br></code></pre></td></tr></table></figure>
+
+<p>在这个例子中，ELT函数将返回给定位置（即<code>dept_id</code>）的相应字符串。如果<code>dept_id</code>为3，则返回“Engineering”字符串。如果<code>dept_id</code>大于N，则ELT函数返回Null。</p>
+<p>请注意，ELT函数只能取一到30个参数，超过30个参数则会被截断。此外，在实际使用中，ELT函数可能不是最好的解决方案，因为它需要由多个字符串常量组成的参数列表，并且很难维护或更新。</p>
+<hr>
+<p>或许这也算是一种获取回显的方式吧</p>
+<h1 id="field函数"><a href="#field函数" class="headerlink" title="field函数"></a>field函数</h1><p><code>MySQL Field()</code>函数用于返回字段的索引位置，该函数可以作为SELECT查询中的一个表达式使用。以下是关于<code>MySQL Field()</code>函数的详细介绍：</p>
+<p>语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">FIELD(str, str1, str2, ...)<br></code></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><code>str</code>: 需要被比较的字符串或字符值</li>
+<li><code>str1</code>: 字符串列表（必须提供至少一个）</li>
+<li><code>str2</code>: 字符串列表</li>
+</ul>
+<p>返回值：</p>
+<p>如果str在参数列表（str1、str2，…）中，则返回其排名，而首个字符串将返回“1”。如果没有匹配，则返回0。</p>
+<p>备注：</p>
+<ul>
+<li>参数不区分大小写。</li>
+<li>这个函数是不区分大小写的，会根据当前的区域设置进行排序。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT FIELD(&#x27;cat&#x27;, &#x27;dog&#x27;, &#x27;cat&#x27;, &#x27;bird&#x27;); //输出：3<br>SELECT FIELD(&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;); //输出：0<br>SELECT FIELD(&#x27;Dog&#x27;, &#x27;apple&#x27;, &#x27;cat&#x27;, &#x27;Bird&#x27;); //输出：4<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>类似于python里面的.index(xxx)</p>
+<h1 id="benchmark函数"><a href="#benchmark函数" class="headerlink" title="benchmark函数"></a>benchmark函数</h1><p><code>MySQL BENCHMARK()</code>函数是用于测试数据库性能专用函数，它会反复执行一个指定的表达式，并返回执行表达式所需的时间。以下是有关BENCHMARK（）函数的详细介绍：</p>
+<p>语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">BENCHMARK(number_of_times, expression)<br></code></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><code>number_of_times</code>: 指定表达式要执行的次数</li>
+<li><code>expression</code>: 要被执行多次的表达式</li>
+</ul>
+<p>返回值：</p>
+<p>该函数返回执行指定表达式所需的时间，以秒为单位。</p>
+<p>备注：</p>
+<ul>
+<li>BENCHMARK()函数不保存正在执行的表达式的结果。</li>
+<li>在进行性能测试时，请务必慎重使用此函数。</li>
+</ul>
+<p>示例：</p>
+<p>以下查询将对SELECT 1 + 1进行1000000次测试：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT BENCHMARK(1000000, SELECT 1 + 1);<br></code></pre></td></tr></table></figure>
+
+<p>输出结果应标识表达式需要的总毫秒数。</p>
+<p>BENCHMARK()也可以用于比较两个或更多表达式的效率，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT BENCHMARK(1000000, (SELECT 1+2)), BENCHMARK(1000000, (SELECT 1*2)), BENCHMARK(1000000, (SELECT 1/2));<br></code></pre></td></tr></table></figure>
+
+<p>这个查询将快速计算三个表达式的平均执行时间，并将其放入结果集中返回。</p>
+<h1 id="get-lock函数"><a href="#get-lock函数" class="headerlink" title="get_lock函数"></a>get_lock函数</h1><p><code>GET_LOCK()</code>函数是MySQL提供的一个用于获取排他锁的函数。使用该函数，可以确保同时只有一个会话（连接）可以访问某个共享资源，从而防止并发访问冲突。</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p><code>GET_LOCK(str, timeout)</code></p>
+<h3 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h3><ul>
+<li>str：表示锁的名称，必须是非空字符串。</li>
+<li>timeout：表示获取锁的等待时间，单位为秒；如果设为0，则表示一直等待到锁被释放后再返回结果。如果等待超时，则函数返回0。</li>
+</ul>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>该函数返回一个整型数值，如果获取锁成功，则返回1；否则返回0。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> GET_LOCK(<span class="hljs-string">&#x27;my_lock&#x27;</span>, <span class="hljs-number">10</span>); <span class="hljs-comment">-- 获取名为&#x27;my_lock&#x27;的锁，最长等待10秒</span><br><br><span class="hljs-comment">-- 如果获取锁成功，则返回1；失败则返回0</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>在调用 <code>GET_LOCK()</code> 函数时，系统会自动创建匹配名称的锁对象，如果该名称已存在锁对象，则会直接获得锁。反之，等待其他会话释放锁后，再进行获取。</li>
+<li>当会话关闭时，MySQL会自动释放该会话所占用的所有锁，因此无需显式调用 <code>RELEASE_LOCK()</code> 函数来释放锁对象。</li>
+<li>当查询结束时，也会自动释放锁对象。但是，开发者仍然应该遵循良好的编程习惯，显式调用 <code>RELEASE_LOCK()</code> 函数来释放所占资源。</li>
+</ul>
+<hr>
+<p>再看看与之对应的release_lock函数吧</p>
+<h1 id="release-lock函数"><a href="#release-lock函数" class="headerlink" title="release_lock函数"></a>release_lock函数</h1><p><code>RELEASE_LOCK()</code> 函数是MySQL提供的一个用于释放由 <code>GET_LOCK()</code> 函数获取到的锁的函数。</p>
+<h3 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h3><p><code>RELEASE_LOCK(str)</code></p>
+<h3 id="参数说明-1"><a href="#参数说明-1" class="headerlink" title="参数说明"></a>参数说明</h3><ul>
+<li>str：表示要释放的锁名称，必须是非空字符串。</li>
+</ul>
+<h3 id="返回值-1"><a href="#返回值-1" class="headerlink" title="返回值"></a>返回值</h3><p>该函数返回一个整型数值，表示当前会话是否成功释放了对该锁的占用，如果成功则返回1，否则返回0。</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> GET_LOCK(<span class="hljs-string">&#x27;my_lock&#x27;</span>, <span class="hljs-number">10</span>); <span class="hljs-comment">-- 获取名为&#x27;my_lock&#x27;的锁，最长等待10秒</span><br><br><span class="hljs-comment">-- 执行一些操作</span><br><br><span class="hljs-keyword">SELECT</span> RELEASE_LOCK(<span class="hljs-string">&#x27;my_lock&#x27;</span>); <span class="hljs-comment">-- 释放名为&#x27;my_lock&#x27;的锁</span><br><br><span class="hljs-comment">-- 执行其他操作</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>当使用 <code>GET_LOCK()</code> 函数获取到锁后，应当在使用完之后尽快用 <code>RELEASE_LOCK()</code> 函数释放锁，确保其他会话可以及时获取资源。</li>
+<li>当调用该函数来释放不存在的锁对象时，将不会有任何效果，并且该函数返回0。</li>
+</ul>
+<h1 id="analyse函数"><a href="#analyse函数" class="headerlink" title="analyse函数"></a>analyse函数</h1><p><code>ANALYZE</code> 函数是 MySQL 数据库中的一个语句，它用于收集并更新表和索引的统计信息，以便MySQL数据库查询优化器可以更准确地评估执行操作所需的代价。执行 <code>ANALYZE</code> 后，MySQL 就会重新进行优化，这通常会导致查询执行速度的提升。</p>
+<p>有两种情况下建议使用 <code>ANALYZE</code> 函数：</p>
+<ol>
+<li><p>当执行某个查询语句时,其执行时间过长，则可能需要使用 <code>ANALYZE</code> 命令来分析该表的索引；</p>
+</li>
+<li><p>当对表的数据进行大量的添加、删除或修改操作后，建议使用 <code>ANALYZE</code> 来更新表的统计信息，因为大量的修改会使得表的统计信息变得不准确。</p>
+</li>
+</ol>
+<p>以下是 <code>ANALYZE</code> 函数的基本语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ANALYZE TABLE table_name;<br></code></pre></td></tr></table></figure>
+
+<p>其中， <code>table_name</code> 表示要分析的表的名称，可以同时指定多个表。例如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ANALYZE TABLE table1, table2;<br></code></pre></td></tr></table></figure>
+
+<p>总而言之， <code>ANALYZE</code> 函数可以帮助开发人员更好地优化 MySQL 数据库的查询性能。</p>
+<h1 id="from-…-for-…语句"><a href="#from-…-for-…语句" class="headerlink" title="from … for …语句"></a>from … for …语句</h1><p>MySQL中，<code>FROM...FOR</code>语句用于限制返回的行数和更新的行数。 它的基本语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT column_name(s)<br>FROM table_name<br>WHERE condition<br>LIMIT num_rows <br>FOR UPDATE;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>column_name(s)</code>：要从表中选择的列的名称。</li>
+<li><code>table_name</code>：要从中选择数据的MySQL表的名称。</li>
+<li><code>condition</code>：对要检索的行进行筛选的条件。</li>
+<li><code>num_rows</code>：要读取的记录行数的数量。</li>
+<li><code>FOR UPDATE</code>：指定行锁定以确保在事务代码块执行期间不要让其他会话修改每个已选择的行。</li>
+</ul>
+<p>举个例子，假设我们在employee表中有一个名为salary的列，并且我们只想选择这一列前10个最高薪水的员工。 那么我们可以使用以下SQL查询：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT salary<br>FROM employee<br>ORDER BY salary DESC<br>LIMIT 10<br>FOR UPDATE;<br></code></pre></td></tr></table></figure>
+
+<p>使用<code>ORDER BY salary DESC</code>对薪资进行降序排序，然后使用<code>LIMIT 10</code>选择前10行。 最后，使用<code>FOR UPDATE</code>将这些行锁定以防止其他会话修改它们。</p>
+<hr>
+<p>用于绕过函数中参数逗号被过滤</p>
+<h1 id="limit-offset语句"><a href="#limit-offset语句" class="headerlink" title="limit..offset语句"></a>limit..offset语句</h1><p><code>LIMIT...OFFSET</code>查询是MySQL中一种限制结果集大小和偏移量的常用方法，常用于分页查询。它的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT column_name(s)<br>FROM table_name<br>LIMIT offset, limit;<br></code></pre></td></tr></table></figure>
+
+<p>其中，<code>offset</code> 是要返回的结果集的起始位置（从0开始计数），<code>limit</code> 指定要返回结果集的最大行数。</p>
+<p>例如，如果想要查询表 <code>users</code> 中的第 6-10 行数据，可以使用以下查询语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT *<br>FROM users<br>LIMIT 5, 5;<br></code></pre></td></tr></table></figure>
+
+<p>这个查询语句将会返回 <code>users</code> 数据表中从第6行到第10行的所有数据。</p>
+<p>注意，在使用 <code>LIMIT...OFFSET</code> 时，应该按照适当的顺序对待数据。即首先执行排序和筛选操作，然后应用 <code>LIMIT</code> 子句。否则结果可能不准确。</p>
+<p>此外还可以省略 <code>offset</code> 值，此时默认起始位置为 0。例如，以下查询将返回 <code>users</code> 数据表中前5条记录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT *<br>FROM users<br>LIMIT 5;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>这用于绕过limit语句中的逗号过滤</p>
+<h1 id="pi函数"><a href="#pi函数" class="headerlink" title="pi函数"></a>pi函数</h1><p>在MySQL中，<code>PI()</code> 函数返回圆周率的值，即 3.141592653589793。</p>
+<p>该函数不需要任何参数。</p>
+<p>用法示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT PI();<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">3.141592653589793<br></code></pre></td></tr></table></figure>
+
+<h1 id="pow函数"><a href="#pow函数" class="headerlink" title="pow函数"></a>pow函数</h1><p><code>POW()</code>是MySQL中的一个数学函数，用于返回指定数字的指定次幂。它可以将第一个参数（底数）提高到第二个参数（指数）的幂。</p>
+<p>具体语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">POW(X, Y)<br></code></pre></td></tr></table></figure>
+
+<p>其中，X为底数，Y为指数。</p>
+<p>举例来说，如果要计算2的3次方，则使用以下语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT POW(2, 3);<br></code></pre></td></tr></table></figure>
+
+<p>执行以上语句后，结果将会是8。</p>
+<p>需要注意的是，<code>POW()</code>只能对正数、负数和0进行计算。如果要计算小数的幂，可以使用POWER()函数。</p>
+<h1 id="char函数"><a href="#char函数" class="headerlink" title="char函数"></a>char函数</h1><p>MySQL的CHAR函数用于将一个整数转换为对应的ASCII字符。它可以接受一个或两个参数：</p>
+<ul>
+<li>如果只有一个参数，则该参数是整数，并返回其对应的ASCII字符。</li>
+<li>如果有两个参数，则第一个参数是整数，第二个参数是字符集编码，函数将使用该编码返回对应的字符。</li>
+</ul>
+<p>下面是两种参数形式的示例：</p>
+<ol>
+<li><p>将整数97转换为对应的ASCII字符’a’：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT CHAR(97);<br></code></pre></td></tr></table></figure>
+
+<p>结果: ‘a’</p>
+</li>
+<li><p>将整数233转换为对应的EUC-KR字符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT CHAR(233, &#x27;euckr&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>结果：视具体字符集编码而定</p>
+</li>
+</ol>
+<p>需要注意的是，如果字符集编码无效，将会抛出错误。因此，请确保提供正确的字符集编码。</p>
+<hr>
+<p>配合后面的ord函数可以起到混淆的作用</p>
+<h1 id="locate函数"><a href="#locate函数" class="headerlink" title="locate函数"></a>locate函数</h1><p>MySQL 的 <code>LOCATE()</code> 函数用于在字符串中查找指定子字符串的位置。该函数返回第一个匹配到子字符串的起始位置，如果没有找到则返回0。</p>
+<p><code>LOCATE()</code> 函数语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">LOCATE(substring, string, start_position)<br></code></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li><code>substring</code>：要查找的子字符串。</li>
+<li><code>string</code>：要查找的字符串。</li>
+<li><code>start_position</code>（可选）：开始查找的位置，默认为1。</li>
+</ul>
+<p>示例：</p>
+<p>假设我们有一个名叫 <code>students</code> 的表，并且该表含有以下数据：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>address</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Alice</td>
+<td>New York City</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+<td>Los Angeles</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Claire</td>
+<td>Chicago</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Daniel</td>
+<td>Houston</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Elizabeth</td>
+<td>Miami</td>
+</tr>
+</tbody></table>
+<p>现在我们想要查找所有名字中包含字母 “e” 的学生记录的信息，并按照地址的字母顺序进行排序，可以使用如下 SQL 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students<br><span class="hljs-keyword">WHERE</span> LOCATE(<span class="hljs-string">&#x27;e&#x27;</span>, name) <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> address;<br></code></pre></td></tr></table></figure>
+<p>该语句的执行结果为：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>address</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Alice</td>
+<td>New York City</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Elizabeth</td>
+<td>Miami</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+<td>Los Angeles</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Claire</td>
+<td>Chicago</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Daniel</td>
+<td>Houston</td>
+</tr>
+</tbody></table>
+<p>从上述结果可以看出，我们使用 <code>LOCATE()</code> 函数找到了包含字母 “e” 的学生名字所在的位置，并筛选出来，然后按照地址排序。</p>
+<hr>
+<p>可以用来替换field函数</p>
+<h1 id="celi函数"><a href="#celi函数" class="headerlink" title="celi函数"></a>celi函数</h1><p>在MySQL中，CEIL()函数用于返回给定数字表达式的最小整数，该整数大于或等于该数字表达式。如果数字表达式是正数，则向上取整到最接近的整数。如果数字表达式是负数，则向下取整到最接近整数。</p>
+<p>以下是使用CEIL()函数的语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CEIL(number)<br></code></pre></td></tr></table></figure>
+
+<p>其中，number是待求最小整数的数字表达式。</p>
+<p>示例：</p>
+<p>假设x&#x3D;2.3</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CEIL(x); -- 结果为3<br></code></pre></td></tr></table></figure>
+
+<p>对于负数，向下取整到最接近整数：</p>
+<p>假设y&#x3D;-4.5</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CEIL(y); -- 结果为-4<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>可以用来替换floor函数达到floor报错的同样效果</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>这篇文章会持续更新，</p>
+<p>介绍所有我后面认识到的函数以及语法，</p>
+<p>但是很多易于理解的就不记录了</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/16/sql-labs%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next sql-labs打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/11/%E6%8E%8C%E6%8E%A7%E5%AE%89%E5%85%A8%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">掌控安全打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cast%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">cast函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ifnull%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">ifnull函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#union-all-select-%E8%AF%AD%E5%8F%A5"><span class="toc-number">3.</span> <span class="toc-text">union all select 语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#strcmp%E5%87%BD%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">strcmp函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E8%BF%90%E7%AE%97"><span class="toc-number">5.</span> <span class="toc-text">各种运算</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-%E2%80%9D-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%8B%E6%8C%89%E4%BD%8D%E6%88%96"><span class="toc-number">5.1.</span> <span class="toc-text">“|” 二进制下按位或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-amp-%E2%80%9D-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%8B%E6%8C%89%E4%BD%8D%E6%88%96"><span class="toc-number">5.2.</span> <span class="toc-text">“&amp;” 二进制下按位或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-%E2%80%9D-%E5%BC%82%E6%88%96"><span class="toc-number">5.3.</span> <span class="toc-text">“^” 异或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-gt-gt-%E2%80%9D-%E5%92%8C-%E2%80%9C-lt-lt-%E2%80%9D-%E4%BD%8D%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">5.4.</span> <span class="toc-text">“&gt;&gt;”   和   “&lt;&lt;” 位运算符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LIKE-%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">5.5.</span> <span class="toc-text">LIKE 模糊匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#REGEXP-%E6%88%96-RLIKE-%E6%AD%A3%E5%88%99%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="toc-number">5.6.</span> <span class="toc-text">REGEXP 或 RLIKE 正则式匹配</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HAVING-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">6.</span> <span class="toc-text">HAVING 关键字</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#conv%E5%87%BD%E6%95%B0"><span class="toc-number">7.</span> <span class="toc-text">conv函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lpad%E5%87%BD%E6%95%B0"><span class="toc-number">8.</span> <span class="toc-text">lpad函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#elt%E5%87%BD%E6%95%B0"><span class="toc-number">9.</span> <span class="toc-text">elt函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#field%E5%87%BD%E6%95%B0"><span class="toc-number">10.</span> <span class="toc-text">field函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#benchmark%E5%87%BD%E6%95%B0"><span class="toc-number">11.</span> <span class="toc-text">benchmark函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#get-lock%E5%87%BD%E6%95%B0"><span class="toc-number">12.</span> <span class="toc-text">get_lock函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">12.0.1.</span> <span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="toc-number">12.0.2.</span> <span class="toc-text">参数说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">12.0.3.</span> <span class="toc-text">返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">12.0.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">12.0.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#release-lock%E5%87%BD%E6%95%B0"><span class="toc-number">13.</span> <span class="toc-text">release_lock函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95-1"><span class="toc-number">13.0.1.</span> <span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-1"><span class="toc-number">13.0.2.</span> <span class="toc-text">参数说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E5%80%BC-1"><span class="toc-number">13.0.3.</span> <span class="toc-text">返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">13.0.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="toc-number">13.0.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#analyse%E5%87%BD%E6%95%B0"><span class="toc-number">14.</span> <span class="toc-text">analyse函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#from-%E2%80%A6-for-%E2%80%A6%E8%AF%AD%E5%8F%A5"><span class="toc-number">15.</span> <span class="toc-text">from … for …语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#limit-offset%E8%AF%AD%E5%8F%A5"><span class="toc-number">16.</span> <span class="toc-text">limit..offset语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pi%E5%87%BD%E6%95%B0"><span class="toc-number">17.</span> <span class="toc-text">pi函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pow%E5%87%BD%E6%95%B0"><span class="toc-number">18.</span> <span class="toc-text">pow函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#char%E5%87%BD%E6%95%B0"><span class="toc-number">19.</span> <span class="toc-text">char函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#locate%E5%87%BD%E6%95%B0"><span class="toc-number">20.</span> <span class="toc-text">locate函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#celi%E5%87%BD%E6%95%B0"><span class="toc-number">21.</span> <span class="toc-text">celi函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">22.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

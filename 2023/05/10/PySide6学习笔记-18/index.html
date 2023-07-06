@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PySide6学习笔记#18 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PySide6学习笔记#18</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-05-10T12:40:56.000Z" id="date"> 2023-05-10</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-25T05:15:20.670Z" id="updated"> 2023-06-25</time></div></span></div></div><hr><div id="post-content"><p>今天是界面的美化之隐藏窗口标题栏，Pydracula就跳过了，</p>
+<p>然后重点是QlistWidget的学习</p>
+<span id="more"></span>
+
+<p>前面一节课讲美化的我之前已经发过博客了</p>
+<h1 id="隐藏标题栏"><a href="#隐藏标题栏" class="headerlink" title="隐藏标题栏"></a>隐藏标题栏</h1><p>这个的弊端就是无法通过鼠标来控制这个窗口的位置了，</p>
+<p>但是可以通过鼠标事件，</p>
+<p>这个是后面的内容这里就先跳过了</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PySide6.QtWidgets <span class="hljs-keyword">import</span> QApplication, QWidget, QVBoxLayout, QPushButton, QLineEdit<br><span class="hljs-keyword">from</span> PySide6.QtCore <span class="hljs-keyword">import</span> Qt<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyWindow</span>(<span class="hljs-title class_ inherited__">QWidget</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment"># 记住这行代码就可以了</span><br>        self.setWindowFlag(Qt.WindowType.FramelessWindowHint)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app = QApplication([])<br>    window = MyWindow()<br>    window.show()<br>    app.<span class="hljs-built_in">exec</span>()<br></code></pre></td></tr></table></figure>
+
+<p>就是一行代码的事情</p>
+<h1 id="QListWidget"><a href="#QListWidget" class="headerlink" title="QListWidget"></a>QListWidget</h1><p>这个组件我觉得和python的数据类型列表有点相似之处，</p>
+<h2 id="基本方法"><a href="#基本方法" class="headerlink" title="基本方法"></a>基本方法</h2><p>例如append对应的是里面的addItem，</p>
+<p>insert对应的就是insertItem</p>
+<p>当然可以加上<strong>s</strong>，然后参数传入一个可迭代对象</p>
+<p>这里up提到，用一个叫做QlistWidgetItem的库比直接插入字符串要好，</p>
+<p>因为直接传入的字符串会在运行的时候隐式转换成这个QListWidgetItem，</p>
+<p>并且这个库有一些自定义的属性，</p>
+<p>例如可以自定义图标什么的，</p>
+<p>我这里列几个属性以及方法以及槽</p>
+<ul>
+<li>addItem 添加一个项，参数传入字符串</li>
+<li>addItems 添加多个项，参数传入列表</li>
+<li>insertItem 插入一个项，用法同python列表的insert</li>
+<li>insertItems 插入一个列表，用法见上</li>
+<li>item 获取指定索引对应的项，传入索引，可以用来修改列表内容</li>
+<li>takeItem 传入索引，用法同python列表的pop，删除元素</li>
+<li>findItems 传入搜索关键词以及搜索规则 规则在核心库里面</li>
+<li>count 返回列表的长度</li>
+<li>clear 清空列表</li>
+</ul>
+<p>信号什么的可以自己去qt助手里面看，</p>
+<p>反正最常用的就是</p>
+<p>currentItemChanged</p>
+<p>currentItem().text()</p>
+<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3>
+
+<p>and</p>
+
+
+<p>and</p>
+
+
+<h2 id="基本信号"><a href="#基本信号" class="headerlink" title="基本信号"></a>基本信号</h2><p>没什么好说的了直接看笔记吧</p>
+<h3 id="笔记-1"><a href="#笔记-1" class="headerlink" title="笔记"></a>笔记</h3>
+
+<h2 id="列表排序"><a href="#列表排序" class="headerlink" title="列表排序"></a>列表排序</h2><p>上面讲了一些简单的增删改查</p>
+<p>今天的内容是列表的排序</p>
+<p>这个其实就是一行代码的事情</p>
+<h3 id="笔记-2"><a href="#笔记-2" class="headerlink" title="笔记"></a>笔记</h3>
+
+<h2 id="上下文菜单"><a href="#上下文菜单" class="headerlink" title="上下文菜单"></a>上下文菜单</h2><p>大家应该都多多少少见过远控吧，</p>
+<p>在对上线主机右键的时候出现的就是这个，</p>
+<p><strong>上下文菜单</strong></p>
+<h3 id="笔记-3"><a href="#笔记-3" class="headerlink" title="笔记"></a>笔记</h3>
+
+<h2 id="选中和选择"><a href="#选中和选择" class="headerlink" title="选中和选择"></a>选中和选择</h2><ul>
+<li>选择</li>
+</ul>
+<p>选择是在每个item前面有一个复选框，</p>
+<p>对应的信号就是itemChanged</p>
+<ul>
+<li>选中</li>
+</ul>
+<p>选中时鼠标点击到哪一个就是点击</p>
+<p>（很遗憾这个没有笔记</p>
+<h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PySide6.QtWidgets <span class="hljs-keyword">import</span> QApplication, QWidget, QVBoxLayout, QListWidget<br><span class="hljs-keyword">from</span> PySide6.QtCore <span class="hljs-keyword">import</span> Qt<br><span class="hljs-keyword">from</span> faker <span class="hljs-keyword">import</span> Faker<br><span class="hljs-keyword">from</span> PySide6.QtGui <span class="hljs-keyword">import</span> QAction<br><span class="hljs-comment"># import random</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyWindow</span>(<span class="hljs-title class_ inherited__">QWidget</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        self.fake = Faker(locale=<span class="hljs-string">&#x27;zh_CN&#x27;</span>)<br><br>        self.listWidget = QListWidget()<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">20</span>):<br>            self.listWidget.addItem(self.fake.name())<br>            <span class="hljs-comment"># self.listWidget.addItem(str(random.randint(0, 100)))</span><br><br>        <span class="hljs-comment"># 插入</span><br>        self.listWidget.insertItems(<span class="hljs-number">0</span>, [<span class="hljs-string">&#x27;插入的内容1&#x27;</span>, <span class="hljs-string">&#x27;插入的内容2&#x27;</span>, <span class="hljs-string">&#x27;插入的内容3&#x27;</span>])<br>        <span class="hljs-comment"># 删除</span><br>        self.listWidget.takeItem(<span class="hljs-number">0</span>)<br>        <span class="hljs-comment"># 修改</span><br>        itemGet = self.listWidget.item(<span class="hljs-number">0</span>)<br>        itemGet.setText(<span class="hljs-string">&#x27;修改后的内容&#x27;</span>)<br>        <span class="hljs-comment"># 查 返回可迭代的object对象</span><br>        result = self.listWidget.findItems(<span class="hljs-string">&#x27;2&#x27;</span>, Qt.MatchFlag.MatchContains)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> result:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;搜索到的内容：&#x27;</span>+i.text())<br>        <span class="hljs-comment"># 查询列表长度</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;列表长度：&#x27;</span>+<span class="hljs-built_in">str</span>(self.listWidget.count()))<br>        <span class="hljs-comment"># 窗体的上下文菜单(右键菜单)</span><br>        self.action = QAction(<span class="hljs-string">&#x27;1&#x27;</span>)<br>        self.action2 = QAction(<span class="hljs-string">&#x27;2&#x27;</span>)<br>        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)<br>        self.addActions([self.action, self.action2])<br>        self.action.triggered.connect(<span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;事件1被触发了&#x27;</span>))<br>        self.action2.triggered.connect(<span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;事件2被触发了&#x27;</span>))<br>        <span class="hljs-comment"># 控件的上下文菜单(右键菜单)</span><br>        self.action3 = QAction(<span class="hljs-string">&#x27;3&#x27;</span>)<br>        self.action4 = QAction(<span class="hljs-string">&#x27;4&#x27;</span>)<br>        self.listWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)<br>        self.listWidget.addActions([self.action3, self.action4])<br>        self.action3.triggered.connect(<span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;列表中的事件1被触发了&#x27;</span>))<br>        self.action4.triggered.connect(<span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;列表中的事件2被触发了&#x27;</span>))<br>        <span class="hljs-comment"># 选择和选中</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>            self.listWidget.item(i).setCheckState(Qt.CheckState.Unchecked)<br><br>        self.listWidget.sortItems(Qt.SortOrder.AscendingOrder)<br><br>        self.mainLayout = QVBoxLayout()<br>        self.mainLayout.addWidget(self.listWidget)<br>        self.setLayout(self.mainLayout)<br>        self.bind()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">bind</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 信号——当前项改变——选中</span><br>        self.listWidget.currentItemChanged.connect(self.listChanged)<br>        <span class="hljs-comment"># 信号——当前信号改变</span><br>        self.listWidget.itemChanged.connect(<span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;当前项被选中了&#x27;</span>, self.listWidget.currentItem().checkState()))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">listChanged</span>(<span class="hljs-params">self, item, previous</span>):<br>        <span class="hljs-keyword">try</span>:<br>            <span class="hljs-built_in">print</span>(previous.text())    <span class="hljs-comment"># 改变前的</span><br>        <span class="hljs-keyword">except</span>:<br>            <span class="hljs-keyword">pass</span><br>        <span class="hljs-built_in">print</span>(item.text())        <span class="hljs-comment"># 改变后的(现在的)</span><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app = QApplication([])<br>    window = MyWindow()<br>    window.show()<br>    app.<span class="hljs-built_in">exec</span>()<br><br></code></pre></td></tr></table></figure>
+
+<p>运行之后是这个样子的</p>
+
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/05/13/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-19/">← Next PySide6学习笔记#19</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/05/09/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-17/">PySide6学习笔记#17 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E6%A0%87%E9%A2%98%E6%A0%8F"><span class="toc-number">1.</span> <span class="toc-text">隐藏标题栏</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">代码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#QListWidget"><span class="toc-number">2.</span> <span class="toc-text">QListWidget</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">基本方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%94%E8%AE%B0"><span class="toc-number">2.1.1.</span> <span class="toc-text">笔记</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BF%A1%E5%8F%B7"><span class="toc-number">2.2.</span> <span class="toc-text">基本信号</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%94%E8%AE%B0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">笔记</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E6%8E%92%E5%BA%8F"><span class="toc-number">2.3.</span> <span class="toc-text">列表排序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%94%E8%AE%B0-2"><span class="toc-number">2.3.1.</span> <span class="toc-text">笔记</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E8%8F%9C%E5%8D%95"><span class="toc-number">2.4.</span> <span class="toc-text">上下文菜单</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%94%E8%AE%B0-3"><span class="toc-number">2.4.1.</span> <span class="toc-text">笔记</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E4%B8%AD%E5%92%8C%E9%80%89%E6%8B%A9"><span class="toc-number">2.5.</span> <span class="toc-text">选中和选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81-1"><span class="toc-number">2.6.</span> <span class="toc-text">代码</span></a></li></ol></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

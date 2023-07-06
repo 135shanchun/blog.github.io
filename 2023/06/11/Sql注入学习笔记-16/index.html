@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#16 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#16</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-11T05:39:24.000Z" id="date"> 2023-06-11</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-16T09:56:47.582Z" id="updated"> 2023-06-16</time></div></span></div></div><hr><div id="post-content"><p>这篇文章记录其他所有的报错注入</p>
+<span id="more"></span>
+
+<p>注：这些报错<em><strong>全部</strong></em>都因为MySQL版本问题无法使用</p>
+<h1 id="exp-报错注入"><a href="#exp-报错注入" class="headerlink" title="exp 报错注入"></a>exp 报错注入</h1><p>首先简单介绍一下这个函数：</p>
+<p>exp()数学函数，用于计算e的x次方的函数。</p>
+<p>作用版本：5.5&lt;mysql版本&lt;5.6</p>
+<p>接下来看看这个报错注入的原理</p>
+<p>exp是以e为底的指数函数，</p>
+<p>但是，由于数字太大是会产生溢出</p>
+<p>这个函数会在参数大于709时溢出，报错</p>
+<p>将0按位取反就会返回“18446744073709551615”，</p>
+<p>再加上函数成功执行后返回0的缘故，</p>
+<p>我们将成功执行的函数取反就会得到最大的无符号BIGINT值</p>
+<p>我们通过子查询与按位求反，</p>
+<p>造成一个DOUBLE overflow error，并借由此注出数据</p>
+<p>构造如下语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">(exp(~(select * from (你的语句) a)))<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46706771/article/details/112727108"> MYSQL 通过exp()报错注入_exp报错注入_C1yas0的博客-CSDN博客</a></p>
+</blockquote>
+<p>（我发现这几篇文章的报错注入好像都是参考这个博主的）</p>
+<h1 id="geometryCollection报错注入"><a href="#geometryCollection报错注入" class="headerlink" title="geometryCollection报错注入"></a>geometryCollection报错注入</h1><p>好了，，</p>
+<p>这个报错又是上面这个博主的了：</p>
+<p>函数解释<br>GeometryCollection是由1个或多个任意类几何对象构成的几何对象。GeometryCollection中的所有元素必须具有相同的空间参考系（即相同的坐标系）。对GeometryCollection的元素无任何限制，但下面介绍的GeometryCollection的子类会限制其成员。这类限制可能基于：</p>
+<p>元素类型（例如，MultiPoint可能仅包含Point元素）。</p>
+<p>维数</p>
+<p>对元素间空间交迭程度的限制</p>
+<p>官方文档中举例的用法如下：</p>
+<p>GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))<br>1<br>POINT(x,y) 函数,这是坐标函数，相当于X,Y坐标图上的一点。</p>
+<p>LINESTRING(x y,x y)函数,这个函数用来描述直线,两点连成的直线。</p>
+<p>报错原理<br>由于MYSQL无法用这样字符串画出图形,所以报错了</p>
+<p>约束条件<br>5.5&lt;mysql版本&lt;5.6</p>
+<p>注入代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and geometrycollection((select * from(select * from (操作代码)a)b))<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46706771/article/details/112770319">https://blog.csdn.net/weixin_46706771/article/details/112770319</a></p>
+</blockquote>
+<h1 id="Polygon报错注入"><a href="#Polygon报错注入" class="headerlink" title="Polygon报错注入"></a>Polygon报错注入</h1><p>依旧有版本限制。。。</p>
+<p>直接放上利用语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and polygon (()select * from(你的语句)a)b );<br></code></pre></td></tr></table></figure>
+
+<p>函数解释：</p>
+<p>Polygon是代表多边几何对象的平面Surface。它由单个外部边界以及0或多个内部边界定义，其中，每个内部边界定义为Polygon中的1个孔。</p>
+<p>Polygon示例</p>
+<p>在地区地图上，Polygon对象可表示森林、区等。</p>
+<p>Polygon声明</p>
+<p>Polygon的边界由一组构成其外部边界和比内部边界的LinearRing归向集合构成(即，简单且封闭的LineString对象)。</p>
+<p>Polygon没有交叉的环。Polygon边界中的环可能会在Point处相交，但仅以切线方式相交。</p>
+<p>Polygon没有线、尖峰或穿孔。</p>
+<p>Polygon有由连接点集合构成的内部。</p>
+<p>Polygon可能包含孔。对于具有孔的Polygon，其外部不连接。每个孔定义了连接的外部部件。</p>
+<p>前述声明使得Polygon成为简单的几何对象。</p>
+<p>(不好意思,这块我得继续使用官方解释,)</p>
+<p>原理解释：</p>
+<p>Polygon() 这货真不好解释,空间几何总是比较抽象的一种。将几何分成区域，并且连接和交叉(个人是这么理解的)。只要知道这函数也是需要数字,大概就可以报错了,这样的概念。</p>
+<p>空间几何,非常的抽象,理解有难度的。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39851457/article/details/113678961">https://blog.csdn.net/weixin_39851457/article/details/113678961</a></p>
+</blockquote>
+<h1 id="multipoint报错注入"><a href="#multipoint报错注入" class="headerlink" title="multipoint报错注入"></a>multipoint报错注入</h1><p>利用语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and multipoint (()select * from(select user() )a)b );<br></code></pre></td></tr></table></figure>
+
+<p>函数解释：</p>
+<p>MultiPoint是一种由Point元素构成的几何对象集合。这些点未以任何方式连接或排序。</p>
+<p>MultiPoint示例</p>
+<p>在世界地图上，MultiPoint可以代表岛链。</p>
+<p>在城市地图上，MultiPoint可以表示售票处的出口。</p>
+<p>MultiPoint属性</p>
+<p>MultiPoint是0维几何对象。</p>
+<p>如果没有两个Point是相同的(具有等同的坐标值)，MultiPoint是简单的。</p>
+<p>MultiPoint的边界为空集合。</p>
+<p>(以上的解释透露出浓浓官方的味道,它的确是官方的解释)</p>
+<p>这个解释,我看的云里雾里，不管解释的多么全面以及抽象。MultiPoint()函数中肯定是需要数字的！</p>
+<p>原理解析：</p>
+<p>由于需要数字,那好吧。GeometryCollection的套路拿来,OK！稳定报错。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39851457/article/details/113678961">https://blog.csdn.net/weixin_39851457/article/details/113678961</a></p>
+</blockquote>
+<h1 id="multinestring报错注入"><a href="#multinestring报错注入" class="headerlink" title="multinestring报错注入"></a>multinestring报错注入</h1><p>利用语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and multlinestring (()select * from(你的语句)a)b );<br></code></pre></td></tr></table></figure>
+
+<h1 id="multpolygon报错注入"><a href="#multpolygon报错注入" class="headerlink" title="multpolygon报错注入"></a>multpolygon报错注入</h1><p>利用语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and multipolygon((select * from(select * from(操作代码)a)b))<br></code></pre></td></tr></table></figure>
+
+<h1 id="linestring报错注入"><a href="#linestring报错注入" class="headerlink" title="linestring报错注入"></a>linestring报错注入</h1><p>利用语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">and linestring((select * from(select * from(操作代码)a)b))<br></code></pre></td></tr></table></figure>
+
+<p>这个包括前面三个来源于：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46706771/article/details/112770568">MYSQL 其他函数报错注入_C1yas0的博客-CSDN博客</a></p>
+</blockquote>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>今天的内容都没有实操，，</p>
+<p>因为这个版本的限制。。。。</p>
+<p>而且内容基本都是cv的，</p>
+<p>感觉在实战中没有什么用，</p>
+<p>反正先记着吧，</p>
+<p>以备不时之需</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/11/%E6%8E%8C%E6%8E%A7%E5%AE%89%E5%85%A8%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next 掌控安全打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/10/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-15/">Sql注入学习笔记#15 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#exp-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">exp 报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#geometryCollection%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">geometryCollection报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Polygon%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">Polygon报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#multipoint%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">multipoint报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#multinestring%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">5.</span> <span class="toc-text">multinestring报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#multpolygon%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">6.</span> <span class="toc-text">multpolygon报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#linestring%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">7.</span> <span class="toc-text">linestring报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

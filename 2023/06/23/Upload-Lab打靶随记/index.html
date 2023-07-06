@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Upload-Lab打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Upload-Lab打靶随记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-23T03:13:20.000Z" id="date"> 2023-06-23</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-07-04T02:44:53.010Z" id="updated"> 2023-07-04</time></div></span></div></div><hr><div id="post-content"><h1 id="Pass1-Pass2"><a href="#Pass1-Pass2" class="headerlink" title="Pass1 - Pass2"></a>Pass1 - Pass2</h1><p>这一关只允许上传jpg等图像文件，</p>
+<p>我们将shell.php重命名为shell.jpg然后上传，</p>
+<p>用burp抓包修改后缀名即可上传成功</p>
+
+
+<p>（Pass2有mime类型检查，需要注意修改）</p>
+<h1 id="Pass3"><a href="#Pass3" class="headerlink" title="Pass3"></a>Pass3</h1><p>这一关出现了过滤，上面的方式行不通了</p>
+
+
+<p>尝试修改一些比较另类的后缀例如php5</p>
+<p>可以上传，但是文件名被修改了，F12打开浏览器在上传图片之后就可以看到文件名了</p>
+
+
+<p>但是蚁剑连接不上去，查找了一下资料发现应该是我本地环境的问题，</p>
+<p>正常情况下应该是会将php5解析为php文件的，这里就不跟这个bug过不去了</p>
+<h1 id="Pass4"><a href="#Pass4" class="headerlink" title="Pass4"></a>Pass4</h1><p>这一关有了严格的后缀限制，上一关的手法用不了了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">array(&quot;.php&quot;,&quot;.php5&quot;,&quot;.php4&quot;,&quot;.php3&quot;,&quot;.php2&quot;,&quot;.php1&quot;,&quot;.html&quot;,&quot;.htm&quot;,&quot;.phtml&quot;,&quot;.pht&quot;,&quot;.pHp&quot;,&quot;.pHp5&quot;,&quot;.pHp4&quot;,&quot;.pHp3&quot;,&quot;.pHp2&quot;,&quot;.pHp1&quot;,&quot;.Html&quot;,&quot;.Htm&quot;,&quot;.pHtml&quot;,&quot;.jsp&quot;,&quot;.jspa&quot;,&quot;.jspx&quot;,&quot;.jsw&quot;,&quot;.jsv&quot;,&quot;.jspf&quot;,&quot;.jtml&quot;,&quot;.jSp&quot;,&quot;.jSpx&quot;,&quot;.jSpa&quot;,&quot;.jSw&quot;,&quot;.jSv&quot;,&quot;.jSpf&quot;,&quot;.jHtml&quot;,&quot;.asp&quot;,&quot;.aspx&quot;,&quot;.asa&quot;,&quot;.asax&quot;,&quot;.ascx&quot;,&quot;.ashx&quot;,&quot;.asmx&quot;,&quot;.cer&quot;,&quot;.aSp&quot;,&quot;.aSpx&quot;,&quot;.aSa&quot;,&quot;.aSax&quot;,&quot;.aScx&quot;,&quot;.aShx&quot;,&quot;.aSmx&quot;,&quot;.cEr&quot;,&quot;.sWf&quot;,&quot;.swf&quot;,&quot;.ini&quot;);<br></code></pre></td></tr></table></figure>
+
+<p>这里就要用到.htaccess文件了</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46684578/article/details/119141109">文件上传之 .htaccess文件getshell_.htaccess getshell</a></p>
+</blockquote>
+<p>文件内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;FilesMatch &quot;shell.jpg&quot;&gt;<br>  SetHandler application/x-httpd-php<br>&lt;/FilesMatch&gt;<br></code></pre></td></tr></table></figure>
+
+<p>之后上传shell.jpg直接访问即可</p>
+<h1 id="Pass5"><a href="#Pass5" class="headerlink" title="Pass5"></a>Pass5</h1><p>没有重复过滤，我们使用shell.php. .绕过</p>
+<p>然后burp查看文件上传后的名字蚁剑连接即可</p>
+<h1 id="Pass6"><a href="#Pass6" class="headerlink" title="Pass6"></a>Pass6</h1><p>大小写绕过即可</p>
+
+
+<h1 id="Pass7"><a href="#Pass7" class="headerlink" title="Pass7"></a>Pass7</h1><p>查看源代码，和前面几关的不同时他没有首尾去除空格，</p>
+<p>那我们就在最后加一个空格即可（要在burp里面添加）</p>
+<h1 id="Pass8"><a href="#Pass8" class="headerlink" title="Pass8"></a>Pass8</h1><p>查看源代码，发现这一关没有删除文件末尾的点</p>
+<p>直接上传shell.php.</p>
+<p>原理：</p>
+<p>windows的特性，会自动删除文件末尾的点，</p>
+<p>但是程序里面的正则却会匹配这个点，</p>
+<p>因此这个方法可以bypass程序的正则检查并利用特性达到效果</p>
+<h1 id="Pass9"><a href="#Pass9" class="headerlink" title="Pass9"></a>Pass9</h1><p>查看源码，找不同，发现这一关没有过滤 ::$Data字符串</p>
+<p>他的原理同上一关，也是利用Windows特性</p>
+
+
+<h1 id="Pass10"><a href="#Pass10" class="headerlink" title="Pass10"></a>Pass10</h1><p>这一关的绕过方式和sql注入中的复写过滤字符这个绕过思路差不多，</p>
+<p>程序只是执行了一次过滤，例如过滤字符是abc，</p>
+<p>那我们构造字符：a<em><strong>abc</strong></em>abc </p>
+<p>其中中间的abc被删除了，但是删除之后还剩下一个abc</p>
+<p>因此，我们的文件名可以是：shell.php. . . </p>
+<h1 id="Pass11"><a href="#Pass11" class="headerlink" title="Pass11"></a>Pass11</h1><p>这一关和上面差不多，只不过没有警告，而是默默的删除你的违规后缀名</p>
+<p>同样是复写过滤字符串的方式来绕过：shell.phhtmlp</p>
+<h1 id="Pass12"><a href="#Pass12" class="headerlink" title="Pass12"></a>Pass12</h1>
+
+<p>%00截断（有限制）</p>
+<blockquote>
+<p>来自<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_53003652/article/details/129969951">https://blog.csdn.net/qq_53003652/article/details/129969951</a></p>
+</blockquote>
+<h1 id="Pass13"><a href="#Pass13" class="headerlink" title="Pass13"></a>Pass13</h1><p>这一关只是接受值变成了POST，其他的和上面一关一样</p>
+<h1 id="Pass14-Pass16"><a href="#Pass14-Pass16" class="headerlink" title="Pass14 - Pass16"></a>Pass14 - Pass16</h1><p>这一关涉及到了文件包含漏洞，简单了解了一下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_46467017/article/details/126380415">https://blog.csdn.net/m0_46467017/article/details/126380415</a></p>
+</blockquote>
+<ul>
+<li><p><strong>能够打开并包含本地文件的漏洞，我们称为本地文件包含漏洞(LFI)</strong></p>
+</li>
+<li><p>文件包含漏洞不在乎文件格式是什么（不像蚁剑的连接）</p>
+</li>
+<li><p>文件包含漏洞会直接执行脚本</p>
+</li>
+</ul>
+<p>回到这一关，首先他会检查图片前面两个字节是否是git、png、jpg格式的</p>
+<p>这里我们只需要给webshell前面加上一个“GIF89a”就可以绕过这层检查，</p>
+<p>然后我们上传之后用burp抓包改名，发现文件名又被修改回了gif，</p>
+<p>再次查看源代码，发现是这一句：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$file_type</span> = <span class="hljs-title function_ invoke__">getReailFileType</span>(<span class="hljs-variable">$temp_file</span>);<br></code></pre></td></tr></table></figure>
+
+<p>那我们就没有办法对后缀名做手脚了，</p>
+<p>但是我们可以利用上面的文件包含漏洞的特性，不论文件格式都执行代码</p>
+<p>我们查看upload-lab这个靶场的根目录，有一个include.php：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">本页面存在文件包含漏洞，用于测试图片马是否能正常运行！</span><br><span class="hljs-comment">*/</span><br><span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Content-Type:text/html;charset=utf-8&quot;</span>);<br><span class="hljs-variable">$file</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;file&#x27;</span>];<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$file</span>))&#123;<br>    <span class="hljs-keyword">include</span> <span class="hljs-variable">$file</span>;<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-title function_ invoke__">show_source</span>(__file__);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>因此我们就可以使用这个漏洞来执行并读取这个我们刚才上传的shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/upload-labs/include.php?file=upload/3020230623150239.gif<br></code></pre></td></tr></table></figure>
+
+<p>同样蚁剑是可以连接的</p>
+<hr>
+<p>注：pass16需要开启php_exif()模块，可以看小皮面板官方给出的方法</p>
+<p><a target="_blank" rel="noopener" href="https://www.xp.cn/b.php/108635.html">https://www.xp.cn/b.php/108635.html</a></p>
+<h1 id="Pass17"><a href="#Pass17" class="headerlink" title="Pass17"></a>Pass17</h1><p>这一关就很高大上了，，《二次渲染》</p>
+<p>具体的可以看这位师傅写的文章，很详尽：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45588247/article/details/119177948">https://blog.csdn.net/weixin_45588247/article/details/119177948</a></p>
+</blockquote>
+<p>其中最精华的就是这个部分：</p>
+
+
+<p>开始操作，首先copy一下，注意顺序不要搞反了</p>
+
+
+<p>（这个命令让我想起了一段痛苦的修bug时光）</p>
+<p>（到现在都解决不了md）</p>
+<p>然后上传，打开16进制查看器对比，我使用的是010</p>
+<blockquote>
+<p><strong><code>GIF</code>绕过二次渲染的方法，就是通过对比上传前和上传后的两个文件，如果说哪个位置，它的上传前和上传后的没有变，我们就把php一句话代码插入到这个位置。</strong></p>
+</blockquote>
+
+
+<p>ctrl s保存，重新上传</p>
+<p>（这里我把一句话木马改成了phpinfo()，因为似乎一句话木马用不了）</p>
+<p>在010内查看，phpinfo()还在！</p>
+<p>浏览器内访问：</p>
+
+
+<p>ok！</p>
+<h1 id="Pass18"><a href="#Pass18" class="headerlink" title="Pass18"></a>Pass18</h1><p>一句话木马前添加GIF89a</p>
+<p>直接上传即可，然后文件包含</p>
+<hr>
+<p>但如果我们的目标是getshell呢？</p>
+<p><strong>条件竞争</strong></p>
+
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45612728/article/details/131222779">https://blog.csdn.net/weixin_45612728/article/details/131222779</a></p>
+</blockquote>
+<p>我懒得写脚本了，直接过了吧。。</p>
+<h1 id="代码审计相关"><a href="#代码审计相关" class="headerlink" title="代码审计相关"></a>代码审计相关</h1><p>后面的几关都是代码审计的了，本人小白不会php，</p>
+<p>直接去上面那个文章里面看吧，略</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>简单梳理一下这篇文章的内容：</p>
+<ol>
+<li><p>前端过滤</p>
+<p>前端的过滤就是个纸老虎，</p>
+<p>只需要在burp里面抓包然后修改数据即可</p>
+</li>
+<li><p>mime类型检查</p>
+<p>Content-Type: image&#x2F;gif</p>
+<p>有些时候可能还会检查是否于文件后缀相符，例如上传的是png，</p>
+<p>但是Content-Type是 image&#x2F;gif，也会拦截，注意细节！</p>
+</li>
+<li><p>后缀名绕过</p>
+<ul>
+<li>利用冷门的后缀</li>
+<li>大小写绕过正则</li>
+<li>添加 “.” 、空格、“::$DATA”绕过正则</li>
+<li>复写被过滤后缀绕过非循环过滤</li>
+<li>%00截断（有限制）</li>
+</ul>
+</li>
+<li><p>中间件特性 .htaccess</p>
+<p>如果文件后缀上绕不过了，就可以尝试这个</p>
+</li>
+<li><p>文件包含漏洞</p>
+<p>如果上传了非php格式shell，且没有办法修改后缀名，</p>
+<p>可以尝试寻找文件包含漏洞，他的好处就是不论后缀都可以解析</p>
+</li>
+<li><p>代码审计</p>
+<p>白盒测试总归轻松很多</p>
+</li>
+</ol>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">← Next 正则表达式学习笔记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/19/DVWA%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">Sql注入打靶随记#5 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass1-Pass2"><span class="toc-number">1.</span> <span class="toc-text">Pass1 - Pass2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass3"><span class="toc-number">2.</span> <span class="toc-text">Pass3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass4"><span class="toc-number">3.</span> <span class="toc-text">Pass4</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass5"><span class="toc-number">4.</span> <span class="toc-text">Pass5</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass6"><span class="toc-number">5.</span> <span class="toc-text">Pass6</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass7"><span class="toc-number">6.</span> <span class="toc-text">Pass7</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass8"><span class="toc-number">7.</span> <span class="toc-text">Pass8</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass9"><span class="toc-number">8.</span> <span class="toc-text">Pass9</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass10"><span class="toc-number">9.</span> <span class="toc-text">Pass10</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass11"><span class="toc-number">10.</span> <span class="toc-text">Pass11</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass12"><span class="toc-number">11.</span> <span class="toc-text">Pass12</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass13"><span class="toc-number">12.</span> <span class="toc-text">Pass13</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass14-Pass16"><span class="toc-number">13.</span> <span class="toc-text">Pass14 - Pass16</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass17"><span class="toc-number">14.</span> <span class="toc-text">Pass17</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Pass18"><span class="toc-number">15.</span> <span class="toc-text">Pass18</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E7%9B%B8%E5%85%B3"><span class="toc-number">16.</span> <span class="toc-text">代码审计相关</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">17.</span> <span class="toc-text">小结</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

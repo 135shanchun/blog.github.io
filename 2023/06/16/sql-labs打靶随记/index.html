@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>sql-labs打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>sql-labs打靶随记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-16T08:56:55.000Z" id="date"> 2023-06-16</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-23T09:34:47.536Z" id="updated"> 2023-06-23</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是sql-labs</p>
+<span id="more"></span>
+
+<p>这个靶场之前学习时已经做掉不少了，</p>
+<p>并且这里的六十多个靶场有很多重复的靶场，</p>
+<p>因此这里只记录有价值、代表性的靶场</p>
+<h1 id="Less42"><a href="#Less42" class="headerlink" title="Less42"></a>Less42</h1><p>这一关看着是一个登录界面，</p>
+<p>尝试了万能密码以及其他所有的http头注入无果，</p>
+<p>这里看了一下别人的writeup，发现刚巧用到刚学的堆叠注入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">login_user=1&amp;login_password=1&#x27;;insert into users(id,username,password) values (&#x27;39&#x27;,&#x27;abc&#x27;,&#x27;123456&#x27;)--+&amp;mysubmit=Login<br></code></pre></td></tr></table></figure>
+
+<p>然后登录进去后看到如下页面：</p>
+
+
+<p>又是一个类似登录界面的东西，这里尝试获取数据库，</p>
+<p>看一下源代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$username</span>= <span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&quot;username&quot;</span>];<br><span class="hljs-variable">$curr_pass</span>=<span class="hljs-title function_ invoke__">mysql_real_escape_string</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;current_password&#x27;</span>]);<br><span class="hljs-variable">$pass</span>= <span class="hljs-title function_ invoke__">mysql_real_escape_string</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>]);<br><span class="hljs-variable">$re_pass</span>= <span class="hljs-title function_ invoke__">mysql_real_escape_string</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;re_password&#x27;</span>]);<br></code></pre></td></tr></table></figure>
+
+<p>这里还不可以使用宽字节注入，</p>
+<p>但是发现username没有过滤，</p>
+<p>我们尝试在username注入，</p>
+<p>但是发现压根没用。。。。</p>
+<p>然后又仔细看了看源代码，发现好像到这一步就结束了</p>
+<p>后面的就是变换了闭合什么的，都是堆叠注入，</p>
+<p>（好像我记得有一两个是login_password的报错注入）</p>
+<h1 id="Less46"><a href="#Less46" class="headerlink" title="Less46"></a>Less46</h1><p>这一关是get注入，</p>
+<p>但是发现无法判断闭合，且不是数字型注入，</p>
+<p>并且输入数字之后会出现不同的结果，</p>
+<p>推测是order by语句，然后通过extractvalue报错注入，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?sort=1 and extractvalue(1,concat(0x7e,(database())))<br></code></pre></td></tr></table></figure>
+
+<p>后面几个就是变换了闭合方式，</p>
+<p>最后3个是盲注，这里就不记录了</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>六十几个靶场实际上都是偏基础的，</p>
+<p>我记录的只是后面的第3，4部分两个最典型的靶场，</p>
+<p>其他几乎只变换了闭合方式，</p>
+<p>这里有几个心得：</p>
+<ul>
+<li><p>数字型注入有时候也是可以有括号的</p>
+<p>这个就比较头疼了，判读闭合不是单引号或者双引号，</p>
+<p>然后and 1&#x3D;1 and 1&#x3D;2 判断是不是数字型依旧无果，</p>
+<p>这时候我一般会考虑关键字例如and被过滤了，</p>
+<p>但是没想过闭合会使数字型加上括号，</p>
+<p>如果我们没有后台源码，我们不知道他的数字型注入有几个括号，</p>
+<p>网站开发者完全可以设置一万个括号来防止我们注入。。。</p>
+</li>
+<li><p>一般报错注入不是通过union select</p>
+<p>之前的笔记中，一般报错注入的语句是这个样子的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,extractvalue(xxx)--+<br></code></pre></td></tr></table></figure>
+
+<p>但是我发现在实战中这个语句更加实用，</p>
+<p>节省了判断字段数和回显点的一步</p>
+</li>
+<li><p>在burpsuite里面操作比在hackbar操作里面好</p>
+</li>
+</ul>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/16/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">← Next Sql注入学习总结</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/15/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-17/">Sql注入学习笔记#17 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Less42"><span class="toc-number">1.</span> <span class="toc-text">Less42</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Less46"><span class="toc-number">2.</span> <span class="toc-text">Less46</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

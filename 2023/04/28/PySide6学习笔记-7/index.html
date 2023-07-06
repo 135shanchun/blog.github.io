@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PySide6学习笔记#7 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PySide6学习笔记#7</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-04-28T09:58:13.000Z" id="date"> 2023-04-28</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-25T05:05:15.077Z" id="updated"> 2023-06-25</time></div></span></div></div><hr><div id="post-content"><p>今天做一个简单的翻译器</p>
+<span id="more"></span>
+
+<p>关闭浏览器，开干！</p>
+<h1 id="画Gui界面"><a href="#画Gui界面" class="headerlink" title="画Gui界面"></a>画Gui界面</h1>
+
+<p>简洁× 不会√</p>
+<h2 id="遇到的坑"><a href="#遇到的坑" class="headerlink" title="遇到的坑"></a>遇到的坑</h2><p>没想到这么简单的都可以遇到坑啊</p>
+<p>在将ui文件转换为py文件的时候，</p>
+<p>我的cmd命令是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">pyside6-uic ui.ui &gt; ui.py<br></code></pre></td></tr></table></figure>
+
+<p>执行后输出了一个py文件，</p>
+<p>听到这里，可能你还没有发现问题，</p>
+<p>但是在我setup_Ui的时候，</p>
+<p>报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ValueError: source code string cannot contain null bytes<br></code></pre></td></tr></table></figure>
+
+<p>一开始以为是我的这个中文导致了乱码，</p>
+<p>在改为英文之后，</p>
+<p>依旧还是报这个错，</p>
+<p>冷静思考一番后，知道了问题所在：</p>
+<p>cmd或者Powershell默认使用的gbk编码，</p>
+<p>但是python读取的时候是utf-8编码！</p>
+<p>pyside6-uic内置的参数（-o）使用的就是utf-8，</p>
+<p>因此之前都没有问题，</p>
+<p>将编译命令改为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">pyside6-uic untitled.ui -o ui.py<br></code></pre></td></tr></table></figure>
+
+<p>即可</p>
+<p>好了现在可以安心写代码了</p>
+<h1 id="框架预设"><a href="#框架预设" class="headerlink" title="框架预设"></a>框架预设</h1><p>和之前那个一样，</p>
+<p>但是可以添加了一个radio button，</p>
+<p>是否添加数据到data.txt，</p>
+<p>方便记录</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PySide6.QtWidgets <span class="hljs-keyword">import</span> QApplication, QWidget<br><span class="hljs-keyword">from</span> ui <span class="hljs-keyword">import</span> Ui_Form<br><span class="hljs-keyword">import</span> requests<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyWindow</span>(QWidget, Ui_Form):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        self.setupUi(self)<br>        self.pushButton.clicked.connect(<span class="hljs-keyword">lambda</span>: self.bind(self.textEdit.toPlainText()))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self, url</span>):<br>        headers = &#123;<br>            <span class="hljs-string">&#x27;user-agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.62&#x27;</span>&#125;<br>        content = requests.get(url, headers=headers).text<br>        <span class="hljs-keyword">return</span> content<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">write</span>(<span class="hljs-params">self, content</span>):<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;data.txt&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            f.write(content + <span class="hljs-string">&#x27;\n&#x27;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">bind</span>(<span class="hljs-params">self, current_text</span>):<br>        word = current_text.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(word) &lt;= <span class="hljs-number">30</span>:<br>            res = self.get(<span class="hljs-string">f&#x27;http://fanyi.youdao.com/translate?&amp;doctype=json&amp;type=AUTO&amp;i=<span class="hljs-subst">&#123;word&#125;</span>&#x27;</span>)<br>            translate = res.split(<span class="hljs-string">&#x27;[[&#123;&quot;src&quot;:&quot;&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;&quot;,&quot;tgt&quot;:&quot;&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;&quot;&#125;]]&#125;&#x27;</span>)[<span class="hljs-number">0</span>].replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>            self.textEdit_2.setText(translate)<br>            self.write(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;word&#125;</span>^^^<span class="hljs-subst">&#123;translate&#125;</span>&#x27;</span>)<br>        <span class="hljs-keyword">else</span>:<br>            self.get(<span class="hljs-string">f&#x27;http://fanyi.youdao.com/translate?&amp;doctype=json&amp;type=AUTO&amp;i=<span class="hljs-subst">&#123;word&#125;</span>&#x27;</span>)<br>            translate = self.res.split(<span class="hljs-string">&#x27;[[&#123;&quot;src&quot;:&quot;&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;&quot;,&quot;tgt&quot;:&quot;&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;&quot;&#125;]]&#125;&#x27;</span>)[<span class="hljs-number">0</span>].replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>            self.textEdit_2.setText(translate)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app = QApplication([])<br>    window = MyWindow()<br>    window.show()<br>    app.<span class="hljs-built_in">exec</span>()<br></code></pre></td></tr></table></figure>
+
+<p>如果单词长度大于30就不加入data.txt中了，</p>
+<p>因为长度大于30的肯定是句子，</p>
+<p>test的时候不会想要翻译句子的</p>
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p>这个问题相对来说比较少</p>
+<p>就一个：</p>
+<p>text edit这个获取当前文本是textEdit.toPlainText()</p>
+<p>而不是current开头的</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/04/29/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-8/">← Next PySide6学习笔记#8</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/04/27/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-6/">PySide6学习笔记#6 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%BBGui%E7%95%8C%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">画Gui界面</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91"><span class="toc-number">1.1.</span> <span class="toc-text">遇到的坑</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A1%86%E6%9E%B6%E9%A2%84%E8%AE%BE"><span class="toc-number">2.</span> <span class="toc-text">框架预设</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.1.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

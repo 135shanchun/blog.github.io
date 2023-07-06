@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>墨客靶场打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>墨客靶场打靶随记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-17T03:54:15.000Z" id="date"> 2023-06-17</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-07-04T09:11:32.309Z" id="updated"> 2023-07-04</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是墨客的靶场</p>
+<span id="more"></span>
+
+<p>墨客的靶场应该是最接近实战的靶场了，</p>
+<p>并且有一定的难度，且靶场比较全面</p>
+<p>这篇文章看看能在不看提示的情况下解决几个</p>
+
+
+<p>就这个了</p>
+<h1 id="SQL注入靶场1-基本检查"><a href="#SQL注入靶场1-基本检查" class="headerlink" title="SQL注入靶场1-基本检查"></a>SQL注入靶场1-基本检查</h1><p>xpath。。。。</p>
+<p>我是个脑残啊沃柑我根本不会xpath啊</p>
+<p>反正先试试吧。。。。。。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://124.70.71.251:41314/demo.php?name=xml<br></code></pre></td></tr></table></figure>
+
+<p>后面有个?name&#x3D;xxx尝试看看最简单的数字型字符型注入</p>
+<p>不行，怎么样都会报错，</p>
+<p>尝试报错注入呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?name=-xml&#x27; or updatexml(1,concat(0x7e,(database()),1) --+<br></code></pre></td></tr></table></figure>
+
+<p>不行，尝试时间盲注</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?name=-xml&#x27; or sleep(3) --+<br></code></pre></td></tr></table></figure>
+
+<p>依旧不行。。。。</p>
+<p>哎，那就用一下sqlmap试试吧。。。不能浪费墨币</p>
+
+
+<p>is not injectable………….</p>
+<h1 id="SQL注入靶场1-正式开干"><a href="#SQL注入靶场1-正式开干" class="headerlink" title="SQL注入靶场1-正式开干"></a>SQL注入靶场1-正式开干</h1><p>搜一下xpath注入吧看看能否现学</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/backlion/p/8554749.html">https://www.cnblogs.com/backlion/p/8554749.html</a></p>
+</blockquote>
+
+
+<p>难道就是让查询为true就可以获得同样的回显吗？</p>
+<p>这不就是post注入万能密码的原理吗？</p>
+<p>那试试看吧，</p>
+<p>这里我不知道闭合是什么，因此我就先构造两个语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?name=xml&#x27; or &#x27;1&#x27;=&#x27;1<br>?name=xml&quot; or &quot;1&quot;=&quot;1<br></code></pre></td></tr></table></figure>
+
+<p>最后一个双引号或者单引号其实就是让原来后台语句的单引号或双引号也发挥作用</p>
+<p>因为在xml里面似乎注释符不可以注释所有后面的东西，</p>
+<p>他的注释长这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;!--注释内容--&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这和我现在使用的typora设置博客文章摘要是一样的</p>
+
+
+<p>好了废话不多说去靶场试一下吧</p>
+
+
+<p>??????????????</p>
+<p>沃柑直接出key了牛皮</p>
+<h1 id="SQL注入靶场1-结束。。"><a href="#SQL注入靶场1-结束。。" class="headerlink" title="SQL注入靶场1-结束。。"></a>SQL注入靶场1-结束。。</h1><p>看了一下别人的writeup</p>
+
+
+<p>发现还有一种payload是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;]|//*|//*[&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>最前面最后面两个引号中括号是闭合前面后面的东西，</p>
+<p>后面的那个东西我猜应该就是搜寻全部内容吧</p>
+<p>原来的查询语句是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">//users/user[loginID/text()=&#x27;user&#x27; and password/text()=&#x27;password&#x27;]<br></code></pre></td></tr></table></figure>
+
+<p>带入之后变成了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">//users/user[loginID/text()=&#x27;user&#x27; and password/text()=&#x27;&#x27;]|//*|//*[&#x27;&#x27;]<br></code></pre></td></tr></table></figure>
+
+<p>中间那个管道符“|”应该是起到分号也就是堆叠查询的作用吧？</p>
+<hr>
+<p>这个靶场结束的有点意外，，，</p>
+<p>之后笔记学习一下xml语法吧哈哈哈</p>
+<hr>
+<p>再开一个靶场练练吧。。。。这次一定挑一个会的</p>
+<h1 id="SQL注入靶场2-基本检查即结束"><a href="#SQL注入靶场2-基本检查即结束" class="headerlink" title="SQL注入靶场2-基本检查即结束"></a>SQL注入靶场2-基本检查即结束</h1>
+
+<p>就这个了，这个是post注入</p>
+<p>首先万能密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">admin&#x27; or 1=1 # <br>admin&quot; or 1=1 #<br></code></pre></td></tr></table></figure>
+
+<p>？？？万能密码直接过了？？？</p>
+<p>浪费我3个墨币。。。。</p>
+<h1 id="文件上传第一题"><a href="#文件上传第一题" class="headerlink" title="文件上传第一题"></a>文件上传第一题</h1><p>首先直接上传shell.php</p>
+<p>提示不让上传，然后尝试改名为shell.png然后bp抓包改名，</p>
+<p>已经提示不让上传，看来是后端验证了，</p>
+<p>然后尝试在后缀名上做手脚，发现这是个Linux的服务器，</p>
+<p>Windows特性绕不了，在尝试使用另类的文件名例如php3，</p>
+<p>上传成功了！蚁剑连接成功，getshell！</p>
+<p>最后在文件里面找到了flag</p>
+
+
+<h1 id="文件上传第二题"><a href="#文件上传第二题" class="headerlink" title="文件上传第二题"></a>文件上传第二题</h1><p>这跟第一题一毛一样啊浪费我墨币。。。。。</p>
+<h1 id="文件上传第三题"><a href="#文件上传第三题" class="headerlink" title="文件上传第三题"></a>文件上传第三题</h1><p>这次学聪明了看了一下别人的writeup，和前面两题解法一样。。。。</p>
+<p>不然又要被坑了</p>
+<h1 id="文件上传第四题"><a href="#文件上传第四题" class="headerlink" title="文件上传第四题"></a>文件上传第四题</h1><p>这道题考点是mime文件头，只需要在content-type那里修改为image.png即可</p>
+<h1 id="文件上传第五题"><a href="#文件上传第五题" class="headerlink" title="文件上传第五题"></a>文件上传第五题</h1><p>这个暂时先留个坑，看样子是个asp木马相关的，超出知识范围了</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/18/Pikachu%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next Pikachu打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/16/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">Sql注入学习总结 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E9%9D%B6%E5%9C%BA1-%E5%9F%BA%E6%9C%AC%E6%A3%80%E6%9F%A5"><span class="toc-number">1.</span> <span class="toc-text">SQL注入靶场1-基本检查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E9%9D%B6%E5%9C%BA1-%E6%AD%A3%E5%BC%8F%E5%BC%80%E5%B9%B2"><span class="toc-number">2.</span> <span class="toc-text">SQL注入靶场1-正式开干</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E9%9D%B6%E5%9C%BA1-%E7%BB%93%E6%9D%9F%E3%80%82%E3%80%82"><span class="toc-number">3.</span> <span class="toc-text">SQL注入靶场1-结束。。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E9%9D%B6%E5%9C%BA2-%E5%9F%BA%E6%9C%AC%E6%A3%80%E6%9F%A5%E5%8D%B3%E7%BB%93%E6%9D%9F"><span class="toc-number">4.</span> <span class="toc-text">SQL注入靶场2-基本检查即结束</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%AC%AC%E4%B8%80%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">文件上传第一题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%AC%AC%E4%BA%8C%E9%A2%98"><span class="toc-number">6.</span> <span class="toc-text">文件上传第二题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%AC%AC%E4%B8%89%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">文件上传第三题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%AC%AC%E5%9B%9B%E9%A2%98"><span class="toc-number">8.</span> <span class="toc-text">文件上传第四题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%AC%AC%E4%BA%94%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">文件上传第五题</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

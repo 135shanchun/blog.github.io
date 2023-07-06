@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#14 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#14</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-09T04:37:16.000Z" id="date"> 2023-06-09</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-19T03:50:52.699Z" id="updated"> 2023-06-19</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习waf绕过的各种姿势</p>
+<span id="more"></span>
+
+<p>up这里给靶场套上了waf，，</p>
+<p>但是我不会套，</p>
+<p>所以这篇笔记就是纯记录没有实操</p>
+<h1 id="1-使用运算判断字符型or数字型"><a href="#1-使用运算判断字符型or数字型" class="headerlink" title="1 使用运算判断字符型or数字型"></a>1 使用运算判断字符型or数字型</h1><p>平常使用and 1&#x3D;1 and 1&#x3D;2 判断数字型还是字符型，</p>
+<p>但是这里被安全狗检测了，</p>
+<p>and替换为&amp;&amp;没有用，</p>
+<p>添加&#x2F;**&#x2F;注释没用，</p>
+<p>我们可以理解一下概念，</p>
+<p>例如现在的查询语句时</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from users where id=&#x27;$id&#x27; 字符型<br>select * from users where id=$id  数字型<br></code></pre></td></tr></table></figure>
+
+<p>他们两个根本的区别就是一个有闭合，</p>
+<p>也就是说，如果是数字型注入，他会执行id后面的运算，</p>
+<p>如果id&#x3D;2-1正常 id&#x3D;2-3不正常，那么就是数字型了，</p>
+<p>但是这种方式可能会被过滤，那么我们可以用更加冷门的运算比如异或，</p>
+<p>因此可以通过异或这种方式来判断是字符型还是数字型</p>
+<h1 id="2-order-by替换"><a href="#2-order-by替换" class="headerlink" title="2 order by替换"></a>2 order by替换</h1><p>替换成group by同样可以起到判断字段数的作用</p>
+<h1 id="3-添加无用字符绕过检测"><a href="#3-添加无用字符绕过检测" class="headerlink" title="3 添加无用字符绕过检测"></a>3 添加无用字符绕过检测</h1><ol>
+<li><p>添加垃圾字符</p>
+<p>其实原理就是利用&#x2F;**&#x2F;</p>
+<p>可以构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union /*!90000test*/ select 1,2,3 --+<br></code></pre></td></tr></table></figure>
+
+<p>即可绕过安全狗</p>
+</li>
+<li><p>注释后换行</p>
+<p>例如 –+ b %0A select</p>
+<p>%0A的意思就是换行，换行后注释就失效了</p>
+</li>
+</ol>
+<h1 id="4-替换绕过"><a href="#4-替换绕过" class="headerlink" title="4 替换绕过"></a>4 替换绕过</h1><h2 id="4-1-替换information-schema-tables"><a href="#4-1-替换information-schema-tables" class="headerlink" title="4.1 替换information_schema.tables"></a>4.1 替换information_schema.tables</h2><p>information_schema这个字符被过滤了可以尝试使用其他表，</p>
+<p>例如，</p>
+<p><code>sys.schema_table_statistics_with_buffer</code></p>
+<p><code>sys.x$ps_schema_table_statistics_io</code></p>
+<h2 id="4-2-替换information-schema-columns"><a href="#4-2-替换information-schema-columns" class="headerlink" title="4.2 替换information_schema.columns"></a>4.2 替换information_schema.columns</h2><p>这个需要使用到前面的join语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union --+ b %0Aselect * from (select * from users as a join users as b)c --+<br><br>?id=-1&#x27; union --+ b %0Aselect * from (select * from users as a join users as b using(id))c --+<br></code></pre></td></tr></table></figure>
+
+<p>后面可以一步步推出全部列名</p>
+<h1 id="5-超大数据包绕过"><a href="#5-超大数据包绕过" class="headerlink" title="5 超大数据包绕过"></a>5 超大数据包绕过</h1><p>有些时候数据包很大可能可以bypass安全狗</p>
+<p>因此我们只需要增大数据包即可，</p>
+<p>这个实战中写个python脚本就可以了，很简单</p>
+<h1 id="6-分块传输绕过安全狗"><a href="#6-分块传输绕过安全狗" class="headerlink" title="6 分块传输绕过安全狗"></a>6 分块传输绕过安全狗</h1><p>这个就是在burpsuite里面操作了</p>
+<p>例如我们要将id&#x3D;1分块，我们需要先写上字符占位数，</p>
+<p>然后换行写上字符，例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Transfer-Encoding: Chunked<br><br>1  # 一个字符<br>i<br>2  # 两个字符<br>d=<br>1  # 一个字符<br>1<br>0  # 零个字符，注意最后需要加上两个换行<br><br><br></code></pre></td></tr></table></figure>
+
+<p>这样就可以绕过waf了,</p>
+<p>这里up介绍了一个插件，</p>
+<p>但是好像似乎GitHub作者删了这个仓库搜不到这个插件了</p>
+<h1 id="7-笔记"><a href="#7-笔记" class="headerlink" title="7 笔记"></a>7 笔记</h1>
+
+<p>and</p>
+
+
+<h1 id="8-最后"><a href="#8-最后" class="headerlink" title="8 最后"></a>8 最后</h1><p>到此位置，bilibili的sql注入教程就是没有了，</p>
+<p>但是我会将学习笔记继续做在这个分类下！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/10/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-15/">← Next Sql注入学习笔记#15</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/09/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-13/">Sql注入学习笔记#13 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8%E8%BF%90%E7%AE%97%E5%88%A4%E6%96%AD%E5%AD%97%E7%AC%A6%E5%9E%8Bor%E6%95%B0%E5%AD%97%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">1 使用运算判断字符型or数字型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-order-by%E6%9B%BF%E6%8D%A2"><span class="toc-number">2.</span> <span class="toc-text">2 order by替换</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%B7%BB%E5%8A%A0%E6%97%A0%E7%94%A8%E5%AD%97%E7%AC%A6%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B"><span class="toc-number">3.</span> <span class="toc-text">3 添加无用字符绕过检测</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%9B%BF%E6%8D%A2%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">4 替换绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E6%9B%BF%E6%8D%A2information-schema-tables"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 替换information_schema.tables</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E6%9B%BF%E6%8D%A2information-schema-columns"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 替换information_schema.columns</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E8%B6%85%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%8C%85%E7%BB%95%E8%BF%87"><span class="toc-number">5.</span> <span class="toc-text">5 超大数据包绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93%E7%BB%95%E8%BF%87%E5%AE%89%E5%85%A8%E7%8B%97"><span class="toc-number">6.</span> <span class="toc-text">6 分块传输绕过安全狗</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E7%AC%94%E8%AE%B0"><span class="toc-number">7.</span> <span class="toc-text">7 笔记</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">8 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

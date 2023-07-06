@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PySide6学习笔记#10 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PySide6学习笔记#10</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-05-01T02:48:49.000Z" id="date"> 2023-05-01</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-25T05:08:22.454Z" id="updated"> 2023-06-25</time></div></span></div></div><hr><div id="post-content"><p>今天讲MessageBox，</p>
+<p>并且我来扩展3种其他的弹窗方式</p>
+<span id="more"></span>
+
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PySide6.QtWidgets <span class="hljs-keyword">import</span> QApplication, QWidget, QMessageBox<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyWindow</span>(<span class="hljs-title class_ inherited__">QWidget</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment">#           ↓ 设置图标                             # ↓ 设置按钮 可以无限增加                                           # 默认</span><br>        QMessageBox.information(self, <span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-string">&#x27;msg&#x27;</span>, QMessageBox.StandardButton.Cancel | QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app = QApplication([])<br>    window = MyWindow()<br>    window.show()<br>    app.<span class="hljs-built_in">exec</span>()<br></code></pre></td></tr></table></figure>
+
+<p>这个太简单了，</p>
+<p>但是这个控件在编译的时候可能会增加很大的体积，</p>
+<p>接下来我拓展几种</p>
+<p>（问就是之前搞远控的时候研究的</p>
+<h1 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h1><h2 id="1-easygui"><a href="#1-easygui" class="headerlink" title="1 easygui"></a>1 easygui</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">pip install easygui<br></code></pre></td></tr></table></figure>
+
+<p>这个是最简单的一行代码搞定的那种，</p>
+<p>但是不推荐用，</p>
+<p>因为打包出来还是很大，</p>
+<p>（这个库有很多封装好的功能，</p>
+<p>（适合小小白</p>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> easygui<br><br>easygui.msgbox(<span class="hljs-string">&#x27;msg&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>, ok_button=<span class="hljs-string">&#x27;我知道了&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-win32api"><a href="#2-win32api" class="headerlink" title="2 win32api"></a>2 win32api</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">pip install pywin32<br></code></pre></td></tr></table></figure>
+
+<p>这个和前面的QMessageBox很像，</p>
+<p>同样可以设置图标</p>
+
+
+<p>这个其实就涉及到win32api的调用了</p>
+<p>可以看microsoft给出的文档</p>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-messagebox">MessageBox 函数</a></p>
+<p>或者可以看我之前远控远古版本的代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">msg</span>(<span class="hljs-params">msg=<span class="hljs-string">&#x27;&#x27;</span>, title=<span class="hljs-string">&#x27;&#x27;</span>, icon=<span class="hljs-string">&#x27;&#x27;</span></span>):<br>    <span class="hljs-keyword">try</span>:<br>        icon = do.split(<span class="hljs-string">&#x27;=&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;-&#x27;</span>)[<span class="hljs-number">2</span>]<br>        <span class="hljs-keyword">if</span> icon == <span class="hljs-string">&#x27;warning&#x27;</span>:<br>            ico = win32con.MB_ICONWARNING<br><br>        <span class="hljs-keyword">elif</span> icon == <span class="hljs-string">&#x27;info&#x27;</span>:<br>            ico = win32con.MB_ICONINFORMATION<br><br>        <span class="hljs-keyword">elif</span> icon == <span class="hljs-string">&#x27;question&#x27;</span>:<br>            ico = win32con.MB_ICONQUESTION<br><br>        <span class="hljs-keyword">elif</span> icon == <span class="hljs-string">&#x27;error&#x27;</span>:<br>            ico = win32con.MB_ICONHAND<br><br>        <span class="hljs-keyword">else</span>:<br>            ico = win32con.MB_ICONMASK<br><br>        ct.send(<span class="hljs-built_in">bytes</span>(<span class="hljs-string">&#x27;[*]ok&#x27;</span>.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)))<br>        win32api.MessageBox(<span class="hljs-number">0</span>, do.split(<span class="hljs-string">&#x27;=&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;-&#x27;</span>)[<span class="hljs-number">0</span>],<br>                            do.split(<span class="hljs-string">&#x27;=&#x27;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;-&#x27;</span>)[<span class="hljs-number">1</span>], ico)<br><br><br>    <span class="hljs-keyword">except</span>:<br>        ct.send(<span class="hljs-built_in">bytes</span>(<span class="hljs-string">&#x27;[-]弹窗执行失败&#x27;</span>.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)))<br></code></pre></td></tr></table></figure>
+
+<h1 id="3-Ctypes"><a href="#3-Ctypes" class="headerlink" title="3 Ctypes"></a>3 Ctypes</h1><p>这个是专门调用win32api的，</p>
+<p>和前面的那个对比一下：</p>
+
+
+<p>体积小了《不少》</p>
+<p>（远控里面反正体积越小越好</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> ctypes<br><br>a = ctypes.windll.LoadLibrary(<span class="hljs-string">&#x27;user32.dll&#x27;</span>)<br>a.MessageBoxW(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;msg&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>这个就是调用user32这个dll里面封装的内置函数，</p>
+<p>可以去下载一个易语言的api伴侣</p>
+
+
+<p>注：</p>
+<p><strong>这里千万不要用MessageBoxA，</strong></p>
+<p><strong>要MessageBoxW！</strong></p>
+<p>之前搞远控的时候因为这个坑浪费了好长时间</p>
+<p>那这个如何设置图标呢？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> ctypes<br><br>a = ctypes.windll.LoadLibrary(<span class="hljs-string">&#x27;user32.dll&#x27;</span>)<br>a.MessageBoxW(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;msg&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-number">0</span>+<span class="hljs-number">16</span>)<br></code></pre></td></tr></table></figure>
+
+<p>只需要在最后参数里面加个数字就和前面<strong>2</strong>介绍的效果一样了，</p>
+<p>图标也是error</p>
+<p>然后我整理了一下常用的图标</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">warning 48<br>info 64<br>question 32<br>error 16<br></code></pre></td></tr></table></figure>
+
+<p>然后按钮样式就是把”0+16”里面的那个0换掉就可以了，</p>
+<p>具体的数字可以自己去试</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/05/02/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/">← Next PySide6学习笔记#11</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/04/30/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-9-1/">PySide6学习笔记#9-1 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-number">2.</span> <span class="toc-text">拓展</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-easygui"><span class="toc-number">2.1.</span> <span class="toc-text">1 easygui</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-win32api"><span class="toc-number">2.2.</span> <span class="toc-text">2 win32api</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Ctypes"><span class="toc-number">3.</span> <span class="toc-text">3 Ctypes</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

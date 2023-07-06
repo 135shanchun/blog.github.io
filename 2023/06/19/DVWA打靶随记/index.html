@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入打靶随记#5 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入打靶随记#5</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-19T04:57:38.000Z" id="date"> 2023-06-19</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-30T08:29:28.390Z" id="updated"> 2023-06-30</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是DVWA</p>
+<span id="more"></span>
+
+<p>简单配置一下靶场环境，开始！</p>
+<h1 id="Sql-Injection"><a href="#Sql-Injection" class="headerlink" title="Sql-Injection"></a>Sql-Injection</h1><h2 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h2><p>这一段就是极其简单的字符型注入，</p>
+<p>payload大概这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; union select 1,(注入语句)--+<br></code></pre></td></tr></table></figure>
+
+<p>没什么好讲的</p>
+<h2 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h2><p>这一关是post注入，burp抓一下包然后注入即可</p>
+<p><strong>注意在post注入中的注释不可以使用“–+”</strong>！！！</p>
+<p>之后的流程同上，就是在post那里编辑</p>
+<h2 id="High"><a href="#High" class="headerlink" title="High"></a>High</h2><p>这一关让你改id session，</p>
+<p>会出现一个新的页面，</p>
+<p>你在新的页面修改的内容会同步到你原来的页面，</p>
+<p>因此你只需要burp抓一下包然后在新页面里面构造注入语句即可</p>
+<hr>
+<p>前三关的难度只花了我5分钟，但是最后一关。。。。</p>
+<h2 id="Impossible"><a href="#Impossible" class="headerlink" title="Impossible"></a>Impossible</h2><p>沃柑我以为他impossible是指的难度升级了，，，</p>
+<p>傻乎乎的注入半天注入不出来，</p>
+<p>无奈之下看了一下别人的writeup</p>
+<p>原来这一关不是用来注入的而是用来防止sql注入的</p>
+<h1 id="Sql-injection-Blind"><a href="#Sql-injection-Blind" class="headerlink" title="Sql-injection(Blind)"></a>Sql-injection(Blind)</h1><p>又到了最讨厌也是最麻烦的盲注了。。。<br>每一关讲一下思路吧就</p>
+<h2 id="Low-1"><a href="#Low-1" class="headerlink" title="Low"></a>Low</h2><p>这个输入正常id提示“User ID exists in the database.”<br>输入错误id提示“User ID is MISSING from the database.”<br>然后判断出闭合是一个单引号，然后?id&#x3D;1’–+提示正常<br>然后接下来判断是否具备布尔盲注条件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; and 1=1--+   正常<br>?id=1&#x27; and 1=2--+   不正常<br></code></pre></td></tr></table></figure>
+<p>那么接下来就是构造payload了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?id=1&#x27; and length(database())=4  正常<br></code></pre></td></tr></table></figure>
+<p>说明数据库一共有4个字符<br>之后的略自行脑补</p>
+<h2 id="Medium-1"><a href="#Medium-1" class="headerlink" title="Medium"></a>Medium</h2><p>这个依旧是post注入，<br>burp抓包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">id=1&amp;Submit=Submit<br></code></pre></td></tr></table></figure>
+<p>然后注入类型是数字型注入，<br>接下来判断是否具备布尔盲注条件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">id=1 and 1=1&amp;Submit=Submit  正常<br>id=1 and 1=2&amp;Submit=Submit  不正常<br></code></pre></td></tr></table></figure>
+<p>那么接下来的注入语句就和上面几乎一样了</p>
+<h2 id="High-1"><a href="#High-1" class="headerlink" title="High"></a>High</h2><p>这。。。。。我搞不懂和上面一关有什么区别<br>不就是新开一个页面然后构造和上面一样的注入语句吗</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">id=1&#x27;&amp;Submit=Submit  不正常<br>id=1&quot;&amp;Submit=Submit  正常<br></code></pre></td></tr></table></figure>
+<p>说明是单引号闭合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">id=1&#x27; and 1=1#&amp;Submit=Submit<br>id=1&#x27; and 1=2&amp;Submit=Submit<br></code></pre></td></tr></table></figure>
+<p>说明具备布尔盲注条件，剩下的略</p>
+<h1 id="File-upload"><a href="#File-upload" class="headerlink" title="File-upload"></a>File-upload</h1><h2 id="Low-2"><a href="#Low-2" class="headerlink" title="Low"></a>Low</h2><p>这一关似乎直接上传php文件就好了，没有任何限制，</p>
+<p>他甚至贴心的给出了shell的路径，</p>
+<p>尝试访问—–成功</p>
+<h2 id="Medium-2"><a href="#Medium-2" class="headerlink" title="Medium"></a>Medium</h2><p>这一关直接上传shell会被打回</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Your image was not uploaded. We can only accept JPEG or PNG images.<br></code></pre></td></tr></table></figure>
+
+<p>很简单还是添加文件头然后bp抓包改数据，注意只能png和jpg</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">../../hackable/uploads/out.php succesfully uploaded!<br></code></pre></td></tr></table></figure>
+
+<p>成功，然后访问—–成功</p>
+<h2 id="High-2"><a href="#High-2" class="headerlink" title="High"></a>High</h2><p>这一关中前面的手法用不了了，看看能不能在后缀名上做点手脚</p>
+<ul>
+<li>添加空格</li>
+<li>添加”.”</li>
+<li>添加::$DATA</li>
+</ul>
+<p>都失败了，查看源代码，分析一下</p>
+
+
+<p>看到黄色框框圈出来的东西，就可以判断出是这个东西过滤了我们的东西，</p>
+<p>此时其实可以尝试上传.htaccess文件来bypass，但是我的环境有问题，</p>
+<p>换一种思路—–文件包含漏洞！</p>
+<p>找到位于dvwa\vulnerabilities\fi目录下的include.php文件，</p>
+<p>然后在文件上传关卡上传图片马，</p>
+<p>随后通过include.php用相对路径访问图片马</p>
+
+
+<p>成功！</p>
+<h1 id="File-inclusion"><a href="#File-inclusion" class="headerlink" title="File-inclusion"></a>File-inclusion</h1><p>此漏洞应该是一个配合文件上传漏洞的bypass方式吧，</p>
+<p>因此webshell需要自己上传，无法通过本关卡的漏洞上传</p>
+<p>现在shell.php的位置是Dvwa靶场的根目录下</p>
+<h2 id="Low-3"><a href="#Low-3" class="headerlink" title="Low"></a>Low</h2><p>简单阅读一下源代码，发现传参应该是：?page&#x3D;xxx.php</p>
+<p>直接访问shell即可，可以通过绝对路径，也可以通过相对路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?page=../../shell.php<br></code></pre></td></tr></table></figure>
+
+<h2 id="Medium-3"><a href="#Medium-3" class="headerlink" title="Medium"></a>Medium</h2><p>这一关使用上面的url访问会出现报错</p>
+<p>简单看一下源代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-comment">// The page we wish to display</span><br><span class="hljs-variable">$file</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;page&#x27;</span> ];<br><br><span class="hljs-comment">// Input validation</span><br><span class="hljs-variable">$file</span> = <span class="hljs-title function_ invoke__">str_replace</span>( <span class="hljs-keyword">array</span>( <span class="hljs-string">&quot;http://&quot;</span>, <span class="hljs-string">&quot;https://&quot;</span> ), <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-variable">$file</span> );<br><span class="hljs-variable">$file</span> = <span class="hljs-title function_ invoke__">str_replace</span>( <span class="hljs-keyword">array</span>( <span class="hljs-string">&quot;../&quot;</span>, <span class="hljs-string">&quot;..\\&quot;</span> ), <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-variable">$file</span> );<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>是个人都能看出来这是被过滤了，</p>
+<p>所有的”http:&#x2F;&#x2F;“, “https:&#x2F;&#x2F;“, “..&#x2F;“, “..\“都被替换成了空格</p>
+<p>但是这个有一个很明显的问题，就是他没有进行多次过滤，</p>
+<p>可以尝试复写过滤字符串的方式bypass</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?page=..././..././shell.php<br></code></pre></td></tr></table></figure>
+
+<p>👌</p>
+<h2 id="High-3"><a href="#High-3" class="headerlink" title="High"></a>High</h2><p>使用Low关卡的url会直接报错，但是和前面一个关的报错不同的是，</p>
+<p>这次的整个页面都没了，报错</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ERROR: File not found!<br></code></pre></td></tr></table></figure>
+
+<p>没有这个文件？那应该是将后缀名过滤了？尝试复写php字符串</p>
+<p>不行。。。。。看一下源代码吧</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-comment">// The page we wish to display</span><br><span class="hljs-variable">$file</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;page&#x27;</span> ];<br><br><span class="hljs-comment">// Input validation</span><br><span class="hljs-keyword">if</span>( !<span class="hljs-title function_ invoke__">fnmatch</span>( <span class="hljs-string">&quot;file*&quot;</span>, <span class="hljs-variable">$file</span> ) &amp;&amp; <span class="hljs-variable">$file</span> != <span class="hljs-string">&quot;include.php&quot;</span> ) &#123;<br>	<span class="hljs-comment">// This isn&#x27;t the page we want!</span><br>	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;ERROR: File not found!&quot;</span>;<br>	<span class="hljs-keyword">exit</span>;<br>&#125;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>看不懂源码的苦😭看一下别人的writeup吧</p>
+
+
+<p>url，绝对路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?page=file:///D:\Home\phpstudy_pro\WWW\dvwa\shell.php<br></code></pre></td></tr></table></figure>
+
+<p>结束</p>
+<h1 id="XSS-Reflacted"><a href="#XSS-Reflacted" class="headerlink" title="XSS-Reflacted"></a>XSS-Reflacted</h1><h2 id="Low-4"><a href="#Low-4" class="headerlink" title="Low"></a>Low</h2><p>直接构造最简单的payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;script&gt;alert(1)&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Medium-4"><a href="#Medium-4" class="headerlink" title="Medium"></a>Medium</h2><p>用上一关的payload发现被过滤只剩下了alert(1)，尝试大小写绕过，直接成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;scriPt&gt;alert(1)&lt;/scrIpt&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="High-4"><a href="#High-4" class="headerlink" title="High"></a>High</h2><p>用上一关的payload发现只剩下了一个尖括号，测试输入一堆尖括号&lt;&gt;不过滤，那么应该是对script作了过滤，尝试使用其他的语句，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;img src=114514 onerror=alert(1)&gt;<br></code></pre></td></tr></table></figure>
+
+<p>成功通关！</p>
+<hr>
+<p>存储型和Dom型已将记录在了《存储型,Dom型Xss注入学习笔记》这篇文章中</p>
+<hr>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/23/Upload-Lab%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next Upload-Lab打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/19/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-18/">Sql注入学习笔记#18 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Sql-Injection"><span class="toc-number">1.</span> <span class="toc-text">Sql-Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Low"><span class="toc-number">1.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Medium"><span class="toc-number">1.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High"><span class="toc-number">1.3.</span> <span class="toc-text">High</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Impossible"><span class="toc-number">1.4.</span> <span class="toc-text">Impossible</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sql-injection-Blind"><span class="toc-number">2.</span> <span class="toc-text">Sql-injection(Blind)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Low-1"><span class="toc-number">2.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Medium-1"><span class="toc-number">2.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High-1"><span class="toc-number">2.3.</span> <span class="toc-text">High</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File-upload"><span class="toc-number">3.</span> <span class="toc-text">File-upload</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Low-2"><span class="toc-number">3.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Medium-2"><span class="toc-number">3.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High-2"><span class="toc-number">3.3.</span> <span class="toc-text">High</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File-inclusion"><span class="toc-number">4.</span> <span class="toc-text">File-inclusion</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Low-3"><span class="toc-number">4.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Medium-3"><span class="toc-number">4.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High-3"><span class="toc-number">4.3.</span> <span class="toc-text">High</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS-Reflacted"><span class="toc-number">5.</span> <span class="toc-text">XSS-Reflacted</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Low-4"><span class="toc-number">5.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Medium-4"><span class="toc-number">5.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High-4"><span class="toc-number">5.3.</span> <span class="toc-text">High</span></a></li></ol></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PySide6学习笔记#12 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PySide6学习笔记#12</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-05-03T12:07:24.000Z" id="date"> 2023-05-03</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-25T05:10:04.876Z" id="updated"> 2023-06-25</time></div></span></div></div><hr><div id="post-content"><p>今天做一个小项目：设置图像模糊度</p>
+<span id="more"></span>
+
+<p>看到就知道要用到哪些控件了吧</p>
+<ul>
+<li><p>QPushButton 这个肯定有</p>
+</li>
+<li><p>QSlider 这个用脚想都知道有</p>
+</li>
+<li><p>QFileDialog 这个用脚想都知道有</p>
+</li>
+<li><p>QLabel 你肯定想不到这个是用来展示图片的</p>
+</li>
+</ul>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PySide6.QtWidgets <span class="hljs-keyword">import</span> QApplication,  QWidget, QVBoxLayout, QSlider, QFileDialog, QLabel, QPushButton<br><span class="hljs-keyword">from</span> PySide6.QtCore <span class="hljs-keyword">import</span> Qt<br><span class="hljs-comment"># from PySide6.QtGui import QPixmap</span><br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> ImageFilter, ImageQt, Image<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyWindow</span>(<span class="hljs-title class_ inherited__">QWidget</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment"># 用来打开图像的按钮</span><br>        btn = QPushButton(<span class="hljs-string">&#x27;导入图像&#x27;</span>)<br>        btn.clicked.connect(self.getImg)<br>        <span class="hljs-comment"># 用来展示图片的标签</span><br>        self.lbShowImg = QLabel()<br>        <span class="hljs-comment"># 用来设置模糊度的滑条</span><br>        self.slider = QSlider(Qt.Orientation.Horizontal)<br>        self.slider.setRange(<span class="hljs-number">0</span>, <span class="hljs-number">20</span>)    <span class="hljs-comment"># 设置刻度范围</span><br>        self.slider.setTickPosition(QSlider.TickPosition.TicksBelow)     <span class="hljs-comment"># 设置滑条刻度位置</span><br>        self.slider.setTickInterval(<span class="hljs-number">3</span>)     <span class="hljs-comment"># 设置间隔</span><br>        self.slider.valueChanged.connect(self.valueChanged)<br><br>        <span class="hljs-comment"># 设置布局</span><br>        self.mainLayout = QVBoxLayout()<br>        self.mainLayout.addWidget(btn)<br>        self.mainLayout.addWidget(self.lbShowImg)<br>        self.mainLayout.addWidget(self.slider)<br>        self.setLayout(self.mainLayout)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">getImg</span>(<span class="hljs-params">self</span>):<br>        self.img = Image.<span class="hljs-built_in">open</span>(QFileDialog.getOpenFileName(self, <span class="hljs-string">&#x27;请选择一个文件&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>, <span class="hljs-string">&#x27;所有图像文件(.jpg *.jpeg *.png)&#x27;</span>)[<span class="hljs-number">0</span>])<br>        self.lbShowImg.setPixmap(ImageQt.toqpixmap(self.img))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">valueChanged</span>(<span class="hljs-params">self, value</span>):    <span class="hljs-comment"># slider会自动传入参数value</span><br>        self.filterImg = self.img.<span class="hljs-built_in">filter</span>(ImageFilter.GaussianBlur(value))<br>        self.lbShowImg.setPixmap(ImageQt.toqpixmap(self.filterImg))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app = QApplication([])<br>    window = MyWindow()<br>    window.show()<br>    app.<span class="hljs-built_in">exec</span>()<br><br><br></code></pre></td></tr></table></figure>
+
+<p>似乎并不需要那个QPixmap😂</p>
+<p>这里有几个坑：</p>
+<ul>
+<li><p>29行一定要Imageopen不然他不是一个图片对象是个string</p>
+</li>
+<li><p>选择的图片分辨率不要太高，不然打开之后你连图片都看不全</p>
+</li>
+</ul>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/05/04/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-13/">← Next PySide6学习笔记#13</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/05/02/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/">PySide6学习笔记#11 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">代码</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>正则表达式学习笔记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy","copyFinish":"copied","expand":"expand"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>正则表达式学习笔记</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2023-06-24T06:16:59.000Z" id="date"> 2023-06-24</time></div></span><br><span>Last Update: <div class="control"><time datetime="2023-06-24T08:19:47.655Z" id="updated"> 2023-06-24</time></div></span></div></div><hr><div id="post-content"><h1 id="匹配零次或一次字符出现"><a href="#匹配零次或一次字符出现" class="headerlink" title="? 匹配零次或一次字符出现"></a>? 匹配零次或一次字符出现</h1><p>出现0次或者1次，可有可无</p>
+<p>例如我的表达式是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">hello?world<br></code></pre></td></tr></table></figure>
+
+<p>那么可以匹配</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">helloworld<br>hellworld<br></code></pre></td></tr></table></figure>
+
+<p>两种字符串</p>
+<h1 id="匹配零次或多次字符出现"><a href="#匹配零次或多次字符出现" class="headerlink" title="* 匹配零次或多次字符出现"></a>* 匹配零次或多次字符出现</h1><p>匹配任意长度的字符，例如正则表达式是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">oh*<br></code></pre></td></tr></table></figure>
+
+<p>那么就可以有以下n种字符可以匹配成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">oh<br>ohhhhhhhh   # (h的长度任意因此无限种字符可以被匹配)<br>o<br></code></pre></td></tr></table></figure>
+
+<h1 id="匹配一次或多次字符出现"><a href="#匹配一次或多次字符出现" class="headerlink" title="+ 匹配一次或多次字符出现"></a>+ 匹配一次或多次字符出现</h1><p>匹配一次或多次字符出现，与上面“*”不同的是他不能匹配零次</p>
+<p>例如表达式是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">oh+<br></code></pre></td></tr></table></figure>
+
+<p>那么可以匹配到的字符串是这样的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ohhhhh<br>oh   <br>o   # 这个匹配不上，因为没有出现“h”<br></code></pre></td></tr></table></figure>
+
+<h1 id="匹配指定字符出现次数"><a href="#匹配指定字符出现次数" class="headerlink" title="{}  匹配指定字符出现次数"></a>{}  匹配指定字符出现次数</h1><p>指定字符出现的次数，有如下三种格式</p>
+<ol>
+<li><p>oh{3}</p>
+<p>只用ohhh可以匹配到</p>
+</li>
+<li><p>oh{2,4}</p>
+<p>有3种方式可以匹配到，分别是长度为2，3，4的h</p>
+</li>
+<li><p>oh{3,}</p>
+<p>“h”出出出现三次及以上</p>
+</li>
+</ol>
+<h1 id="匹配多个字符"><a href="#匹配多个字符" class="headerlink" title="()  匹配多个字符"></a>()  匹配多个字符</h1><p>上面都是对单个字符进行的匹配，这个是匹配多个字符</p>
+<p>如果需要对多个字符进行匹配只需要个给需要多次匹配的字符加上一对小括号即可</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">regex: test(ab)*<br></code></pre></td></tr></table></figure>
+
+<p>就有如下n种可以匹配</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">testabab<br>test<br>testab<br></code></pre></td></tr></table></figure>
+
+<h1 id="匹配其中一个字符"><a href="#匹配其中一个字符" class="headerlink" title="|  匹配其中一个字符"></a>|  匹配其中一个字符</h1><p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">a (cat|dog|bird)<br></code></pre></td></tr></table></figure>
+
+<p>就有三种可以匹配到，分别是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">a cat<br>a dog<br>a bird<br></code></pre></td></tr></table></figure>
+
+<h1 id="匹配其中含有指定字符的字符"><a href="#匹配其中含有指定字符的字符" class="headerlink" title="[] 匹配其中含有指定字符的字符"></a>[] 匹配其中含有指定字符的字符</h1><p>听着很绕口，想起来也很费劲，但是看个例子就不迷糊了</p>
+
+
+<p>意思就是说：只要这个字符在括号内，那只要你出现在了我要匹配的字符里面，我就给你匹配上，不论顺序</p>
+<h1 id="指定字符匹配字符的范围"><a href="#指定字符匹配字符的范围" class="headerlink" title="- 指定字符匹配字符的范围"></a>- 指定字符匹配字符的范围</h1>
+
+<p>就是匹配所有的小写字母</p>
+<p>同样可以写：[a-zA-Z0-9]</p>
+<p>来匹配全部非符号字符</p>
+<h1 id="匹配除指定字符以外的所有字符"><a href="#匹配除指定字符以外的所有字符" class="headerlink" title="^ 匹配除指定字符以外的所有字符"></a>^ 匹配除指定字符以外的所有字符</h1>
+
+<p>正好与前面那个例子相反</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><ol>
+<li><p>\d匹配全部数字字符</p>
+</li>
+<li><p>\D除1↑外所有字符</p>
+</li>
+<li><p>\w所有单词字符包括下划线、数字</p>
+</li>
+<li><p>\W除3↑外所有字符</p>
+</li>
+<li><p>\s代表所有空白符包括换行符，tab</p>
+</li>
+<li><p>\S除5↑外所有字符</p>
+</li>
+<li><p>\b匹配整行字符要求全部满足，有一个不满足则全部不匹配</p>
+<p>这一个有点难以理解，可以看后面的例子RGB</p>
+</li>
+</ol>
+<h1 id="匹配任意非换行字符"><a href="#匹配任意非换行字符" class="headerlink" title=".  匹配任意非换行字符"></a>.  匹配任意非换行字符</h1><p>这个看标题就懂了吧，举1个拓展的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">.*?  匹配全宇宙的字符<br>.*   匹配非宽字符全部字符（也差不多就是匹配全部字符毕竟键盘敲不出来宽字符）<br></code></pre></td></tr></table></figure>
+
+<h1 id="特殊"><a href="#特殊" class="headerlink" title="特殊"></a>特殊</h1><p>^ 匹配行首 $ 匹配行尾</p>
+<h1 id="贪心模式与懒惰模式"><a href="#贪心模式与懒惰模式" class="headerlink" title="贪心模式与懒惰模式"></a>贪心模式与懒惰模式</h1><p>默认是贪心模式</p>
+<p>有如下一个字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;span&gt;&lt;b&gt;testTesttesttesttesttesttest&lt;/b&gt;&lt;/span&gt;<br></code></pre></td></tr></table></figure>
+
+<p>我们想要匹配全部的标签，也就是说，匹配全部&lt;&gt;内的字符，</p>
+<p>但是是每个小的&lt;&gt;，如果你的正则是这个样子的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;.+&gt;<br></code></pre></td></tr></table></figure>
+
+<p>他就会匹配首尾两个&lt;&gt;，也就是说，他匹配了我们整个字符串，这就是贪心模式</p>
+<p>如果要切换为懒惰模式，就在+后面添加一个问号即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;.+?&gt;<br></code></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="RGB颜色匹配"><a href="#RGB颜色匹配" class="headerlink" title="RGB颜色匹配"></a>RGB颜色匹配</h2><p>首先来寻找以下他的特点</p>
+<ol>
+<li>第一位永远为“#”</li>
+<li>“#”后面的字符一定是6位，且是a-fA-F0-9（hex）</li>
+</ol>
+<p>那么开始构造语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#[a-fA-F0-9]&#123;6&#125;<br></code></pre></td></tr></table></figure>
+
+<p>测试成功，但是我们可以在最后添加一个\b</p>
+<p>这样就不会在后面有垃圾字符了</p>
+
+
+<p>我愿将其理解为一个老鼠屎坏了一锅粥😁😁😁</p>
+<h2 id="IPV4地址匹配"><a href="#IPV4地址匹配" class="headerlink" title="IPV4地址匹配"></a>IPV4地址匹配</h2><p>ipv4的特征：</p>
+<ol>
+<li>一共4段</li>
+<li>每一段都是数字并且位于1~254之间</li>
+</ol>
+<p>于是开始构造语句：：：：：：：：我不会。</p>
+<p>但是谁没事用正则来匹配ipv4呢？用python不香吗？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">ipv4</span>(<span class="hljs-params">string</span>):<br>    string_list = string.split(<span class="hljs-string">&#x27;.&#x27;</span>)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> string_list:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">int</span>(i) &gt;= <span class="hljs-number">256</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">int</span>(i) &lt; <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="拓展-邮箱匹配"><a href="#拓展-邮箱匹配" class="headerlink" title="拓展-邮箱匹配"></a>拓展-邮箱匹配</h2><p>浅浅拓展一个例子吧，首先来找一下邮箱的特征</p>
+<ol>
+<li>有一个“@”符号</li>
+<li>“@”后面必须有且只有一个“.”</li>
+<li>“.”后面的必须是网站域名后缀例如com、cn</li>
+</ol>
+<p>那么开始构造语句吧：：：：：：：：还是不会。</p>
+<p>放弃😡😡😡</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+
+
+<blockquote>
+<p> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1da4y1p7iZ/?spm_id_from=333.337.search-card.all.click&vd_source=1c43bcf31e4abf33f3960dd414786c92">10分钟快速掌握正则表达式</a></p>
+</blockquote>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/28/%E5%8F%8D%E5%B0%84%E6%80%A7Xss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">← Next 反射性Xss注入学习笔记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/23/Upload-Lab%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">Upload-Lab打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="To Catalog">≡</a><a id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%9B%B6%E6%AC%A1%E6%88%96%E4%B8%80%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">? 匹配零次或一次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%9B%B6%E6%AC%A1%E6%88%96%E5%A4%9A%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">* 匹配零次或多次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E4%B8%80%E6%AC%A1%E6%88%96%E5%A4%9A%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">+ 匹配一次或多次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0%E6%AC%A1%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">{}  匹配指定字符出现次数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%A4%9A%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-number">5.</span> <span class="toc-text">()  匹配多个字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%85%B6%E4%B8%AD%E4%B8%80%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-number">6.</span> <span class="toc-text">|  匹配其中一个字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%85%B6%E4%B8%AD%E5%90%AB%E6%9C%89%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E7%9A%84%E5%AD%97%E7%AC%A6"><span class="toc-number">7.</span> <span class="toc-text">[] 匹配其中含有指定字符的字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E5%8C%B9%E9%85%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="toc-number">8.</span> <span class="toc-text">- 指定字符匹配字符的范围</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%99%A4%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E4%BB%A5%E5%A4%96%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%97%E7%AC%A6"><span class="toc-number">9.</span> <span class="toc-text">^ 匹配除指定字符以外的所有字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%83%E5%AD%97%E7%AC%A6"><span class="toc-number">10.</span> <span class="toc-text">元字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E4%BB%BB%E6%84%8F%E9%9D%9E%E6%8D%A2%E8%A1%8C%E5%AD%97%E7%AC%A6"><span class="toc-number">11.</span> <span class="toc-text">.  匹配任意非换行字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A"><span class="toc-number">12.</span> <span class="toc-text">特殊</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B4%AA%E5%BF%83%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%87%92%E6%83%B0%E6%A8%A1%E5%BC%8F"><span class="toc-number">13.</span> <span class="toc-text">贪心模式与懒惰模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">14.</span> <span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RGB%E9%A2%9C%E8%89%B2%E5%8C%B9%E9%85%8D"><span class="toc-number">14.1.</span> <span class="toc-text">RGB颜色匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPV4%E5%9C%B0%E5%9D%80%E5%8C%B9%E9%85%8D"><span class="toc-number">14.2.</span> <span class="toc-text">IPV4地址匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95-%E9%82%AE%E7%AE%B1%E5%8C%B9%E9%85%8D"><span class="toc-number">14.3.</span> <span class="toc-text">拓展-邮箱匹配</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">15.</span> <span class="toc-text">总结</span></a></li></ol></div></div><footer><nobr>Published with <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> Theme <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>by <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: 'This comment is sent by Penguin Logistics.'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

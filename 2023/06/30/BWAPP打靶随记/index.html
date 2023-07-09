@@ -17,19 +17,17 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 }</style><style>:root {
   --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
   --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>BWAPP打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-30T08:38:00.000Z" id="date"> 2023-06-30</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-02T05:18:10.670Z" id="updated"> 2023-07-02</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是bwapp靶场</p>
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>BWAPP打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-30T08:38:00.000Z" id="date"> 2023-06-30</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-09T02:19:43.914Z" id="updated"> 2023-07-09</time></div></span></div></div><hr><div id="post-content"><p>这篇文章的靶场是bwapp靶场</p>
 <span id="more"></span>
 
 <p>迎面而来的第一个靶场是html注入</p>
 <p>这给我搞懵了，没听说过啊？</p>
-<p>然后又往后翻了翻，他这也不是xss注入，那是什么？我尝试的输入了一个xss的payload——————弹窗了？！</p>
-<p>一脸懵的我赶紧问了chatgpt</p>
+<p>立刻打开chatgpt询问：</p>
 
 
-<p>（电脑上找不出表情包形容我的心情114514又是一堆要学的）</p>
 <hr>
-<p>废话不多说，从零开始打靶！</p>
-<p><strong>注：本靶场的Medium和High无法攻破，不演示</strong></p>
+<p>废话不多说，开始打靶！</p>
+<p><strong>注：本靶场的大部分Medium和High无法攻破，不记录</strong></p>
 <h1 id="SQL-Injection-GET-x2F-Search"><a href="#SQL-Injection-GET-x2F-Search" class="headerlink" title="SQL Injection (GET&#x2F;Search)"></a>SQL Injection (GET&#x2F;Search)</h1><ol>
 <li><p>判断闭合为单引号</p>
 </li>
@@ -51,7 +49,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>这一关只给了我们id&#x3D;多少的电影，推测后台语句为：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">select * from movies where id=$id<br></code></pre></td></tr></table></figure>
 
-<p>推测处了这个那构造语句就不难了</p>
+<p>推测出了这个那构造语句就不难了</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?movie=6 and extractvalue(1,concat(0x7e,(database())))&amp;action=go<br></code></pre></td></tr></table></figure>
 
 <p>之后的略</p>
@@ -91,7 +89,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>成功！</p>
 <h1 id="SQL-Injection-Stored-SQLite"><a href="#SQL-Injection-Stored-SQLite" class="headerlink" title="SQL Injection - Stored (SQLite)"></a>SQL Injection - Stored (SQLite)</h1><p>Mysql换成了sqlite，只是些sql语句写法变了, 思路不变</p>
-<h1 id="SQL-Injection-Stored-User-Agent"><a href="#SQL-Injection-Stored-User-Agent" class="headerlink" title="SQL Injection - Stored (User-Agent)"></a>SQL Injection - Stored (User-Agent)</h1><p>看到标题就知道要干什么了，然后下面有一个表格记录我们的ua，那就是ua下的insert注入，我们吧上一关的payload放到ua里面即可</p>
+<h1 id="SQL-Injection-Stored-User-Agent"><a href="#SQL-Injection-Stored-User-Agent" class="headerlink" title="SQL Injection - Stored (User-Agent)"></a>SQL Injection - Stored (User-Agent)</h1><p>看到标题就知道要干什么了，然后下面有一个表格记录我们的ua，那就是ua下的insert注入，我们把上一关的payload放到ua里面即可</p>
 
 
 <h1 id="SQL-Injection-Stored-XML"><a href="#SQL-Injection-Stored-XML" class="headerlink" title="SQL Injection - Stored (XML)"></a>SQL Injection - Stored (XML)</h1>
@@ -126,7 +124,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
 <p>就弹窗了</p>
-<h1 id="XSS-Reflected-POST"><a href="#XSS-Reflected-POST" class="headerlink" title="XSS - Reflected (POST)"></a>XSS - Reflected (POST)</h1><p>和上一关payload一样，知识换了get和post的提交方式而已</p>
+<h1 id="XSS-Reflected-POST"><a href="#XSS-Reflected-POST" class="headerlink" title="XSS - Reflected (POST)"></a>XSS - Reflected (POST)</h1><p>和上一关payload一样，只是换了get和post的提交方式而已</p>
 <h1 id="XSS-Reflected-JSON"><a href="#XSS-Reflected-JSON" class="headerlink" title="XSS - Reflected (JSON)"></a>XSS - Reflected (JSON)</h1><p>我们随便输入一个字符“a”，查看页面源代码：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">var JSONResponseString = &#x27;&#123;&quot;movies&quot;:[&#123;&quot;response&quot;:&quot;a??? Sorry, we don&amp;#039;t have that movie :(&quot;&#125;]&#125;&#x27;;<br></code></pre></td></tr></table></figure>
 
@@ -171,7 +169,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>实现原理：通过数据库报错将payload回显，从而触发xss</p>
 <h1 id="phpMyAdmin-BBCode-Tag-XSS"><a href="#phpMyAdmin-BBCode-Tag-XSS" class="headerlink" title="phpMyAdmin BBCode Tag XSS"></a>phpMyAdmin BBCode Tag XSS</h1><p>CVE，且需要bee box，看wt吧</p>
 <h1 id="XSS-Reflected-PHP-SELF"><a href="#XSS-Reflected-PHP-SELF" class="headerlink" title="XSS - Reflected (PHP_SELF)"></a>XSS - Reflected (PHP_SELF)</h1><p>同XSS - Reflected (GET)</p>
-<h1 id="XSS-Reflected-Referer"><a href="#XSS-Reflected-Referer" class="headerlink" title="XSS - Reflected (Referer)"></a>XSS - Reflected (Referer)</h1><p>referer注入，把payload放到referer里面就可以了，上一关的payload放到ua即可，因为页面展示出来了当前用户的referer：</p>
+<h1 id="XSS-Reflected-Referer"><a href="#XSS-Reflected-Referer" class="headerlink" title="XSS - Reflected (Referer)"></a>XSS - Reflected (Referer)</h1><p>referer注入，把payload放到referer里面就可以了，上一关的payload放到referer即可，因为页面展示出来了当前用户的referer：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
 <h1 id="XSS-Reflected-User-Agent"><a href="#XSS-Reflected-User-Agent" class="headerlink" title="XSS - Reflected (User-Agent)"></a>XSS - Reflected (User-Agent)</h1><p>上一关的payload放到ua即可，因为页面展示出来了当前用户的ua</p>

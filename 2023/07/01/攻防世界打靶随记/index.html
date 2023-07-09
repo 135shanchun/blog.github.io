@@ -17,21 +17,19 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 }</style><style>:root {
   --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
   --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>攻防世界打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-01T01:50:29.000Z" id="date"> 2023-07-01</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-01T01:51:35.451Z" id="updated"> 2023-07-01</time></div></span></div></div><hr><div id="post-content"><h1 id="1-Sql-inject"><a href="#1-Sql-inject" class="headerlink" title="1 Sql-inject"></a>1 Sql-inject</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://61.147.171.105:61115/?inject=1<br></code></pre></td></tr></table></figure>
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>攻防世界打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-01T01:50:29.000Z" id="date"> 2023-07-01</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-09T02:41:55.075Z" id="updated"> 2023-07-09</time></div></span></div></div><hr><div id="post-content"><h1 id="1-Sql-inject"><a href="#1-Sql-inject" class="headerlink" title="1 Sql-inject"></a>1 Sql-inject</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">http://61.147.171.105:61115/?inject=1<br></code></pre></td></tr></table></figure>
 <p>判断闭合————&gt;单引号<br>构造payload：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">union select 1,2<br></code></pre></td></tr></table></figure>
 <p>发现被过滤了，界面返回：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">return preg_match(&quot;/select|update|delete|drop|insert|where|\./i&quot;,$inject);<br></code></pre></td></tr></table></figure>
 <p>就是说他的正则匹配到了我们的语句，<br>尝试大小写绕过，，失败<br>复写过滤字符绕过，，失败<br>但是他没有过滤我们的“show”啊！<br>这个payload是可用的,结合堆叠注入可以构造出：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;;show databases --+<br>&#x27;;show tables from supersqli --+<br>&#x27;;show columns from words --+<br></code></pre></td></tr></table></figure>
-<p>最后一段查内容我还是无奈看了一下别人的writeup</p>
+<p>最后一段查内容不会无奈看了一下writeup</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">; alter table words rename to words1;alter table `1919810931114514` rename to words;alter table words change flag id varchar(50); #<br></code></pre></td></tr></table></figure>
-<p>也就是将这两个表换了个名字，<br>但是我们原来的查询语句是在1145141919180这个表里面查询的，<br>现在查询的还是这个名字的表，但是内容却是含有flag的那个表，<br>最后只需要构造万能密码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1&#x27; or 1=1 #<br></code></pre></td></tr></table></figure>
-<p>即出现flag</p>
+<p>也就是将这两个表换了个名字，<br>但是我们原来的查询语句是在1145141919180这个表里面查询的，<br>现在查询的还是这个名字的表，但是内容却是含有flag的那个表</p>
 <h1 id="2-Sql-inject2"><a href="#2-Sql-inject2" class="headerlink" title="2 Sql-inject2"></a>2 Sql-inject2</h1><p>这是一道post注入的题目，尝试万能密码失败，<br>抓包看到有个注释：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-comment">&lt;!-- use.php --&gt;</span><br></code></pre></td></tr></table></figure>
-<p>好家伙这也太隐晦了吧<br>然后让他去访问那个原来的url<br>回显：nonono<br>被嘲讽了c<br>但是做不出来就是做不出来。。。<br>后面的盲注内容我就不写了，去看write up吧</p>
+<p>然后让他去访问那个原来的url<br>回显：nonono<br>被嘲讽了c<br>后面的内容似乎涉及到了ssrf我就不写了，去看write up吧</p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/xulei1132562/article/details/126541635">https://blog.csdn.net/xulei1132562/article/details/126541635</a></p>
 </blockquote>
@@ -66,11 +64,9 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 
 
-<p>到这里就知道是flag了，dump内容，不浪费时间了</p>
+<p>之后的就不记录了</p>
 <hr>
-<p>看了以下wt。。。。。原来是可以直接最普通的注入的。。。。。。。</p>
-<p>而且表名也不是上面的flag。。。。。。。。。。。</p>
-<p>mdc浪费我这么长时间</p>
+<p>看了以下wt。。。。。原来是可以直接最普通的union注入的。。。。。。。</p>
 
 
 
@@ -138,12 +134,12 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 
 <p>那就是出现了文件名后缀的过滤并且不给出返回值，此时可以尝试上传.htaccess来指定php解析。</p>
-<p>但是，重新访问后还是没有出现这个文件，猜测，只能上传图片后缀的文件。那么我们可以上传shell.png.php试试看，是不是有白名单，但是还是上传失败了。</p>
+<p>但是，重新访问后还是没有出现这个文件，猜测，只能上传图片后缀的文件。那么我们可以上传shell.png.php试试看，是不是有白名单，但是还是上传失败了。。。？？</p>
 <hr>
 <p>看了下writeup，原来是条件竞争上传</p>
 
 
-<p>然后</p>
+<p>然后再这样：</p>
 
 
 <p>这题好难</p>

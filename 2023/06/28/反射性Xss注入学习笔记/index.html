@@ -17,12 +17,12 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 }</style><style>:root {
   --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
   --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>反射性Xss注入学习笔记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-28T08:19:48.000Z" id="date"> 2023-06-28</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-04T10:09:36.339Z" id="updated"> 2023-07-04</time></div></span></div></div><hr><div id="post-content"><p>这篇文章是反射性xss认识以及xss-lab实操打靶</p>
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>反射性Xss注入学习笔记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-28T08:19:48.000Z" id="date"> 2023-06-28</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-09T02:34:41.182Z" id="updated"> 2023-07-09</time></div></span></div></div><hr><div id="post-content"><p>这篇文章是反射性xss认识以及xss-lab实操打靶</p>
 <span id="more"></span>
 
 <p>首先这个学习笔记来源于合天网安的公开课：</p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1hY411a7P5">https://www.bilibili.com/video/BV1hY411a7P5</a></p>
-<p>然后这篇笔记是第3，4p，反射性xss的讲解。</p>
+<p>然后这篇笔记是第3，4p，反射型xss的讲解</p>
 <h1 id="原理概述"><a href="#原理概述" class="headerlink" title="原理概述"></a>原理概述</h1>
 
 <h1 id="注入语句"><a href="#注入语句" class="headerlink" title="注入语句"></a>注入语句</h1><ol>
@@ -32,7 +32,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>拓展：</p>
 
 </li>
-<li><p><code>&lt;onclick&gt;=prompt(1)</code>  </p>
+<li><p><code>&lt;onclick=prompt(1)&gt;</code>  </p>
 </li>
 <li><p><code>&#39; onfocus=javascript:alert() &#39;</code></p>
 </li>
@@ -43,9 +43,10 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 </ol>
 <p>更多：<a target="_blank" rel="noopener" href="https://blog.csdn.net/LYJ20010728/article/details/116462782">https://blog.csdn.net/LYJ20010728/article/details/116462782</a></p>
 <h1 id="函数、语句介绍"><a href="#函数、语句介绍" class="headerlink" title="函数、语句介绍"></a>函数、语句介绍</h1><ul>
-<li><code>eval()</code> 同python的eval，bypass之神，将字符串作为代码执行</li>
+<li><code>eval()</code> 同python的eval()，bypass之神，将字符串作为代码执行</li>
 <li><code>String.fromCharCode()</code> 传入字符串的ASCII值，将其转换成字符串</li>
 <li><code>document.cookie</code> 获取用户的cookie</li>
+<li>获取更多的信息可以使用跨站脚本注入接收平台，如xsser、蓝莲花等。。。个人推荐蓝莲花</li>
 </ul>
 <h1 id="实操-xss-labs"><a href="#实操-xss-labs" class="headerlink" title="实操 xss-labs"></a>实操 xss-labs</h1><h2 id="Less1"><a href="#Less1" class="headerlink" title="Less1"></a>Less1</h2><p>这一关非常简单，直接就是构造最简单的payload：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -64,7 +65,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>但是在页面中有两个可以注入的地方：第18行和第20行，为什么偏偏选择第20行呢？查看源代码便可以找到解释</p>
 
 
-<p>函数htmlspecialchars的作用是将所有特殊的符号进行转义，让他不做为html元素被读取。因此第18行的注入点不可以被利用，但是第20行的没有做任何过滤，因此选择第20行注入</p>
+<p>函数htmlspecialchars的作用是将所有特殊的符号（其实就是两个尖括号）进行转义，让他不做为html元素被读取。因此第18行的注入点不可以被利用，但是第20行的没有做任何过滤，因此选择第20行注入</p>
 <h2 id="Less3"><a href="#Less3" class="headerlink" title="Less3"></a>Less3</h2><p>这一关第一眼看上去和上面一关的唯一区别就是第17行的源代码换成了单引号，其他的几乎没有变化，那我们尝试用上一关的payload，只修改一个单引号：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">&#x27;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>&lt;&#x27;<br></code></pre></td></tr></table></figure>
 
@@ -84,8 +85,6 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <li>两个单引号之间需要有空格，不可以写成</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&#x27;onfocus=javascript:alert()&#x27;<br></code></pre></td></tr></table></figure>
-
-
 
 <h2 id="Less4"><a href="#Less4" class="headerlink" title="Less4"></a>Less4</h2>
 
@@ -127,7 +126,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>注释：strpos() 函数对大小写敏感。</p>
 <p>注释：该函数是二进制安全的。</p>
 </blockquote>
-<p>就是判断http是否在我们的注入语句中，那绕过很简单，在注释里面加上http这个字符串就好了，payload：</p>
+<p>就是判断http是否在我们的注入语句中，那绕过很简单，在注释里面加上http这个字符串就好了：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#41;/* http:// */<br></code></pre></td></tr></table></figure>
 
 <p>注意注释就不用编码了，不然程序找不到这一串字符串还是会拦截 </p>
@@ -150,7 +149,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <h2 id="Less12"><a href="#Less12" class="headerlink" title="Less12"></a>Less12</h2><p>将上一关的payload从referer中放到ua头即可</p>
 <h2 id="Less13"><a href="#Less13" class="headerlink" title="Less13"></a>Less13</h2>
 
-<p>这一关的主要绕过实在cookie里面，所以我们将上一关的payload放到cookie里面即可</p>
+<p>这一关的主要绕过是在cookie里面，所以我们将上一关的payload放到cookie里面即可</p>
 <p>注意，不要将cookie里面的user&#x3D;删了，不然程序接受不到参数</p>
 <h2 id="Less14"><a href="#Less14" class="headerlink" title="Less14"></a>Less14</h2><p>这一关演示不了，会自动跳转，但是自动跳转的网站无了，具体的见下：</p>
 

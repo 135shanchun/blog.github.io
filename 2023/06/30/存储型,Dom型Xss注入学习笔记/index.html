@@ -1,53 +1,246 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>存储型,Dom型Xss注入学习笔记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>存储型,Dom型Xss注入学习笔记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-30T02:03:59.000Z" id="date"> 2023-06-30</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-09T02:30:45.715Z" id="updated"> 2023-07-09</time></div></span></div></div><hr><div id="post-content"><p>这篇文章是存储型和DOM型xss学习以及实操打靶</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>存储型,Dom型Xss注入学习笔记 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这篇文章是存储型和DOM型xss学习以及实操打靶">
+<meta property="og:type" content="article">
+<meta property="og:title" content="存储型,Dom型Xss注入学习笔记">
+<meta property="og:url" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:description" content="这篇文章是存储型和DOM型xss学习以及实操打靶">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/6.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/7.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/8.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/9.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/10.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/11.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/12.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/13.png">
+<meta property="article:published_time" content="2023-06-30T02:03:59.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:38:16.359Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="xss">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://handsome-vincent.space/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-存储型,Dom型Xss注入学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
+  	<time datetime="2023-06-30T02:03:59.000Z" itemprop="datePublished">2023-06-30</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      存储型,Dom型Xss注入学习笔记
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xss/" rel="tag">xss</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Note/">Note</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇文章是存储型和DOM型xss学习以及实操打靶</p>
 <span id="more"></span>
 
 <p>首先这个学习笔记来源于合天网安的公开课：</p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1hY411a7P5">https://www.bilibili.com/video/BV1hY411a7P5</a></p>
 <p>然后这篇笔记是第5，6p，存储型xss的讲解。</p>
 <h1 id="存储型-原理-amp-利用场景"><a href="#存储型-原理-amp-利用场景" class="headerlink" title="存储型 - 原理 &amp; 利用场景"></a>存储型 - 原理 &amp; 利用场景</h1><p>原理：</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png" class="">
 
 <p>利用场景：</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png" class="">
 
 <p>一般是和数据库有交互的场景下，存入的时候对页面和数据库没有影响，但是在显示输出的时候被浏览器当成的页面元素，执行了xss语句</p>
 <h1 id="存储型-打靶实操"><a href="#存储型-打靶实操" class="headerlink" title="存储型 - 打靶实操"></a>存储型 - 打靶实操</h1><p>偌大的互联网找了一圈，最后发现他就静静的躺在我的pikachu和DVWA靶场里面。。</p>
-<h2 id="Pikachu"><a href="#Pikachu" class="headerlink" title="Pikachu"></a>Pikachu</h2>
+<h2 id="Pikachu"><a href="#Pikachu" class="headerlink" title="Pikachu"></a>Pikachu</h2><img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png" class="">
 
 <p>这是一个留言板，典型的存储型xss利用场景（这个是sql注入那一关insert&#x2F;delete注入的留言板，之前的留言都还在🤣）</p>
 <p>我们输入test后查看页面源代码：</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.png" class="">
 
 <p>不需要考虑闭合直接构造最简单的payload：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;xss&#x27;</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png" class="">
 
 <p>成功注入，网页源代码中将其成功解释为了html标签</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&#x27;con&#x27;</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;xss&#x27;</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&#x27;xss_stored.php?id=68&#x27;</span>&gt;</span>删除<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
 <p>之后无论怎么刷新都是一样会弹窗的，可以看出这就是一个存储型的xss</p>
 <h2 id="DVWA"><a href="#DVWA" class="headerlink" title="DVWA"></a>DVWA</h2><h3 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h3><p>应该和上面的pikachu的是一样的</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/6.png" class="">
 
 <h3 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h3><p>上面一关的payload用不了了，单引号被转义了，script标签被删除了：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;guestbook_comments&quot;</span>&gt;</span>Name: Vincent<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>Message: alert(\&#x27;xss\&#x27;)<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -60,7 +253,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>也就是说我们不能使用尖括号，且他对大小写不敏感….这，，怎么绕过？</p>
 <p>看一下源码：</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/7.png" class="">
 
 <p>好家伙，各种过滤</p>
 <ul>
@@ -89,21 +282,21 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>  这个的影响最大，但是他只过滤一次，可以尝试复写过滤字符串（name处）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;scr&lt;script&gt;ipt&gt;alert(1)&lt;/scri&lt;script&gt;pt&gt;<br></code></pre></td></tr></table></figure>
 
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/8.png" class="">
 
 <p>注意在注入前要在前端修改maxlength</p>
 <h3 id="High"><a href="#High" class="headerlink" title="High"></a>High</h3><p>使用上一关的payload，过滤后只剩下了一个尖括号</p>
 <p>查看源码</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/9.png" class="">
 
 <p>这一关在script这上面肯定做不了手脚了，复写、大小写都不行，但是我们可以使用其他的标签啊！a href 、 img src等</p>
 <p>payload：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;img src=114514 onerror=alert(1)&gt;<br></code></pre></td></tr></table></figure>
 
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/10.png" class="">
 
 <p>成功弹窗</p>
-<h1 id="DOM型-原理-amp-利用场景"><a href="#DOM型-原理-amp-利用场景" class="headerlink" title="DOM型 - 原理 &amp; 利用场景"></a>DOM型 - 原理 &amp; 利用场景</h1>
+<h1 id="DOM型-原理-amp-利用场景"><a href="#DOM型-原理-amp-利用场景" class="headerlink" title="DOM型 - 原理 &amp; 利用场景"></a>DOM型 - 原理 &amp; 利用场景</h1><img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/11.png" class="">
 
 <p>这个给我的理解就是前端的，前端的东西都是纸老虎，因此绕过方式应该会简单很多</p>
 <h1 id="存储型-打靶实操-1"><a href="#存储型-打靶实操-1" class="headerlink" title="存储型 - 打靶实操"></a>存储型 - 打靶实操</h1><h2 id="DVWA-1"><a href="#DVWA-1" class="headerlink" title="DVWA"></a>DVWA</h2><h3 id="Low-1"><a href="#Low-1" class="headerlink" title="Low"></a>Low</h3><p>直接在url的default中写入最简单的注入payload：</p>
@@ -111,37 +304,90 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>成功弹窗</p>
 <h3 id="Medium-1"><a href="#Medium-1" class="headerlink" title="Medium"></a>Medium</h3><p>上一关的payload被过滤了，f12仔细查看</p>
-
+<img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/12.png" class="">
 
 <p>原来这一关需要闭合前面和后面的内容</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;/option&gt;&lt;/select&gt;&lt;img src=x onerror=alert(1)&gt;<br></code></pre></td></tr></table></figure>
 
-<h3 id="High-1"><a href="#High-1" class="headerlink" title="High"></a>High</h3>
+<h3 id="High-1"><a href="#High-1" class="headerlink" title="High"></a>High</h3><img src="/2023/06/30/%E5%AD%98%E5%82%A8%E5%9E%8B,Dom%E5%9E%8BXss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/13.png" class="">
 
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">English&amp;&lt;script&gt;alert(123)&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
 <hr>
 <p>打靶暂时先到这里，之后有靶场可能随缘记录</p>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/30/BWAPP%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next BWAPP打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/28/%E5%8F%8D%E5%B0%84%E6%80%A7Xss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">反射性Xss注入学习笔记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8B-%E5%8E%9F%E7%90%86-amp-%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">存储型 - 原理 &amp; 利用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8B-%E6%89%93%E9%9D%B6%E5%AE%9E%E6%93%8D"><span class="toc-number">2.</span> <span class="toc-text">存储型 - 打靶实操</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Pikachu"><span class="toc-number">2.1.</span> <span class="toc-text">Pikachu</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DVWA"><span class="toc-number">2.2.</span> <span class="toc-text">DVWA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Low"><span class="toc-number">2.2.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Medium"><span class="toc-number">2.2.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#High"><span class="toc-number">2.2.3.</span> <span class="toc-text">High</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DOM%E5%9E%8B-%E5%8E%9F%E7%90%86-amp-%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">3.</span> <span class="toc-text">DOM型 - 原理 &amp; 利用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8B-%E6%89%93%E9%9D%B6%E5%AE%9E%E6%93%8D-1"><span class="toc-number">4.</span> <span class="toc-text">存储型 - 打靶实操</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DVWA-1"><span class="toc-number">4.1.</span> <span class="toc-text">DVWA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Low-1"><span class="toc-number">4.1.1.</span> <span class="toc-text">Low</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Medium-1"><span class="toc-number">4.1.2.</span> <span class="toc-text">Medium</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#High-1"><span class="toc-number">4.1.3.</span> <span class="toc-text">High</span></a></li></ol></li></ol></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/06/30/BWAPP%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          BWAPP打靶随记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/06/28/%E5%8F%8D%E5%B0%84%E6%80%A7Xss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">反射性Xss注入学习笔记</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

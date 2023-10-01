@@ -1,23 +1,205 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PortSwigger打靶随记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PortSwigger打靶随记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-07-11T04:58:22.000Z" id="date"> 2023-07-11</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-22T09:04:41.939Z" id="updated"> 2023-07-22</time></div></span></div></div><hr><div id="post-content"><p>这篇文章来打burp官方提供的portswigger的部分靶场</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PortSwigger打靶随记 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这篇文章来打burp官方提供的portswigger的部分靶场">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PortSwigger打靶随记">
+<meta property="og:url" content="http://handsome-vincent.space/2023/07/11/PortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:description" content="这篇文章来打burp官方提供的portswigger的部分靶场">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://handsome-vincent.space/pic%5CPortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/1.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic%5CPortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/2.png">
+<meta property="article:published_time" content="2023-07-11T04:58:22.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:39:25.994Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="sql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://handsome-vincent.space/pic%5CPortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-PortSwigger打靶随记" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/07/11/PortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" class="article-date">
+  	<time datetime="2023-07-11T04:58:22.000Z" itemprop="datePublished">2023-07-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PortSwigger打靶随记
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sql/" rel="tag">sql</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Web/">Web</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇文章来打burp官方提供的portswigger的部分靶场</p>
 <span id="more"></span>
 
 <h1 id="postgresql注入"><a href="#postgresql注入" class="headerlink" title="postgresql注入"></a>postgresql注入</h1><p>点进去是商品订购界面，随便点进去一个，查看url：</p>
@@ -38,7 +220,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <li><p>尝试联合查询获取回显点，，失败，尝试报错注入，，还是失败，，尝试布尔盲注</p>
 <p>这个倒是成功了，有不同的页面</p>
 <p>但是布尔盲注过于麻烦，这里不记录了，这里尝试新的注入方法：sqlmap万能注入😏</p>
-<p class='item-img' data-src='/1.png'><img src="/1.png"></p>
+<p><img src="/./pic%5CPortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/1.png"></p>
 </li>
 </ol>
 <p>原来是postgresql数据库类型，暂时退下sqlmap，看着上次梳理的文章实操一下吧</p>
@@ -64,7 +246,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs postgresql">?category=Accessories<span class="hljs-string">&#x27; union all select null,&#x27;</span>null1<span class="hljs-string">&#x27;,price||&#x27;</span>::<span class="hljs-string">&#x27;||name,null,null,&#x27;</span>null3<span class="hljs-string">&#x27;,null,&#x27;</span>null4<span class="hljs-string">&#x27; from public.products--+</span><br></code></pre></td></tr></table></figure>
 
 <p>这里就只挑选两列的内容吧，成功dump全部：</p>
-<p class='item-img' data-src='/2.png'><img src="/2.png"></p>
+<p><img src="/./pic%5CPortSwigger%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/2.png"></p>
 <p>成功！完美</p>
 <p>这一次的主要关键点是对于数据库类型的判断，需要借助sqlmap来判断数据库类型以进行注入语句的选择</p>
 <h1 id="登录框sql注入绕过"><a href="#登录框sql注入绕过" class="headerlink" title="登录框sql注入绕过"></a>登录框sql注入绕过</h1><p>相比前面一关，这一关似乎没有了category的这个选项，也就是说我们需要从其他地方找注入点</p>
@@ -183,26 +365,79 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>这篇文章仅仅只是记录了sql注入的部分，剩下的靶场都已经在其他的靶场学习过便不记录了</p>
 <p>这篇文章的主要内容就是MySQL之外的数据库类型的基本注入语句，给未来的我或为数不多的读者一个参考！</p>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/07/28/XXE%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">← Next XXE注入学习笔记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/07/05/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/">各种数据库类型sql注入 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#postgresql%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">postgresql注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E6%A1%86sql%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">登录框sql注入绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#orancle%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">orancle注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">mysql注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#postgresql%E6%B3%A8%E5%85%A52"><span class="toc-number">5.</span> <span class="toc-text">postgresql注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#orancle%E6%B3%A8%E5%85%A52"><span class="toc-number">6.</span> <span class="toc-text">orancle注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5"><span class="toc-number">7.</span> <span class="toc-text">sql联合注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A52"><span class="toc-number">8.</span> <span class="toc-text">sql联合注入2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A53"><span class="toc-number">9.</span> <span class="toc-text">sql联合注入3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A54"><span class="toc-number">10.</span> <span class="toc-text">sql联合注入4</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E7%9B%B2%E6%B3%A8"><span class="toc-number">11.</span> <span class="toc-text">sql盲注</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">12.</span> <span class="toc-text">sql报错注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">13.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/07/28/XXE%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          XXE注入学习笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/07/05/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8Bsql%E6%B3%A8%E5%85%A5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">各种数据库类型sql注入</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

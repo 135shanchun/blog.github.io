@@ -1,23 +1,204 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>正则表达式学习笔记 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>正则表达式学习笔记</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-24T06:16:59.000Z" id="date"> 2023-06-24</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-06-24T08:19:47.655Z" id="updated"> 2023-06-24</time></div></span></div></div><hr><div id="post-content"><h1 id="匹配零次或一次字符出现"><a href="#匹配零次或一次字符出现" class="headerlink" title="? 匹配零次或一次字符出现"></a>? 匹配零次或一次字符出现</h1><p>出现0次或者1次，可有可无</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>正则表达式学习笔记 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="正则表达式学习笔记">
+<meta property="og:url" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png">
+<meta property="article:published_time" content="2023-06-24T06:16:59.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:58:06.593Z">
+<meta property="article:author" content="Vincent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://handsome-vincent.space/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-正则表达式学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
+  	<time datetime="2023-06-24T06:16:59.000Z" itemprop="datePublished">2023-06-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      正则表达式学习笔记
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Note/">Note</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!---->
+<span id="more"></span>
+
+<h1 id="匹配零次或一次字符出现"><a href="#匹配零次或一次字符出现" class="headerlink" title="? 匹配零次或一次字符出现"></a>? 匹配零次或一次字符出现</h1><p>出现0次或者1次，可有可无</p>
 <p>例如我的表达式是这样的：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">hello?world<br></code></pre></td></tr></table></figure>
 
@@ -65,15 +246,15 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">a cat<br>a dog<br>a bird<br></code></pre></td></tr></table></figure>
 
 <h1 id="匹配其中含有指定字符的字符"><a href="#匹配其中含有指定字符的字符" class="headerlink" title="[] 匹配其中含有指定字符的字符"></a>[] 匹配其中含有指定字符的字符</h1><p>听着很绕口，想起来也很费劲，但是看个例子就不迷糊了</p>
-
+<img src="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png" class="">
 
 <p>意思就是说：只要这个字符在括号内，那只要你出现在了我要匹配的字符里面，我就给你匹配上，不论顺序</p>
-<h1 id="指定字符匹配字符的范围"><a href="#指定字符匹配字符的范围" class="headerlink" title="- 指定字符匹配字符的范围"></a>- 指定字符匹配字符的范围</h1>
+<h1 id="指定字符匹配字符的范围"><a href="#指定字符匹配字符的范围" class="headerlink" title="- 指定字符匹配字符的范围"></a>- 指定字符匹配字符的范围</h1><img src="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png" class="">
 
 <p>就是匹配所有的小写字母</p>
 <p>同样可以写：[a-zA-Z0-9]</p>
 <p>来匹配全部非符号字符</p>
-<h1 id="匹配除指定字符以外的所有字符"><a href="#匹配除指定字符以外的所有字符" class="headerlink" title="^ 匹配除指定字符以外的所有字符"></a>^ 匹配除指定字符以外的所有字符</h1>
+<h1 id="匹配除指定字符以外的所有字符"><a href="#匹配除指定字符以外的所有字符" class="headerlink" title="^ 匹配除指定字符以外的所有字符"></a>^ 匹配除指定字符以外的所有字符</h1><img src="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png" class="">
 
 <p>正好与前面那个例子相反</p>
 <h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><ol>
@@ -119,7 +300,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>测试成功，但是我们可以在最后添加一个\b</p>
 <p>这样就不会在后面有垃圾字符了</p>
-
+<img src="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png" class="">
 
 <p>我愿将其理解为一个老鼠屎坏了一锅粥😁😁😁</p>
 <h2 id="IPV4地址匹配"><a href="#IPV4地址匹配" class="headerlink" title="IPV4地址匹配"></a>IPV4地址匹配</h2><p>ipv4的特征：</p>
@@ -139,32 +320,85 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 </ol>
 <p>那么开始构造语句吧：：：：：：：：还是不会。</p>
 <p>放弃😡😡😡</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><img src="/2023/06/24/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png" class="">
 
 
 <blockquote>
 <p> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1da4y1p7iZ/?spm_id_from=333.337.search-card.all.click&vd_source=1c43bcf31e4abf33f3960dd414786c92">10分钟快速掌握正则表达式</a></p>
 </blockquote>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/28/%E5%8F%8D%E5%B0%84%E6%80%A7Xss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">← Next 反射性Xss注入学习笔记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/23/Upload-Lab%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">Upload-Lab打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%9B%B6%E6%AC%A1%E6%88%96%E4%B8%80%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">? 匹配零次或一次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%9B%B6%E6%AC%A1%E6%88%96%E5%A4%9A%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">* 匹配零次或多次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E4%B8%80%E6%AC%A1%E6%88%96%E5%A4%9A%E6%AC%A1%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">+ 匹配一次或多次字符出现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E5%87%BA%E7%8E%B0%E6%AC%A1%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">{}  匹配指定字符出现次数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%A4%9A%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-number">5.</span> <span class="toc-text">()  匹配多个字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%85%B6%E4%B8%AD%E4%B8%80%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-number">6.</span> <span class="toc-text">|  匹配其中一个字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%85%B6%E4%B8%AD%E5%90%AB%E6%9C%89%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E7%9A%84%E5%AD%97%E7%AC%A6"><span class="toc-number">7.</span> <span class="toc-text">[] 匹配其中含有指定字符的字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E5%8C%B9%E9%85%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="toc-number">8.</span> <span class="toc-text">- 指定字符匹配字符的范围</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E9%99%A4%E6%8C%87%E5%AE%9A%E5%AD%97%E7%AC%A6%E4%BB%A5%E5%A4%96%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%97%E7%AC%A6"><span class="toc-number">9.</span> <span class="toc-text">^ 匹配除指定字符以外的所有字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%83%E5%AD%97%E7%AC%A6"><span class="toc-number">10.</span> <span class="toc-text">元字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E4%BB%BB%E6%84%8F%E9%9D%9E%E6%8D%A2%E8%A1%8C%E5%AD%97%E7%AC%A6"><span class="toc-number">11.</span> <span class="toc-text">.  匹配任意非换行字符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A"><span class="toc-number">12.</span> <span class="toc-text">特殊</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B4%AA%E5%BF%83%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%87%92%E6%83%B0%E6%A8%A1%E5%BC%8F"><span class="toc-number">13.</span> <span class="toc-text">贪心模式与懒惰模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">14.</span> <span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RGB%E9%A2%9C%E8%89%B2%E5%8C%B9%E9%85%8D"><span class="toc-number">14.1.</span> <span class="toc-text">RGB颜色匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPV4%E5%9C%B0%E5%9D%80%E5%8C%B9%E9%85%8D"><span class="toc-number">14.2.</span> <span class="toc-text">IPV4地址匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95-%E9%82%AE%E7%AE%B1%E5%8C%B9%E9%85%8D"><span class="toc-number">14.3.</span> <span class="toc-text">拓展-邮箱匹配</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">15.</span> <span class="toc-text">总结</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/06/28/%E5%8F%8D%E5%B0%84%E6%80%A7Xss%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          反射性Xss注入学习笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/06/23/Upload-Lab%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Upload-Lab打靶随记</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

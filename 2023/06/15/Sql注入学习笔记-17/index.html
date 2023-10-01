@@ -1,23 +1,202 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sql注入学习笔记#17 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Sql注入学习笔记#17</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-06-15T10:48:39.000Z" id="date"> 2023-06-15</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-06-22T00:38:10.973Z" id="updated"> 2023-06-22</time></div></span></div></div><hr><div id="post-content"><p>这篇文章是一些函数、语句学习</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Sql注入学习笔记#17 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这篇文章是一些函数、语句学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sql注入学习笔记#17">
+<meta property="og:url" content="http://handsome-vincent.space/2023/06/15/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-17/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:description" content="这篇文章是一些函数、语句学习">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-06-15T10:48:39.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:41:27.368Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="sql">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-Sql注入学习笔记-17" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/06/15/Sql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-17/" class="article-date">
+  	<time datetime="2023-06-15T10:48:39.000Z" itemprop="datePublished">2023-06-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Sql注入学习笔记#17
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sql/" rel="tag">sql</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/SQL-Study/">SQL_Study</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇文章是一些函数、语句学习</p>
 <span id="more"></span>
 
 <h1 id="cast函数"><a href="#cast函数" class="headerlink" title="cast函数"></a>cast函数</h1><p><code>CAST()</code> 函数是 MySQL 中一种类型转换函数，用于将一个数据类型转换为另一个数据类型。该函数通常可以用于针对某些列或变量进行特定的计算或操作，需要将其转换成特定的数据类型才能完成。下面是 <code>CAST()</code> 函数的基本语法：</p>
@@ -659,26 +838,79 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>这篇文章会持续更新，</p>
 <p>介绍所有我后面认识到的函数以及语法，</p>
 <p>但是很多易于理解的就不记录了</p>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/06/16/sql-labs%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">← Next sql-labs打靶随记</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/06/11/%E6%8E%8C%E6%8E%A7%E5%AE%89%E5%85%A8%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/">掌控安全打靶随记 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cast%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">cast函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ifnull%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">ifnull函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#union-all-select-%E8%AF%AD%E5%8F%A5"><span class="toc-number">3.</span> <span class="toc-text">union all select 语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#strcmp%E5%87%BD%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">strcmp函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E8%BF%90%E7%AE%97"><span class="toc-number">5.</span> <span class="toc-text">各种运算</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-%E2%80%9D-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%8B%E6%8C%89%E4%BD%8D%E6%88%96"><span class="toc-number">5.1.</span> <span class="toc-text">“|” 二进制下按位或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-amp-%E2%80%9D-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%8B%E6%8C%89%E4%BD%8D%E6%88%96"><span class="toc-number">5.2.</span> <span class="toc-text">“&amp;” 二进制下按位或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-%E2%80%9D-%E5%BC%82%E6%88%96"><span class="toc-number">5.3.</span> <span class="toc-text">“^” 异或</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C-gt-gt-%E2%80%9D-%E5%92%8C-%E2%80%9C-lt-lt-%E2%80%9D-%E4%BD%8D%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">5.4.</span> <span class="toc-text">“&gt;&gt;”   和   “&lt;&lt;” 位运算符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LIKE-%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">5.5.</span> <span class="toc-text">LIKE 模糊匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#REGEXP-%E6%88%96-RLIKE-%E6%AD%A3%E5%88%99%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="toc-number">5.6.</span> <span class="toc-text">REGEXP 或 RLIKE 正则式匹配</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HAVING-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">6.</span> <span class="toc-text">HAVING 关键字</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#conv%E5%87%BD%E6%95%B0"><span class="toc-number">7.</span> <span class="toc-text">conv函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lpad%E5%87%BD%E6%95%B0"><span class="toc-number">8.</span> <span class="toc-text">lpad函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#elt%E5%87%BD%E6%95%B0"><span class="toc-number">9.</span> <span class="toc-text">elt函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#field%E5%87%BD%E6%95%B0"><span class="toc-number">10.</span> <span class="toc-text">field函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#benchmark%E5%87%BD%E6%95%B0"><span class="toc-number">11.</span> <span class="toc-text">benchmark函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#get-lock%E5%87%BD%E6%95%B0"><span class="toc-number">12.</span> <span class="toc-text">get_lock函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">12.0.1.</span> <span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="toc-number">12.0.2.</span> <span class="toc-text">参数说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">12.0.3.</span> <span class="toc-text">返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">12.0.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">12.0.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#release-lock%E5%87%BD%E6%95%B0"><span class="toc-number">13.</span> <span class="toc-text">release_lock函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95-1"><span class="toc-number">13.0.1.</span> <span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-1"><span class="toc-number">13.0.2.</span> <span class="toc-text">参数说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E5%80%BC-1"><span class="toc-number">13.0.3.</span> <span class="toc-text">返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">13.0.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="toc-number">13.0.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#analyse%E5%87%BD%E6%95%B0"><span class="toc-number">14.</span> <span class="toc-text">analyse函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#from-%E2%80%A6-for-%E2%80%A6%E8%AF%AD%E5%8F%A5"><span class="toc-number">15.</span> <span class="toc-text">from … for …语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#limit-offset%E8%AF%AD%E5%8F%A5"><span class="toc-number">16.</span> <span class="toc-text">limit..offset语句</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pi%E5%87%BD%E6%95%B0"><span class="toc-number">17.</span> <span class="toc-text">pi函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pow%E5%87%BD%E6%95%B0"><span class="toc-number">18.</span> <span class="toc-text">pow函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#char%E5%87%BD%E6%95%B0"><span class="toc-number">19.</span> <span class="toc-text">char函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#locate%E5%87%BD%E6%95%B0"><span class="toc-number">20.</span> <span class="toc-text">locate函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#celi%E5%87%BD%E6%95%B0"><span class="toc-number">21.</span> <span class="toc-text">celi函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">22.</span> <span class="toc-text">最后</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/06/16/sql-labs%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          sql-labs打靶随记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/06/11/%E6%8E%8C%E6%8E%A7%E5%AE%89%E5%85%A8%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">掌控安全打靶随记</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

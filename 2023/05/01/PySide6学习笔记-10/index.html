@@ -1,23 +1,208 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PySide6学习笔记#10 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>PySide6学习笔记#10</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-05-01T02:48:49.000Z" id="date"> 2023-05-01</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-06-25T05:08:22.454Z" id="updated"> 2023-06-25</time></div></span></div></div><hr><div id="post-content"><p>今天讲MessageBox，</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PySide6学习笔记#10 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天讲MessageBox， 并且我来扩展3种其他的弹窗方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PySide6学习笔记#10">
+<meta property="og:url" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:description" content="今天讲MessageBox， 并且我来扩展3种其他的弹窗方式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/1.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/2.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/4.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/3.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/5.png">
+<meta property="article:published_time" content="2023-05-01T02:48:49.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:39:54.530Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://handsome-vincent.space/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-PySide6学习笔记-10" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/" class="article-date">
+  	<time datetime="2023-05-01T02:48:49.000Z" itemprop="datePublished">2023-05-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PySide6学习笔记#10
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/PySide6/">PySide6</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天讲MessageBox，</p>
 <p>并且我来扩展3种其他的弹窗方式</p>
 <span id="more"></span>
 
@@ -34,7 +219,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <p>因为打包出来还是很大，</p>
 <p>（这个库有很多封装好的功能，</p>
 <p>（适合小小白</p>
-
+<img src="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/1.png" class="">
 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> easygui<br><br>easygui.msgbox(<span class="hljs-string">&#x27;msg&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>, ok_button=<span class="hljs-string">&#x27;我知道了&#x27;</span>)<br></code></pre></td></tr></table></figure>
 
@@ -42,7 +227,7 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>这个和前面的QMessageBox很像，</p>
 <p>同样可以设置图标</p>
-
+<img src="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/2.png" class="">
 
 <p>这个其实就涉及到win32api的调用了</p>
 <p>可以看microsoft给出的文档</p>
@@ -52,17 +237,17 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <h1 id="3-Ctypes"><a href="#3-Ctypes" class="headerlink" title="3 Ctypes"></a>3 Ctypes</h1><p>这个是专门调用win32api的，</p>
 <p>和前面的那个对比一下：</p>
-
+<img src="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/4.png" class="">
 
 <p>体积小了《不少》</p>
 <p>（远控里面反正体积越小越好</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> ctypes<br><br>a = ctypes.windll.LoadLibrary(<span class="hljs-string">&#x27;user32.dll&#x27;</span>)<br>a.MessageBoxW(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;msg&#x27;</span>, <span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
 
-
+<img src="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/3.png" class="">
 
 <p>这个就是调用user32这个dll里面封装的内置函数，</p>
 <p>可以去下载一个易语言的api伴侣</p>
-
+<img src="/2023/05/01/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10/5.png" class="">
 
 <p>注：</p>
 <p><strong>这里千万不要用MessageBoxA，</strong></p>
@@ -78,26 +263,79 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 
 <p>然后按钮样式就是把”0+16”里面的那个0换掉就可以了，</p>
 <p>具体的数字可以自己去试</p>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/05/02/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/">← Next PySide6学习笔记#11</a></div><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/2023/04/30/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-9-1/">PySide6学习笔记#9-1 Prev →</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-number">2.</span> <span class="toc-text">拓展</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-easygui"><span class="toc-number">2.1.</span> <span class="toc-text">1 easygui</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-win32api"><span class="toc-number">2.2.</span> <span class="toc-text">2 win32api</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Ctypes"><span class="toc-number">3.</span> <span class="toc-text">3 Ctypes</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/05/02/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          PySide6学习笔记#11
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/04/30/PySide6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-9-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PySide6学习笔记#9-1</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

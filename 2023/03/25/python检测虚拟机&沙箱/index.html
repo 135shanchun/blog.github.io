@@ -1,23 +1,199 @@
-<!DOCTYPE html><html lang="en" theme-mode="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>python检测沙箱及虚拟机 | Vincent</title><link rel="icon" type="image/x-icon" href="/favicon.ico"><script>var config = {"root":"/","search":{"preload":"all","activeHolder":"键入以继续","blurHolder":"数据检索","noResult":"无 $0 相关数据"},"code":{"codeInfo":"$0 - 共 $1 行","copy":"复制","copyFinish":"复制成功","expand":"展开"}}</script><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script src="//unpkg.com/mermaid@9.2.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/brands.min.css"><link type="text/css" rel="stylesheet" href="/lib/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/css/arknights.css"><script>if (window.localStorage.getItem('theme-mode') === 'light') document.documentElement.setAttribute('theme-mode', 'light')
-if (window.localStorage.getItem('theme-mode') === 'dark') document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
- font-family: BenderLight;
- src: local('Bender'), url("/font/BenderLight.ttf");
-}
-@font-face {
- font-family: 'JetBrains Mono';
- src: local('JetBrains Mono'), url('/font/JetBrainsMono-Regular.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Brands';
- src: local('Font Awesome 6 Brands'), url('/lib/fontawesome/fa-brands.woff2') format('woff2');
-}
-@font-face {
- font-family: 'Font Awesome 6 Free';
- src: local('Font Awesome 6 Free'), url('/lib/fontawesome/fa-regular.woff2') format('woff2');
-}</style><style>:root {
-  --dark-background: url('https://cdnjson.com/images/2023/05/14/bg.jpg');
-  --light-background: url('https://cdnjson.com/images/2023/05/14/bk.jpg');
-}</style><meta name="generator" content="Hexo 6.3.0"></head><body><div class="loading" style="opacity: 0"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><nav><div class="navBtn hide"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="数据检索" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>python检测沙箱及虚拟机</h1><div id="post-info"><span>文章发布时间: <div class="control"><time datetime="2023-03-25T12:52:17.000Z" id="date"> 2023-03-25</time></div></span><br><span>最后更新时间: <div class="control"><time datetime="2023-07-09T02:52:39.975Z" id="updated"> 2023-07-09</time></div></span></div></div><hr><div id="post-content"><h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>虚拟机不是日常使用的电脑，所以肯定有很大的不同</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python检测沙箱及虚拟机 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="python检测沙箱及虚拟机">
+<meta property="og:url" content="http://handsome-vincent.space/2023/03/25/python%E6%A3%80%E6%B5%8B%E8%99%9A%E6%8B%9F%E6%9C%BA&%E6%B2%99%E7%AE%B1/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-25T12:52:17.000Z">
+<meta property="article:modified_time" content="2023-09-29T14:58:06.575Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-python检测虚拟机&amp;沙箱" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/03/25/python%E6%A3%80%E6%B5%8B%E8%99%9A%E6%8B%9F%E6%9C%BA&%E6%B2%99%E7%AE%B1/" class="article-date">
+  	<time datetime="2023-03-25T12:52:17.000Z" itemprop="datePublished">2023-03-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python检测沙箱及虚拟机
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+	</div>
+
+        
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!---->
+<span id="more"></span>
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>虚拟机不是日常使用的电脑，所以肯定有很大的不同</p>
 <p>例如，虚拟机有一些文件是物理机没有的</p>
 <p>或者说，虚拟机的运行配置特别的低</p>
 <p>那么这就是一个不错的思路</p>
@@ -25,26 +201,74 @@ if (window.localStorage.getItem('theme-mode') === 'dark') document.documentEleme
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> shutil<br><span class="hljs-keyword">from</span> psutil <span class="hljs-keyword">import</span> boot_time<br><span class="hljs-keyword">from</span> time <span class="hljs-keyword">import</span> sleep, time<br><span class="hljs-keyword">from</span> ping3 <span class="hljs-keyword">import</span> ping<br><br><br>host = <span class="hljs-string">&#x27;baidu.com&#x27;</span><br><br>src_addr = <span class="hljs-literal">None</span><br>res = <span class="hljs-number">0</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ping_some_ip</span>(<span class="hljs-params">host, src_addr=<span class="hljs-literal">None</span></span>):<br>    second = ping(host, src_addr=src_addr)<br>    <span class="hljs-keyword">return</span> second<br><br><br><span class="hljs-keyword">while</span> res &lt;= <span class="hljs-number">3</span>:<br>    result = ping_some_ip(host, src_addr)<br>    <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        res = res + <span class="hljs-number">1</span><br>        <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">else</span>:<br>        exit()<br>count = os.cpu_count()<br><br>bootTime = (time() - boot_time()) / <span class="hljs-number">3600</span><br>total_size = shutil.disk_usage(<span class="hljs-string">&quot;C:\\&quot;</span>).total<br>total_size = total_size / (<span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>)<br>file_1 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\Vmmouse.sys&quot;</span>)<br>file_2 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\vmtray.dll&quot;</span>)<br>file_3 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\VMToolsHook.dll&quot;</span>)<br>file_4 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\vmmousever.dll&quot;</span>)<br>file_5 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\vmhgfs.dll&quot;</span>)<br>file_6 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\vmGuestLib.dll&quot;</span>)<br>file_7 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\VBoxMouse.sys&quot;</span>)<br>file_8 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\VBoxGuest.sys&quot;</span>)<br>file_9 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\VBoxSF.sys&quot;</span>)<br>file_10 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\Drivers\VBoxVideo.sys&quot;</span>)<br>file_11 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxdisp.dll&quot;</span>)<br>file_12 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxhook.dll&quot;</span>)<br>file_13 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxoglerrorspu.dll&quot;</span>)<br>file_14 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxoglpassthroughspu.dll&quot;</span>)<br>file_15 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxservice.exe&quot;</span>)<br>file_16 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\vboxtray.exe&quot;</span>)<br>file_17 = os.path.exists(<span class="hljs-string">r&quot;C:\windows\System32\VBoxControl.exe&quot;</span>)<br><br><span class="hljs-keyword">if</span> file_1 <span class="hljs-keyword">or</span> file_2 <span class="hljs-keyword">or</span> file_17 <span class="hljs-keyword">or</span> file_16 <span class="hljs-keyword">or</span> file_15 <span class="hljs-keyword">or</span> file_14 <span class="hljs-keyword">or</span> file_13 <span class="hljs-keyword">or</span> file_12 <span class="hljs-keyword">or</span> file_11 <span class="hljs-keyword">or</span> file_9 <span class="hljs-keyword">or</span> file_8 <span class="hljs-keyword">or</span> file_10 <span class="hljs-keyword">or</span> file_7 <span class="hljs-keyword">or</span> file_6 <span class="hljs-keyword">or</span> file_5 <span class="hljs-keyword">or</span> file_4 <span class="hljs-keyword">or</span> file_3:<br>    exit()<br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-keyword">if</span> bootTime &lt;= <span class="hljs-number">0.5</span>:<br>        sleep(<span class="hljs-number">100</span>)<br><br><span class="hljs-keyword">if</span> count &lt; <span class="hljs-number">4</span>:<br>    sleep(<span class="hljs-number">100</span>)<br><br><span class="hljs-keyword">if</span> total_size &lt;= <span class="hljs-number">50</span> * <span class="hljs-number">1024</span>:<br>    <span class="hljs-built_in">print</span>(total_size)<br>    sleep(<span class="hljs-number">100</span>)<br><br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-comment"># 如果是虚拟机就不会执行下面的代码</span><br>    <span class="hljs-comment"># 这里存放你要执行的恶意代码</span><br></code></pre></td></tr></table></figure>
 
 <p>这并不能检测全部的虚拟机、沙箱，具体的可以自己根据思路改改代码</p>
-<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-start"><div class="footer-link" style="width: 50%;text-align:right;border-right:1px #fe2 solid"><a href="/2023/04/05/%E4%BB%BB%E6%84%8F%E8%BF%9B%E5%88%B6%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/">← Next 任意进制之间的转换</a></div></div></div><div id="comments"><div class="selector"><button class="valine-sel"></button></div><div id="valine"></div></div></div><div class="bottom-btn"><div><a id="to-top" onClick="scrolls.scrolltop();" title="回到顶部" style="opacity: 0; display: none;">∧</a><a id="to-index" href="#toc-div" title="文章目录">≡</a><a id="color-mode" onClick="colorMode.change()" title="切换主题"></a></div></div></article><aside><div id="about"><a href="/" id="logo"><img src="./img/logo.jpg" alt="Logo"></a><h1 id="Dr"><a href="/">Vincent</a></h1><div id="description"><p>不与无谓人争气</p></div></div><div id="aside-block"><div id="toc-div"><h1>目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">代码</span></a></li></ol></div></div><footer><nobr>构建自 <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a></nobr><wbr><nobr> 使用主题 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus/hexo-theme-arknights">Arknights</a></nobr><wbr><nobr>主题作者 <a target="_blank" rel="noopener" href="https://github.com/Yue-plus">Yue_plus</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script src="/js/search.js"></script><script src="/js/arknights.js"></script><script src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="/js/pjax.js"></script><script class="pjax-js">reset= () => {new Valine({
- el: '#valine'
- , appId: 'HPascq2qxfVnEiu0BvuEltaD-gzGzoHsz'
- , appKey: 'AKHEZyHQcEOLkAQk07kDBYgN' , placeholder: '此条评论委托企鹅物流发送'
- , path: window.location.pathname
-});code.findCode();
-document.querySelector('.lg-container')?.remove()
-lightGallery(document.getElementById('post-bg'), {
-  plugins: [lgZoom,lgThumbnail],
-  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
- cacheBust: false,
- selectors: ['title','article','#aside-block','.pjax-js'],
- switches: {'article': Pjax.switches.sideBySide},
- switchesOptions: {
-   'article': {
-     classNames: {
-       remove: "pjax-out",
-       add: "pjax-in"
-     }
-   }
- }
-});
-document.addEventListener("pjax:complete", reset);reset()})</script></body></html>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/04/05/%E4%BB%BB%E6%84%8F%E8%BF%9B%E5%88%B6%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          任意进制之间的转换
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

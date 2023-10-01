@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>php学习笔记#1 | Vincent</title>
+
+  <!-- keywords -->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="php学习笔记#1">
+<meta property="og:url" content="http://handsome-vincent.space/2023/09/21/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1/index.html">
+<meta property="og:site_name" content="Vincent">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C1.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C2.png">
+<meta property="og:image" content="http://handsome-vincent.space/2023/09/21/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1/3.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C4.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C5.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C6.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C7.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C8.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C9.png">
+<meta property="og:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C10.png">
+<meta property="article:published_time" content="2023-09-21T12:05:51.000Z">
+<meta property="article:modified_time" content="2023-10-01T10:32:44.397Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="php">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://handsome-vincent.space/pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Vincent" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+<script src="//cdn.bootcss.com/require.js/2.3.2/require.min.js"></script>
+
+  
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+  <div id="container">
+    <div id="particles-js"></div>
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+			<h1 class="header-author"><a href="/">Vincent</a></h1>
+		</hgroup>
+
+		
+			<p class="header-subtitle"></p>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">Home</a></li>
+				        
+							<li><a href="/archives">Archives</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="half-header-menu">
+						<a class="hide">Home</a>
+						<a>Tags</a>
+						<a>Links</a>
+						<a>About</a>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+						<!-- music -->
+						
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/file-inclusion/" style="font-size: 13.33px;">file_inclusion</a> <a href="/tags/file-upload/" style="font-size: 15px;">file_upload</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/python/" style="font-size: 18.33px;">python</a> <a href="/tags/sql/" style="font-size: 20px;">sql</a> <a href="/tags/vuln/" style="font-size: 11.67px;">vuln</a> <a href="/tags/xss/" style="font-size: 16.67px;">xss</a> <a href="/tags/xxe/" style="font-size: 10px;">xxe</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/">github</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">不与无谓人争气</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide"></h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author"></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">Home</a></li>
+		        
+					<li><a href="/archives">Archives</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-php学习笔记-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2023/09/21/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1/" class="article-date">
+  	<time datetime="2023-09-21T12:05:51.000Z" itemprop="datePublished">2023-09-21</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      php学习笔记#1
+      
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/" rel="tag">php</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Note/">Note</a>
+	</div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!---->
+
+<span id="more"></span>
+
+<p>此听课笔记来源于<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1kf4y177ex/?spm_id_from=333.337.search-card.all.click&vd_source=1c43bcf31e4abf33f3960dd414786c92">PHP基础巩固共20节视频教程_哔哩哔哩_bilibili</a></p>
+<p>此系列用于学习记录，有错误希望指出！</p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>首先安装好phpstorm以及php环境，这里就不赘述了</p>
+<h1 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h1><ul>
+<li><p>注释</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">// 这是单行注释</span><br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">这是多行注释</span><br><span class="hljs-comment">这是多行注释</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>变量</p>
+<p>命名规则和所有编程语言一样，不能数字开头，第一个字符必须是字符串</p>
+<p>定义一个变量需要在最前添加一个“$”</p>
+</li>
+<li><p>每一行最后需要加上分号</p>
+</li>
+</ul>
+<p>示例代码：</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C1.png"></p>
+<p>事实上这是和python非常相像的，例如print的语句：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$res</span> = <span class="hljs-string">&#x27;a&#x27;</span><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$res</span>, <span class="hljs-string">&#x27;----&#x27;</span>, <span class="hljs-variable">$res</span>; <br></code></pre></td></tr></table></figure>
+
+<p>这就会打印出<code>a----a</code></p>
+<p>需要注意的是，php中的换行是html中的标签，即<code>&lt;/br&gt;</code>,相当于python的<code>\n</code></p>
+<h1 id="数学运算符"><a href="#数学运算符" class="headerlink" title="数学运算符"></a>数学运算符</h1><p>PHP中的数学运算符用于执行各种基本的数学计算。以下是一些常用的数学运算符：</p>
+<ol>
+<li>加法运算符（+）：用于将两个数值相加。</li>
+<li>减法运算符（-）：用于将一个数值减去另一个数值。</li>
+<li>乘法运算符（*）：用于将两个数值相乘。</li>
+<li>除法运算符（&#x2F;）：用于将一个数值除以另一个数值。</li>
+<li>取余运算符（%）：用于计算一个数值除以另一个数值后的余数。</li>
+</ol>
+<p>此外，PHP还提供了一些其他的数学函数，如abs()用于获取一个数的绝对值、sqrt()用于计算一个数的平方根、round()用于将一个数四舍五入等。这些函数可以在数学计算中进行更复杂的操作。</p>
+<p>需要注意的是，在进行数值计算时，需要注意使用合适的数据类型，避免数据精度丢失或溢出等问题。</p>
+<hr>
+<p>示例代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">// 定义变量</span><br><span class="hljs-variable">$a</span> = <span class="hljs-number">1</span>;<br><span class="hljs-variable">$b</span> = <span class="hljs-number">2</span>;<br><span class="hljs-variable">$c</span> = <span class="hljs-number">3</span>;<br><span class="hljs-variable">$d</span> = <span class="hljs-number">6</span>;<br><br><span class="hljs-variable">$res1</span> = <span class="hljs-variable">$a</span> + <span class="hljs-variable">$b</span>;<br><span class="hljs-variable">$res2</span> = <span class="hljs-variable">$b</span> * <span class="hljs-variable">$c</span>;<br><span class="hljs-variable">$res3</span> = <span class="hljs-variable">$d</span> % <span class="hljs-variable">$c</span>;<br><span class="hljs-variable">$res4</span> = <span class="hljs-variable">$res1</span> + <span class="hljs-variable">$res2</span> + <span class="hljs-variable">$res3</span> - <span class="hljs-number">5</span>;<br><span class="hljs-variable">$res5</span> = <span class="hljs-variable">$a</span> / <span class="hljs-variable">$b</span>;<br><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$res1</span>.<span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>.<span class="hljs-variable">$res2</span>.<br>            <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>.<span class="hljs-variable">$res3</span>.<br>            <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>.<span class="hljs-variable">$res4</span>.<br>            <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>.<span class="hljs-variable">$res5</span>; <span class="hljs-comment">// php中 “.” 也可以用来连接字符串</span><br></code></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">3<br>6<br>0<br>4<br>0.5<br></code></pre></td></tr></table></figure>
+
+<h1 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h1><ol>
+<li>相等运算符（&#x3D;&#x3D;）：检查两个操作数是否相等，如果相等则返回true，否则返回false。</li>
+<li>全等运算符（&#x3D;&#x3D;&#x3D;）：除了检查两个操作数的值是否相等外，还会检查它们的类型是否相同，如果相同则返回true，否则返回false。</li>
+<li>不相等运算符（!&#x3D;或&lt;&gt;）：检查两个操作数是否不相等，如果不相等则返回true，否则返回false。</li>
+<li>不全等运算符（!&#x3D;&#x3D;）：除了检查两个操作数的值是否不相等外，还会检查它们的类型是否不同，如果不同则返回true，否则返回false。</li>
+<li>大于运算符（&gt;）：检查左操作数是否大于右操作数，如果是则返回true，否则返回false。</li>
+<li>小于运算符（&lt;）：检查左操作数是否小于右操作数，如果是则返回true，否则返回false。</li>
+<li>大于等于运算符（&gt;&#x3D;）：检查左操作数是否大于或等于右操作数，如果是则返回true，否则返回false。</li>
+<li>小于等于运算符（&lt;&#x3D;）：检查左操作数是否小于或等于右操作数，如果是则返回true，否则返回false。</li>
+<li>逻辑与运算符（&amp;&amp;）：当两个操作数都为true时，结果为true，否则结果为false。相当于and</li>
+<li>逻辑或运算符（||）：当两个操作数中至少有一个为true时，结果为true，否则结果为false。相当于or</li>
+<li>逻辑非运算符（!）：对单个操作数进行取反操作，如果操作数为true，则结果为false；如果操作数为false，则结果为true。</li>
+</ol>
+<p>位运算符（&amp;、|、^）用于对二进制数进行按位操作。</p>
+<ol start="12">
+<li>位与运算符（&amp;）：将两个操作数的对应位进行与操作，如果对应位都为1，则结果为1，否则结果为0。</li>
+<li>位或运算符（|）：将两个操作数的对应位进行或操作，如果对应位至少有一个为1，则结果为1，否则结果为0。</li>
+<li>位异或运算符（^）：将两个操作数的对应位进行异或操作，如果对应位相同，则结果为0，如果对应位不同，则结果为1。</li>
+</ol>
+<hr>
+<p>非常简单，跳过</p>
+<h1 id="简单函数"><a href="#简单函数" class="headerlink" title="简单函数"></a>简单函数</h1><ul>
+<li><p>var_dump($var) 返回变量的类型以及值</p>
+</li>
+<li><p>strpos($string, ‘abc’)类似于python的index函数，返回第二个参数第一次出现在第一个参数的索引，例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">&lt;?php<br>$a = &#x27;abcde&#x27;;<br>$b = strpos($a, &#x27;c&#x27;);<br>echo $b;<br></code></pre></td></tr></table></figure>
+
+<p>上述代码返回2，如果无法找到指定字符串，则会返回bool类型的false</p>
+</li>
+</ul>
+<p> 	</p>
+<h1 id="if-else-判断"><a href="#if-else-判断" class="headerlink" title="if else 判断"></a>if else 判断</h1><p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C2.png"></p>
+<p>同样这里也可以有<code>else if</code>，用法同python，格式同<code>if </code></p>
+<h1 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h1><p>和python的几乎一样：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$num</span> = <span class="hljs-number">1</span>;<br><span class="hljs-keyword">while</span> (<span class="hljs-variable">$num</span> &lt; <span class="hljs-number">10</span>)&#123;   <span class="hljs-comment">// while后面加的应该是bool类型的判断条件</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;hello&#x27;</span>.<span class="hljs-variable">$num</span>.<span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>;<br>    <span class="hljs-variable">$num</span> = <span class="hljs-variable">$num</span> + <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">hello1<br>hello2<br>hello3<br>hello4<br>hello5<br>hello6<br>hello7<br>hello8<br>hello9<br></code></pre></td></tr></table></figure>
+
+<h1 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h1><p>这个非常类似与c家族的for循环</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">for</span>(<span class="hljs-variable">$num</span>=<span class="hljs-number">0</span>;<span class="hljs-variable">$num</span>&lt;<span class="hljs-number">10</span>;<span class="hljs-variable">$num</span>=<span class="hljs-variable">$num</span>+<span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$num</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第一个参数定义起始值，第二个参数定义循环范围，第三个参数定义步长</p>
+<p>例如上述代码的起始值是0，范围是小于十，步长是1，因此这一段代码会被执行九次</p>
+<p>输出为<code>0123456789</code></p>
+<p>并且最需要注意的是，<strong>三个参数中间使用分号分隔，而不是逗号</strong></p>
+<p>但是，在具有同样定义的时候可以使用逗号，例如下面代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">for</span>(<span class="hljs-variable">$num</span>=<span class="hljs-number">0</span>,<span class="hljs-variable">$i</span>=<span class="hljs-number">5</span>;<span class="hljs-variable">$num</span>&lt;<span class="hljs-variable">$i</span>;<span class="hljs-variable">$num</span>=<span class="hljs-variable">$num</span>+<span class="hljs-number">1</span>,<span class="hljs-variable">$i</span>=<span class="hljs-variable">$i</span>-<span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-variable">$num</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">hello0hello1hello2<br></code></pre></td></tr></table></figure>
+
+<h1 id="break-continue"><a href="#break-continue" class="headerlink" title="break continue"></a>break continue</h1><p>和python中的一样，continue跳过当前一次的循环，</p>
+<p>break结束当循环，后面的循环不会执行，接下来会执行循环体之外的内容</p>
+<img src="./pic/php学习笔记\1\3.png" style="zoom:50%;" />
+
+<p>如果将上述代码的<code>continue</code>换成<code>break</code>程序就只会输出<code>123</code></p>
+<h1 id="小练习"><a href="#小练习" class="headerlink" title="小练习"></a>小练习</h1><h2 id="1-现金问题"><a href="#1-现金问题" class="headerlink" title="1 现金问题"></a>1 现金问题</h2><p>题目描述</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">假设某人有100,000现金。<br>每经过一次路口需要进行一次交费。交费规则为当他现金大于<br>50000时每次需要交5%<br>如果现金小于等于50000时每次交5000。请写一程序计算此人可经过多少次这个路口。<br></code></pre></td></tr></table></figure>
+
+<p>我的代码：</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C4.png"></p>
+<p>答案正确，看看视频中的代码</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C5.png"></p>
+<p>利用for循环确实更好一些</p>
+<h2 id="2-九九乘法表"><a href="#2-九九乘法表" class="headerlink" title="2 九九乘法表"></a>2 九九乘法表</h2><p>这个是一个非常经典的编程题目，记得当时学python for循环嵌套的时候做过这一道题</p>
+<p>非常简单</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">for</span> (<span class="hljs-variable">$i</span>=<span class="hljs-number">1</span>;<span class="hljs-variable">$i</span>&lt;<span class="hljs-number">10</span>;<span class="hljs-variable">$i</span>+=<span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-variable">$j</span>=<span class="hljs-number">1</span>;<span class="hljs-variable">$j</span>&lt;<span class="hljs-number">10</span>;<span class="hljs-variable">$j</span>+=<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$i</span> &gt; <span class="hljs-variable">$j</span>) &#123;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$i</span>.<span class="hljs-string">&#x27;x&#x27;</span>.<span class="hljs-variable">$j</span>.<span class="hljs-string">&#x27;=&#x27;</span>.<span class="hljs-variable">$i</span>*<span class="hljs-variable">$j</span>.<span class="hljs-string">&#x27;&amp;nbsp&#x27;</span>;   <span class="hljs-comment">// &amp;nbsp是空格的意思</span><br>    &#125;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1x1=1 1x2=2 1x3=3 1x4=4 1x5=5 1x6=6 1x7=7 1x8=8 1x9=9 <br>2x2=4 2x3=6 2x4=8 2x5=10 2x6=12 2x7=14 2x8=16 2x9=18 <br>3x3=9 3x4=12 3x5=15 3x6=18 3x7=21 3x8=24 3x9=27 <br>4x4=16 4x5=20 4x6=24 4x7=28 4x8=32 4x9=36 <br>5x5=25 5x6=30 5x7=35 5x8=40 5x9=45 <br>6x6=36 6x7=42 6x8=48 6x9=54 <br>7x7=49 7x8=56 7x9=63 <br>8x8=64 8x9=72 <br>9x9=81 <br></code></pre></td></tr></table></figure>
+
+<h2 id="3-百钱买百鸡"><a href="#3-百钱买百鸡" class="headerlink" title="3 百钱买百鸡"></a>3 百钱买百鸡</h2><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">公鸡5文钱1只，<br>母鸡3文钱1只，<br>小鸡1文钱买3只，现在用100文钱共买了100只鸡，问：在这100只鸡中，公鸡母鸡和小鸡各是多少只？（设每种至少只)<br></code></pre></td></tr></table></figure>
+
+<p>这也是非常经典的一个问题，也是利用嵌套遍历来实现</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;meta charset=<span class="hljs-string">&quot;utf8&quot;</span>&gt;  <span class="hljs-comment">// 设置编码，这样在浏览器查看输出结果的时候不会乱码</span><br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment"> 钱 100文</span><br><span class="hljs-comment"> 鸡 100只</span><br><span class="hljs-comment"> 公鸡5文钱1只，</span><br><span class="hljs-comment"> 母鸡3文钱1只，</span><br><span class="hljs-comment"> 小鸡1文钱买3只</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">for</span> (<span class="hljs-variable">$g</span>=<span class="hljs-number">1</span>;<span class="hljs-variable">$g</span>&lt;<span class="hljs-number">100</span>;<span class="hljs-variable">$g</span>++) &#123;          <span class="hljs-comment">// 公鸡</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-variable">$m</span>=<span class="hljs-number">1</span>;<span class="hljs-variable">$m</span>&lt;<span class="hljs-number">100</span>;<span class="hljs-variable">$m</span>++) &#123;      <span class="hljs-comment">// 母鸡</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-variable">$x</span>=<span class="hljs-number">1</span>;<span class="hljs-variable">$x</span>&lt;<span class="hljs-number">100</span>;<span class="hljs-variable">$x</span>++) &#123;  <span class="hljs-comment">// 小鸡</span><br>            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$g</span>+<span class="hljs-variable">$m</span>+<span class="hljs-variable">$x</span>==<span class="hljs-number">100</span> &amp;&amp; <span class="hljs-variable">$g</span>*<span class="hljs-number">5</span>+<span class="hljs-variable">$m</span>*<span class="hljs-number">3</span>+<span class="hljs-variable">$x</span>/<span class="hljs-number">3</span>==<span class="hljs-number">100</span>) &#123;<br>                <span class="hljs-comment">// 只数加起来==100 并且钱数加起来==100即符合题意</span><br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;公鸡&#x27;</span>.<span class="hljs-variable">$g</span>.<span class="hljs-string">&#x27; 母鸡&#x27;</span>.<span class="hljs-variable">$m</span>.<span class="hljs-string">&#x27; 小鸡&#x27;</span>.<span class="hljs-variable">$x</span>;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最终输出答案</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">公鸡4 母鸡18 小鸡78<br>公鸡8 母鸡11 小鸡81<br>公鸡12 母鸡4 小鸡84<br></code></pre></td></tr></table></figure>
+
+<p>但是在视频中给出了一个更加高效的方法，这个就是知2求1的思路，减少一层遍历，高效很多</p>
+<p>但是在这基础上还是可以优化，也就是规定遍历的范围，范围的计算方法是<code>[100/鸡单价向上取整]-2</code></p>
+<p>最终版代码是</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C6.png"></p>
+<h1 id="字符串定义"><a href="#字符串定义" class="headerlink" title="字符串定义"></a>字符串定义</h1><p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C7.png"></p>
+<p><strong>大段的字符串中不可以出现注释或者空格</strong></p>
+<h1 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h1><p>建议读者下一个utools，其中一个插件叫”程序员手册“的插件可以涵盖大部分编程语言的函数</p>
+<ul>
+<li><p>字符长度 strlen($str) </p>
+</li>
+<li><p>字符数量 mb_strlen($str, ‘utf-8’)  第二个参数可以不填 </p>
+</li>
+<li><p>字符第一次出现的索引 strpos($str)  返回int或者false</p>
+</li>
+<li><p>与上一个函数相对的 字符最后一次出现的地方及后面字符串strrchr($str) 示例代码在后面</p>
+</li>
+<li><p>字符串替换 str_replace(‘匹配词’, ‘替换词’, $str)</p>
+</li>
+<li><p>转换指定字符 两种方法</p>
+<ul>
+<li><p>strtr($str, array(‘匹配1’&#x3D;&gt;’替换1’, ‘匹配2’&#x3D;&gt;’替换2’))</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;meta charset=<span class="hljs-string">&#x27;utf-8&#x27;</span>&gt;<br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$str</span> = <span class="hljs-string">&#x27;匹配1匹配2&#x27;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">strtr</span>(<span class="hljs-variable">$str</span>, <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;匹配1&#x27;</span>=&gt;<span class="hljs-string">&#x27;替换1&#x27;</span>, <span class="hljs-string">&#x27;匹配2&#x27;</span>=&gt;<span class="hljs-string">&#x27;替换2&#x27;</span>));<br><br>输出：替换<span class="hljs-number">1</span>替换<span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>strtr($str, ‘替换一’, ‘替换2’)</p>
+<p>这一种的弊端就是会乱码并且无法看作一个整体，因此推荐上一种写法</p>
+</li>
+</ul>
+</li>
+<li><p>截取字符串 substr($str, int start, [int length]) 如果没有第三个参数默认截取到最后</p>
+<p>如果start是负数，将从倒数第[start]开始截取</p>
+</li>
+<li><p>拆分字符串 explode(‘split_符号’, $str)</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">// 示例 1</span><br><span class="hljs-variable">$pizza</span>  = <span class="hljs-string">&quot;piece1 piece2 piece3 piece4 piece5 piece6&quot;</span>;<br><span class="hljs-variable">$pieces</span> = <span class="hljs-title function_ invoke__">explode</span>(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-variable">$pizza</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$pieces</span>[<span class="hljs-number">0</span>]; <span class="hljs-comment">// piece1</span><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$pieces</span>[<span class="hljs-number">1</span>]; <span class="hljs-comment">// piece2</span><br><br><span class="hljs-comment">// 示例 2</span><br><span class="hljs-variable">$data</span> = <span class="hljs-string">&quot;foo:*:1023:1000::/home/foo:/bin/sh&quot;</span>;<br><span class="hljs-keyword">list</span>(<span class="hljs-variable">$user</span>, <span class="hljs-variable">$pass</span>, <span class="hljs-variable">$uid</span>, <span class="hljs-variable">$gid</span>, <span class="hljs-variable">$gecos</span>, <span class="hljs-variable">$home</span>, <span class="hljs-variable">$shell</span>) = <span class="hljs-title function_ invoke__">explode</span>(<span class="hljs-string">&quot;:&quot;</span>, <span class="hljs-variable">$data</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$user</span>; <span class="hljs-comment">// foo</span><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$pass</span>; <span class="hljs-comment">// *</span><br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>连接数组 implode(‘连接符号’, array)</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-variable">$array</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;lastname&#x27;</span>, <span class="hljs-string">&#x27;email&#x27;</span>, <span class="hljs-string">&#x27;phone&#x27;</span>);<br><span class="hljs-variable">$comma_separated</span> = <span class="hljs-title function_ invoke__">implode</span>(<span class="hljs-string">&quot;,&quot;</span>, <span class="hljs-variable">$array</span>);<br><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$comma_separated</span>; <span class="hljs-comment">// lastname,email,phone</span><br></code></pre></td></tr></table></figure>
+
+<p>类似于python中的<code>join</code></p>
+</li>
+<li><p>替换字符串左右两边的字符（中间的不替换）trim($str, ‘替换字符’)</p>
+</li>
+<li><p>替换字符串右边的字符（中间的不替换）rtrim($str, ‘替换字符’)</p>
+</li>
+<li><p>替换字符串左边的字符（中间的不替换）ltrim($str, ‘替换字符’)</p>
+</li>
+</ul>
+<p>简单小练习：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;meta charset=<span class="hljs-string">&#x27;utf-8&#x27;</span>&gt;<br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">// 获取文件后缀名小示例</span><br><span class="hljs-variable">$file</span> = <span class="hljs-string">&#x27;text.php.txt    &#x27;</span>;<br><span class="hljs-variable">$a</span> = <span class="hljs-title function_ invoke__">strrchr</span>(<span class="hljs-variable">$file</span>,<span class="hljs-string">&#x27;.&#x27;</span>);<br><span class="hljs-variable">$b</span> = <span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$a</span>, <span class="hljs-number">1</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$c</span>;  <span class="hljs-comment">// txt</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="数组定义"><a href="#数组定义" class="headerlink" title="数组定义"></a>数组定义</h1><p>php中的数组和python中的字典或者列表类似，都是键值对或者列表的形式</p>
+<p>array可以定义为字典的形式，也可以定义为列表的形式</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;meta charset=<span class="hljs-string">&#x27;utf-8&#x27;</span>&gt;<br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_dict</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>=&gt;<span class="hljs-string">&#x27;A&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>=&gt;<span class="hljs-string">&#x27;B&#x27;</span>);<br><span class="hljs-variable">$array_list</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;a&#x27;</span>]; <span class="hljs-comment">// &#x27;A&#x27;</span><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_list</span>[<span class="hljs-number">0</span>];   <span class="hljs-comment">// &#x27;a&#x27;</span><br><span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-variable">$array_dict</span>);<br><span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-variable">$array_list</span>);<br></code></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C8.png"></p>
+<p>上面的代码是<code>查</code></p>
+<p>接下来介绍<code>增</code> <code>删</code> <code>改</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;meta charset=<span class="hljs-string">&#x27;utf-8&#x27;</span>&gt;<br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_dict</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>=&gt;<span class="hljs-string">&#x27;A&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>=&gt;<span class="hljs-string">&#x27;B&#x27;</span>);<br><span class="hljs-variable">$array_list</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>);<br><span class="hljs-comment">// 改</span><br><span class="hljs-variable">$array_list</span>[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;d&#x27;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_list</span>[<span class="hljs-number">0</span>];  <span class="hljs-comment">// d</span><br><span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;a&#x27;</span>] = <span class="hljs-string">&#x27;AA&#x27;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;a&#x27;</span>];  <span class="hljs-comment">// AA</span><br><span class="hljs-comment">// 增</span><br><span class="hljs-variable">$array_list</span>[<span class="hljs-number">4</span>] = <span class="hljs-string">&#x27;d&#x27;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_list</span>[<span class="hljs-number">4</span>];   <span class="hljs-comment">// d</span><br><span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;c&#x27;</span>] = <span class="hljs-string">&#x27;C&#x27;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;c&#x27;</span>];  <span class="hljs-comment">// C</span><br><span class="hljs-comment">// 删</span><br><span class="hljs-keyword">unset</span>(<span class="hljs-variable">$array_dict</span>[<span class="hljs-string">&#x27;a&#x27;</span>]);<br><span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-variable">$array_dict</span>);<br><span class="hljs-keyword">unset</span>(<span class="hljs-variable">$array_list</span>[<span class="hljs-number">0</span>]);<br><span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-variable">$array_list</span>);<br></code></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C9.png"></p>
+<h1 id="数组的遍历"><a href="#数组的遍历" class="headerlink" title="数组的遍历"></a>数组的遍历</h1><ul>
+<li><p>列表式数组遍历：</p>
+<p>法一</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_list</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>);<br><br><span class="hljs-keyword">for</span> (<span class="hljs-variable">$i</span>=<span class="hljs-number">0</span>;<span class="hljs-variable">$i</span>&lt;<span class="hljs-title function_ invoke__">count</span>(<span class="hljs-variable">$array_list</span>);<span class="hljs-variable">$i</span>+=<span class="hljs-number">1</span>) &#123;  <span class="hljs-comment">// count返回数组的长度</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$array_list</span>[<span class="hljs-variable">$i</span>].<span class="hljs-string">&#x27;&lt;br&gt;&#x27;</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">a<br>b<br>c<br></code></pre></td></tr></table></figure>
+
+<p>​	法二 foreach函数使用</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_list</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>);<br><br><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$array_list</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$v</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$v</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​	遍历字典式的数组</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_dict</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>=&gt;<span class="hljs-string">&#x27;A&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>=&gt;<span class="hljs-string">&#x27;B&#x27;</span>);<br><br><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$array_dict</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span>=&gt;<span class="hljs-variable">$v</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$k</span>.<span class="hljs-string">&#x27;:&#x27;</span>.<span class="hljs-variable">$v</span>.<span class="hljs-string">&#x27;&lt;br&gt;&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$array_dict</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>=&gt;<span class="hljs-string">&#x27;A&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>=&gt;<span class="hljs-string">&#x27;B&#x27;</span>);<br><span class="hljs-variable">$array_list</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>);<br><br><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$array_dict</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span>=&gt;<span class="hljs-variable">$v</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$k</span>.<span class="hljs-string">&#x27;:&#x27;</span>.<span class="hljs-variable">$v</span>.<span class="hljs-string">&#x27;&lt;br&gt;&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">a:A<br>b:B<br></code></pre></td></tr></table></figure>
+
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>函数的定义以及概念这里不再赘述</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sum</span>(<span class="hljs-params"><span class="hljs-variable">$a</span>, <span class="hljs-variable">$b</span></span>) </span>&#123;   <span class="hljs-comment">// 函数名以及参数</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-variable">$a</span> + <span class="hljs-variable">$b</span>;      <span class="hljs-comment">// 函数体</span><br>&#125;<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">sum</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);          <span class="hljs-comment">// 调用函数</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="时间戳格式化"><a href="#时间戳格式化" class="headerlink" title="时间戳格式化"></a>时间戳格式化</h1><p>这个不是非常常用，需要用的时候看一下手册或者上网搜一下就可以了</p>
+<p><img src="/./pic/php%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%5C1%5C10.png"></p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>php基础就到这里了，大概一周的时间，后面的笔记学习<code>PHP操作MySQL</code>、<code>新版PHP加强</code></p>
+<p>php系列差不多就结束了！</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/10/01/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98%E5%8F%98%E6%9B%B4%E8%AE%B0%E5%BD%95/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          博客主题变更记录
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/09/09/%E5%B0%81%E7%A5%9E%E5%8F%B0%E6%89%93%E9%9D%B6%E9%9A%8F%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">封神台打靶随记</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+      <div class="footer-left">
+        &copy; 2023 Vincent
+      </div>
+        <div class="footer-right">
+          <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/preccrep/hexo-theme-jelly" target="_blank">Jelly</a>
+        </div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
